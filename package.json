@@ -6,7 +6,7 @@
         "type": "git",
         "url": "https://github.com/tolokoban/vintage-machine.git"
     },
-    "homepage": "https://tolokoban.github.io/vintage-machine",
+    "homepage": "https://github.com/tolokoban/vintage-machine",
     "license": "GPL-3.0",
     "scripts": {
         "test": "node node_modules/karma/bin/karma start karma.conf.js",
@@ -19,11 +19,14 @@
         "url": "https://github.com/tolokoban/vintage-machine/issues"
     },
     "tfw": {
-        "resources": [],
+        "resources": [
+        ],
         "modules": [],
         "compile": {
             "type": "firefoxos",
-            "files": [ "\\.html$" ]
+            "files": [
+                "\\.html$"
+            ]
         },
         "output": "www"
     },
