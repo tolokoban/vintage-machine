@@ -19,8 +19,7 @@
         "url": "https://github.com/tolokoban/vintage-machine/issues"
     },
     "tfw": {
-        "resources": [
-        ],
+        "resources": [],
         "modules": [],
         "compile": {
             "type": "firefoxos",
@@ -30,7 +29,7 @@
         },
         "output": "www"
     },
-    "version": "0.0.1",
+    "version": "0.0.2",
     "reservedModules": [],
     "dependencies": {
         "jasmine-core": "^2.4",
