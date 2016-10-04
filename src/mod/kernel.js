@@ -97,7 +97,6 @@ function Kernel( canvas, symbols ) {
         if (debugMode) return;
 
         gl.bindFramebuffer( gl.FRAMEBUFFER, null );
-        //gl.viewport(0, 0, WIDTH << 1, HEIGHT << 1);
         var prg = that._prgRender;
         prg.use();
         gl.colorMask( true, true, true, true );
@@ -108,6 +107,8 @@ function Kernel( canvas, symbols ) {
         gl.vertexAttribPointer( prg.$attPosition, 2, gl.FLOAT, false, 0, 0 );
         gl.bufferData( gl.ARRAY_BUFFER, datRectangle, gl.STATIC_DRAW );
 
+        //gl.uniform1i( gl.getUniformLocation(prg.program, "texSource"), 0 );
+        //gl.uniform1i( gl.getUniformLocation(prg.program, "texPalette"), 1 );
         prg.$texSource = 1;
         prg.$texPalette = 1;
         
