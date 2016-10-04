@@ -29,8 +29,13 @@
  * JLT( n, delta )
  * JGE( n, delta )
  * JLE( n, delta )
- * GET( name )
+ * GET( name ) -> valut
  * SET( name, value )
+ * LET( name )
+ * RND() -> number
+ * DEC( name ) -> number
+ * POINT( x, y, color )
+ * TRIANGLES()
  */
 
 // Every atomic instruction has a time cost.
@@ -63,7 +68,7 @@ module.exports = Asm;
  * @return void
  */
 Asm.prototype.next = function( runtime ) {
-    if( typeof runtime === 'undefined' ) runtime = this._runtime;
+    if( !runtime ) runtime = this._runtime;
     else this._runtime = runtime;
 
     var cmd;
@@ -76,6 +81,7 @@ Asm.prototype.next = function( runtime ) {
             this.push( cmd );
         }
     }
+    this._cost -= MAX_COST;
 
     return true;
 };
@@ -114,6 +120,71 @@ Asm.prototype.asNumber = function( v ) {
     if (typeof v === 'number') return v;
     var n = parseFloat( v );
     return isNaN( n ) ? 0 : n;
+};
+
+/**
+ * POINT( x, y color )
+ */
+Asm.POINT = function() {
+    var color = this.popAsNumber();
+    var y = this.popAsNumber();
+    var x = this.popAsNumber();
+    if (this.kernel) {
+        this.kernel.point( x, y, color );
+    }
+    return 5;
+};
+
+/**
+ * TRIANGLES()
+ */
+Asm.TRIANGLES = function() {
+    if (this.kernel) {
+        this.kernel.triangles();
+    }
+    return 10;
+};
+
+/**
+ * RND()
+ * Push a random number between 0.0 and 1.0.
+ */
+Asm.RND = function() {
+    this.push( Math.random() );
+    return 2;
+};
+
+/**
+ * DEC( name )
+ * Substract 1 to the variable `name` and push the result on the stack.
+ * Usefull for loops.
+ */
+Asm.DEC = function() {
+    var name = "" + this.pop();
+    var value;
+    if (typeof this.runtime.lets[name] !== 'undefined') {
+        value = parseFloat(this.runtime.lets[name]);
+        if (isNaN( value )) value = 0;
+        value--;
+        this.runtime.lets[name] = value;
+    } else {
+        value = parseFloat(this.runtime.vars[name]);
+        if (isNaN( value )) value = 0;
+        value--;
+        this.runtime.vars[name] = value;
+    }
+    this.push( value );
+    return 2;
+};
+
+/**
+ * LET( name )
+ * Declare a local variable if it does not yet exist.
+ */
+Asm.LET = function() {
+    var name = "" + this.pop();
+    if( typeof this.runtime.lets[name] === 'undefined' ) this.runtime.lets[name] = 0;
+    return 1;
 };
 
 /**

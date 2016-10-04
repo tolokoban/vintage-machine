@@ -32,6 +32,11 @@ describe('Module `asm`', function() {
         ));
     });
 
+    describe('DEC', function() {
+        it('should decrement 7 to 6', check(
+            ["x", 7, Asm.SET, "x", Asm.DEC], [6]));
+    });
+
     describe('JMP', function() {
         it('should jump forward',
            check([27, 2, Asm.JMP, 1, Asm.ADD, 1, Asm.ADD],

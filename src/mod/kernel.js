@@ -92,7 +92,7 @@ function Kernel( canvas, symbols ) {
             gl.disable( gl.DEPTH_TEST );
             gl.colorMask( that._screen0, that._screen1, that._screen2, that._screen3 );
             // Do the user rendering.
-            that._render( that, time );
+            that._render( time, that );
         }
         if (debugMode) return;
 
@@ -143,6 +143,14 @@ function Kernel( canvas, symbols ) {
         ker.point( WIDTH / 4, 0, 32 );
         ker.triangles();
     };
+
+    // Getter/setter for the rendering function.
+    Object.defineProperty( Kernel.prototype, 'render', {
+        get: function() { return this._render; },
+        set: function(v) { this._render = v; },
+        configurable: true,
+        enumerable: true
+    });
 }
 
 module.exports = Kernel;
