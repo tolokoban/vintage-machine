@@ -107,9 +107,7 @@ function Kernel( canvas, symbols ) {
         gl.vertexAttribPointer( prg.$attPosition, 2, gl.FLOAT, false, 0, 0 );
         gl.bufferData( gl.ARRAY_BUFFER, datRectangle, gl.STATIC_DRAW );
 
-        //gl.uniform1i( gl.getUniformLocation(prg.program, "texSource"), 0 );
-        //gl.uniform1i( gl.getUniformLocation(prg.program, "texPalette"), 1 );
-        prg.$texSource = 1;
+        prg.$texSource = 0;
         prg.$texPalette = 1;
         
         gl.activeTexture(gl.TEXTURE0);
