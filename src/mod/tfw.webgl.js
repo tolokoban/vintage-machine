@@ -135,6 +135,7 @@ function createUniformSetter(gl, item, nameGL) {
     case gl.UNSIGNED_SHORT:
     case gl.INT:
     case gl.UNSIGNED_INT:
+    case gl.SAMPLER_2D:  // Used to set an index to a texture.
         if (item.size == 1) {
             return function(v) {
                 gl.uniform1i(nameGL, v);

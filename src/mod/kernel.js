@@ -33,6 +33,7 @@ var HEIGHT = 480;
 function Kernel( canvas, symbols ) {
     canvas.width = WIDTH;
     canvas.height = HEIGHT;
+    
     var renderer = new WebGL( canvas );
     var gl = renderer.gl;
     this._gl = gl;
@@ -107,8 +108,8 @@ function Kernel( canvas, symbols ) {
         gl.vertexAttribPointer( prg.$attPosition, 2, gl.FLOAT, false, 0, 0 );
         gl.bufferData( gl.ARRAY_BUFFER, datRectangle, gl.STATIC_DRAW );
 
-        gl.uniform1i( gl.getUniformLocation(prg.program, "texSource"), 0 );
-        gl.uniform1i( gl.getUniformLocation(prg.program, "texPalette"), 1 );
+        prg.$texSource = 1;
+        prg.$texPalette = 1;
         
         gl.activeTexture(gl.TEXTURE0);
         gl.bindTexture( gl.TEXTURE_2D, that._fbTexture );
