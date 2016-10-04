@@ -24,13 +24,15 @@ var HEIGHT = 480;
  * _renderer: WebGL instance (from module `tfw.webgl`).
  * _prgTri: webgl program used for triangles drawing on framebuffer.
  * _prgRender: webgl program used for final rendering.
- * 
+ *
  * _screen0 {boolean}: enable/disable drawings on screen 0.
  * _screen1 {boolean}: enable/disable drawings on screen 1.
  * _screen2 {boolean}: enable/disable drawings on screen 2.
  * _screen3 {boolean}: enable/disable drawings on screen 3.
  */
 function Kernel( canvas, symbols ) {
+    canvas.width = WIDTH;
+    canvas.height = HEIGHT;
     var renderer = new WebGL( canvas );
     var gl = renderer.gl;
     this._gl = gl;
@@ -39,6 +41,15 @@ function Kernel( canvas, symbols ) {
     initPalette.call( this );
     initFramebuffer.call( this );
 
+    // Palette texture.
+    var texPalette = gl.createTexture();
+    gl.bindTexture(gl.TEXTURE_2D, texPalette);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 64, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, this._palette);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+    
     // We start with only the first screen (0) enabled.
     this._screen0 = true;
     this._screen1 = this._screen2 = this._screen3 = false;
@@ -70,7 +81,7 @@ function Kernel( canvas, symbols ) {
     renderer.start(function(time) {
         var debugMode = Keyboard.test("d");
 
-        gl.viewport(-WIDTH * 2, -HEIGHT * 2, WIDTH * 4, HEIGHT * 4);
+        gl.viewport(0, 0, WIDTH, HEIGHT);
         if (typeof that._render === 'function') {
             // All user's operations are performed in the framebuffer.
             gl.bindFramebuffer( gl.FRAMEBUFFER, that._framebuffer );
@@ -95,7 +106,17 @@ function Kernel( canvas, symbols ) {
         gl.enableVertexAttribArray( prg.$attPosition );
         gl.vertexAttribPointer( prg.$attPosition, 2, gl.FLOAT, false, 0, 0 );
         gl.bufferData( gl.ARRAY_BUFFER, datRectangle, gl.STATIC_DRAW );
+
+        gl.uniform1i( gl.getUniformLocation(prg.program, "texSource"), 0 );
+        gl.uniform1i( gl.getUniformLocation(prg.program, "texPalette"), 1 );
+        
+        gl.activeTexture(gl.TEXTURE0);
         gl.bindTexture( gl.TEXTURE_2D, that._fbTexture );
+        
+        gl.activeTexture(gl.TEXTURE1);
+        gl.bindTexture(gl.TEXTURE_2D, texPalette);
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 64, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, that._palette);
+
         gl.drawArrays( gl.TRIANGLE_STRIP, 0, 4 );
     });
 
@@ -203,11 +224,16 @@ function initPalette() {
     for (r=0; r<4; r++) {
         for (g=0; g<4; g++) {
             for (b=0; b<4; b++) {
-                palette.push(coeff * r, coeff * g, coeff * b, 1);
+                palette.push(
+                    Math.floor(255 * coeff * r),
+                    Math.floor(255 * coeff * g),
+                    Math.floor(255 * coeff * b),
+                    255);
             }
         }
     }
-    this._palette = new Float32Array( palette );
+    console.info("[kernel] palette=...", palette);
+    this._palette = new Uint8Array( palette );
 }
 
 
