@@ -3,13 +3,23 @@ body {
 }
 
 #CANVAS {
-    background: #000;
+    background: transparent;
     position: absolute;
     left: 50%;
     top: 50%;
     width: 128vh;
     height: 96vh;
     margin: -48vh -64vh;
+}
+
+@media (orientation: portrait) {
+    #CANVAS {
+        width: 128vw;
+        height: 96vw;
+        transform-origin: center;
+        transform: rotate(90deg);
+        margin: -48vw -64vw;
+    }
 }
 
 #MANUAL {

@@ -36,6 +36,7 @@
  * DEC( name ) -> number
  * POINT( x, y, color )
  * TRIANGLES()
+ * FRAME()
  */
 
 // Every atomic instruction has a time cost.
@@ -120,6 +121,14 @@ Asm.prototype.asNumber = function( v ) {
     if (typeof v === 'number') return v;
     var n = parseFloat( v );
     return isNaN( n ) ? 0 : n;
+};
+
+/**
+ * FRAME
+ * Just wait for the next frame refresh.
+ */
+Asm.FRAME = function() {
+    return MAX_COST;
 };
 
 /**
