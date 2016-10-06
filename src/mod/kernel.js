@@ -1,9 +1,9 @@
 "use strict";
 
-var Keyboard = require("keyboard");
-
-
 var WebGL = require("tfw.webgl");
+var Keyboard = require("keyboard");
+var VertexBuffer = require("vertex-buffer");
+
 var WIDTH = 640;
 var HEIGHT = 480;
 
@@ -67,7 +67,7 @@ function Kernel( canvas, symbols ) {
     });
 
     // Array of vertices.
-    this._arrVertices = [];
+    this._arrVertices = new VertexBuffer();
 
     // Buffer for triangles vertices.
     this._bufVertexAttribs = gl.createBuffer();
@@ -160,7 +160,7 @@ module.exports = Kernel;
  * Remove all the points.
  */
 Kernel.prototype.clearPoints = function() {
-    this._arrVertices = [];
+    this._arrVertices.reset();
 };
 
 /**
@@ -202,7 +202,7 @@ function draw( type ) {
     var prg = this._prgTri;
     prg.use();
     gl.bindBuffer( gl.ARRAY_BUFFER, this._bufVertexAttribs );
-    var datAttributes = new Float32Array( this._arrVertices );
+    var datAttributes = this._arrVertices.array;
     gl.bufferData( gl.ARRAY_BUFFER, datAttributes, gl.STATIC_DRAW );
     var bpe = datAttributes.BYTES_PER_ELEMENT;
     var blockSize = 3 * bpe;

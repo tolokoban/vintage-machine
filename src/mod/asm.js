@@ -80,7 +80,6 @@ Asm.prototype.next = function( runtime ) {
         cmd = this._code[this._cursor++];
         if (typeof cmd === 'function') {
             this._cost += cmd.call( this );
-            console.info("[asm] cost=...", this._cost);
         } else {
             this.push( cmd );
         }

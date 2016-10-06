@@ -22,13 +22,14 @@ exports.start = function() {
         var canvas = document.getElementById( 'CANVAS' );
         var kernel = new Kernel( canvas, img );
         var asm = new Asm( kernel, [
-            "loop", 1000, Asm.SET,
+            "loop", 10, Asm.SET,
             "color", 64, Asm.RND, Asm.MUL, Asm.SET,
             640, Asm.RND, Asm.MUL, 480, Asm.RND, Asm.MUL, "color", Asm.GET, Asm.POINT,
             640, Asm.RND, Asm.MUL, 480, Asm.RND, Asm.MUL, "color", Asm.GET, Asm.POINT,
             640, Asm.RND, Asm.MUL, 480, Asm.RND, Asm.MUL, "color", Asm.GET, Asm.POINT,
+            Asm.TRIANGLES,
             1, Asm.FRAME,
-            Asm.TRIANGLES, -37, Asm.JMP            
+            "loop", Asm.DEC, -39, Asm.JGT            
         ]);
         asm.kernel = kernel;
         kernel.render = function(time) {
