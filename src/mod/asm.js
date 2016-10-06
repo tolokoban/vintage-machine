@@ -36,7 +36,7 @@
  * DEC( name ) -> number
  * POINT( x, y, color )
  * TRIANGLES()
- * FRAME()
+ * FRAME( n )
  */
 
 // Every atomic instruction has a time cost.
@@ -78,6 +78,7 @@ Asm.prototype.next = function( runtime ) {
         cmd = this._code[this._cursor++];
         if (typeof cmd === 'function') {
             this._cost += cmd.call( this );
+            console.info("[asm] cost=...", this._cost);
         } else {
             this.push( cmd );
         }
@@ -124,11 +125,13 @@ Asm.prototype.asNumber = function( v ) {
 };
 
 /**
- * FRAME
- * Just wait for the next frame refresh.
+ * FRAME( n )
+ * Just wait for the next `n` frames.
  */
 Asm.FRAME = function() {
-    return MAX_COST;
+    var framesCount = this.popAsNumber();
+    if (framesCount < 1) return 0;
+    return MAX_COST * framesCount - this._cost;
 };
 
 /**

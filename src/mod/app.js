@@ -27,7 +27,8 @@ exports.start = function() {
             640, Asm.RND, Asm.MUL, 480, Asm.RND, Asm.MUL, "color", Asm.GET, Asm.POINT,
             640, Asm.RND, Asm.MUL, 480, Asm.RND, Asm.MUL, "color", Asm.GET, Asm.POINT,
             640, Asm.RND, Asm.MUL, 480, Asm.RND, Asm.MUL, "color", Asm.GET, Asm.POINT,
-            Asm.TRIANGLES, -35, Asm.JMP            
+            1, Asm.FRAME,
+            Asm.TRIANGLES, -37, Asm.JMP            
         ]);
         asm.kernel = kernel;
         kernel.render = function(time) {
