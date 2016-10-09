@@ -33,7 +33,7 @@ var HEIGHT = 480;
 function Kernel( canvas, symbols ) {
     canvas.width = WIDTH;
     canvas.height = HEIGHT;
-    
+
     var renderer = new WebGL( canvas );
     var gl = renderer.gl;
     this._gl = gl;
@@ -45,12 +45,12 @@ function Kernel( canvas, symbols ) {
     // Palette texture.
     var texPalette = gl.createTexture();
     gl.bindTexture(gl.TEXTURE_2D, texPalette);
-    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 64, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, this._palette);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, 64, 1, 0, gl.RGB, gl.UNSIGNED_BYTE, this._palette);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-    
+
     // We start with only the first screen (0) enabled.
     this._screen0 = true;
     this._screen1 = this._screen2 = this._screen3 = false;
@@ -109,10 +109,10 @@ function Kernel( canvas, symbols ) {
 
         prg.$texSource = 0;
         prg.$texPalette = 1;
-        
+
         gl.activeTexture(gl.TEXTURE0);
         gl.bindTexture( gl.TEXTURE_2D, that._fbTexture );
-        
+
         gl.activeTexture(gl.TEXTURE1);
         gl.bindTexture(gl.TEXTURE_2D, texPalette);
         gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 64, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, that._palette);
@@ -226,18 +226,32 @@ function draw( type ) {
  * be used as a texture.
  */
 function initPalette() {
-    var palette = [];
-    var r, g, b;
-    var coeff = 1 / 3;
-    for (r=0; r<4; r++) {
-        for (g=0; g<4; g++) {
-            for (b=0; b<4; b++) {
-                palette.push(
-                    Math.floor(255 * coeff * r),
-                    Math.floor(255 * coeff * g),
-                    Math.floor(255 * coeff * b),
-                    255);
-            }
+    var palette = [
+        0x00, 0x00, 0x85,
+        0xff, 0xff, 0x00,
+        0x00, 0xff, 0xff,
+        0xff, 0x00, 0x00,
+        0xff, 0xff, 0xff,
+        0x00, 0x00, 0x00,
+        0x00, 0x00, 0xff,
+        0xff, 0x00, 0xff,
+        0x00, 0x94, 0x85,
+        0x85, 0x94, 0x00,
+        0x85, 0x94, 0xff,
+        0xff, 0x94, 0x85,
+        0x00, 0xff, 0x00,
+        0x85, 0xff, 0x85,
+        0xff, 0x85, 0x00,
+        0xff, 0xff, 0x00
+    ];
+    var i, j;
+    for (j=.75; j>0 ; j-=.25) {
+        for (i=0; i<16; i++) {
+            palette.push(
+                Math.floor(palette[i*3 + 0] * j),
+                Math.floor(palette[i*3 + 1] * j),
+                Math.floor(palette[i*3 + 2] * j)
+            );
         }
     }
     console.info("[kernel] palette=...", palette);
