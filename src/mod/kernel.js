@@ -45,7 +45,8 @@ function Kernel( canvas, symbols ) {
     // Palette texture.
     var texPalette = gl.createTexture();
     gl.bindTexture(gl.TEXTURE_2D, texPalette);
-    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, 64, 1, 0, gl.RGB, gl.UNSIGNED_BYTE, this._palette);
+    // No transparency on palette.
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 64, 2, 0, gl.RGBA, gl.UNSIGNED_BYTE, this._palette);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
@@ -107,6 +108,7 @@ function Kernel( canvas, symbols ) {
         gl.vertexAttribPointer( prg.$attPosition, 2, gl.FLOAT, false, 0, 0 );
         gl.bufferData( gl.ARRAY_BUFFER, datRectangle, gl.STATIC_DRAW );
 
+        prg.$uniTime = time;
         prg.$texSource = 0;
         prg.$texPalette = 1;
 
@@ -115,7 +117,7 @@ function Kernel( canvas, symbols ) {
 
         gl.activeTexture(gl.TEXTURE1);
         gl.bindTexture(gl.TEXTURE_2D, texPalette);
-        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 64, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, that._palette);
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 64, 2, 0, gl.RGBA, gl.UNSIGNED_BYTE, that._palette);
 
         gl.drawArrays( gl.TRIANGLE_STRIP, 0, 4 );
     });
@@ -227,33 +229,50 @@ function draw( type ) {
  */
 function initPalette() {
     var palette = [
-        0x00, 0x00, 0x85,
-        0xff, 0xff, 0x00,
-        0x00, 0xff, 0xff,
-        0xff, 0x00, 0x00,
-        0xff, 0xff, 0xff,
-        0x00, 0x00, 0x00,
-        0x00, 0x00, 0xff,
-        0xff, 0x00, 0xff,
-        0x00, 0x94, 0x85,
-        0x85, 0x94, 0x00,
-        0x85, 0x94, 0xff,
-        0xff, 0x94, 0x85,
-        0x00, 0xff, 0x00,
-        0x85, 0xff, 0x85,
-        0xff, 0x85, 0x00,
-        0xff, 0xff, 0x00
+        0x00, 0x00, 0x85, 0xff,  // 0
+        0xff, 0xff, 0x00, 0xff,  // 1
+        0x00, 0xff, 0xff, 0xff,  // 2
+        0xff, 0x00, 0x00, 0xff,  // 3
+        0xff, 0xff, 0xff, 0xff,  // 4
+        0x00, 0x00, 0x00, 0xff,  // 5
+        0x00, 0x00, 0xff, 0xff,  // 6
+        0xff, 0x00, 0xff, 0xff,  // 7
+        0x00, 0x94, 0x85, 0xff,  // 8
+        0x85, 0x94, 0x00, 0xff,  // 9
+        0x85, 0x94, 0xff, 0xff,  // 10
+        0xff, 0x94, 0x85, 0xff,  // 11
+        0x00, 0xff, 0x00, 0xff,  // 12
+        0x85, 0xff, 0x85, 0xff,  // 13
+        0x85, 0x85, 0x85, 0xff,  // 14
+        0x00, 0x00, 0xff, 0xff   // 15
     ];
     var i, j;
     for (j=.75; j>0 ; j-=.25) {
         for (i=0; i<16; i++) {
             palette.push(
-                Math.floor(palette[i*3 + 0] * j),
-                Math.floor(palette[i*3 + 1] * j),
-                Math.floor(palette[i*3 + 2] * j)
+                Math.floor(palette[i*4 + 0] * j),
+                Math.floor(palette[i*4 + 1] * j),
+                Math.floor(palette[i*4 + 2] * j),
+                0xff
             );
         }
     }
+    // Copy the colors on 2 rows to manage blinking.
+    for (i=0; i<64; i++) {
+        if (i==15) {
+            // Color 15 will blink between color 0  and 1. It is used for text
+            // cursor.
+            palette.push(0xff, 0x85, 0x00, 0xff);
+        } else {
+            palette.push(
+                palette[i*4 + 0],
+                palette[i*4 + 1],
+                palette[i*4 + 2],
+                0xff
+            );
+        }
+    }
+
     console.info("[kernel] palette=...", palette);
     this._palette = new Uint8Array( palette );
 }
