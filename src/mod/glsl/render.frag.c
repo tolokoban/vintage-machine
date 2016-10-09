@@ -27,11 +27,12 @@ void main() {
   float x = mod( varUV.x, 1.0 );
   float y = mod( varUV.y, 1.0 );
 
+  /* DISPLAY CURRENT PALETTE.
   if (y < .1) {
     gl_FragColor = texture2D( texPalette, vec2(x, y * 10.0) );
     return;
   }
-
+  */
   vec4 color = texture2D( texSource, vec2(x, y) );
   // Start with a full transparent color with tint of the pen 0 of the palette.
   vec4 target = vec4( texture2D( texPalette, vec2(0.0, 0.0) ).rgb, 0.0 );
