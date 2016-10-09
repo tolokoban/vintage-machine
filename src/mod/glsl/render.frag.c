@@ -17,8 +17,8 @@ vec4 blend( vec4 target, float color ) {
   //float y = (1.0 + sin(uniTime * 0.0031415926535897933)) * 0.5;
   float y = mod(uniTime * 0.0005, 2.0);
   if (y > 1.0) y = 2.0 - y;
-  vec4 c1 = texture2D(texPalette, vec2(color, .5));
-  vec4 c2 = texture2D(texPalette, vec2(color, 1.5));
+  vec4 c1 = texture2D(texPalette, vec2(color, .25));
+  vec4 c2 = texture2D(texPalette, vec2(color, .75));
   return mix(c1, c2, y);
 }
 
