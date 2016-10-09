@@ -2,7 +2,15 @@
 
 var Keyboard = require("keyboard");
 var Kernel = require("kernel");
+var Basic = require("basic");
 var Asm = require("asm");
+
+
+var Lexer = require("lexer");
+var lex = new Lexer( "27" );
+console.log( lex.next('NUM') );
+lex = new Lexer( "32" );
+console.log( lex.next('NUM') );
 
 /*
 var asm = new Asm( null,             [

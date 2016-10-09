@@ -21,7 +21,8 @@ void main() {
   float y = mod( varUV.y, 1.0 );
 
   vec4 color = texture2D( texSource, vec2(x, y) );
-  vec4 target = texture2D( texPalette, vec2(0.0, 0.0) );
+  // Start with a full transparent color with tint of the pen 0 of the palette.
+  vec4 target = vec4( texture2D( texPalette, vec2(0.0, 0.0) ).rgb, 0.0 );
 
   target = blend( target, color.r );
   target = blend( target, color.g );

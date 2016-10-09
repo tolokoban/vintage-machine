@@ -9,3 +9,6 @@
  * @example
  * var mod = require('basic');
  */
+
+var Lexer = require("lexer");
+
