@@ -58,7 +58,13 @@ var Asm = function( code, kernel ) {
     this._cost = 0;
     this._runtime = {
         stack: [],
-        vars: {},
+        vars: {
+            pen: 1,
+            paper: 0,
+            locateX: 0,
+            locateY: 0,
+            cursor: 1
+        },
         lets: {}
     };
     
