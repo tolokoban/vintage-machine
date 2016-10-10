@@ -20,8 +20,9 @@ var RX = {
     VAR: /^\$[a-z0-9\._]+/gi,
     NUM: /^-?[0-9]+(\.[0-9]+)?/g,
     STR: /^"(\\"|[^"])*"/g,
-    COLOR: /^:/g,
-    BINOP: /^(>=|<=|<>|\*\*|[=%+*\/-])/g,
+    EQUAL: /^=/g,
+    COLON: /^:/g,
+    BINOP: /^(and|or|xor|>=|<=|<>|\^|[=%+*\/<>-])/g,
     PAR_OPEN: /^\(/g,
     PAR_CLOSE: /^\)/g,
     COMMA: /^,/g,
@@ -47,11 +48,31 @@ function Lexer( code ) {
 }
 
 /**
+ * @return `true` if there is more code to parse.
+ */
+Lexer.prototype.hasMoreCode = function() {
+    return this._cursor < this._code.length - 1;
+};
+
+/**
  * @return void
  */
-Lexer.prototype.next = function(tokens) {
+Lexer.prototype.fatal = function(msg) {
+    throw { pos: this._cursor, code: this._code, msg: msg };
+};
+
+
+/**
+ * @return void
+ */
+Lexer.prototype.next = function(tokens) {    
     if( typeof tokens === 'undefined' ) tokens = ALL.slice();
     if (!Array.isArray( tokens )) tokens = [tokens];
+    var i, arg;
+    for (i = 1 ; i < arguments.length ; i++) {
+        arg = arguments[i];
+        tokens.push( arg );
+    }
 
     ['SPC', 'DOTS', 'COM'].forEach(function (item) {
         if (tokens.indexOf( item ) == -1) {
@@ -59,9 +80,9 @@ Lexer.prototype.next = function(tokens) {
         }
     });
 
+   
     var code = this._code.substr( this._cursor );
     var id, rx, matcher;
-    var i;
     var tkn;
     while (true) {
         tkn = null;

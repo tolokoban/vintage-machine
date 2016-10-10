@@ -4,7 +4,7 @@ var Asm = require("asm");
 describe('Module `asm`', function() {
     function check(code, result) {
         return function() {
-            var asm = new Asm(null, code);
+            var asm = new Asm(code);
             asm.next();
             expect( asm.runtime.stack ).toEqual( result );
         };

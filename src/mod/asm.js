@@ -18,6 +18,10 @@
  * asm.next( runtime )
  *
  * =========================================================
+ * AND( a, b )
+ * OR( a, b )
+ * XOR( a, b )
+
  * ADD( a, b )
  * SUB( a, b )
  * MUL( a, b )
@@ -44,9 +48,10 @@
 // Every atomic instruction has a time cost.
 // The cost allower between two requestAnimationFrames is `MAX_COST`.
 var MAX_COST = 10000;
+var PRECISION = 0.0000000001;
 
 
-var Asm = function( kernel, code ) {
+var Asm = function( code, kernel ) {
     this._kernel = kernel;
     this._code = code;
     this._cursor = 0;
@@ -383,7 +388,7 @@ Asm.DIV = function() {
         return 0;
     }
     // Protection against division by zero
-    if (b == 0) {
+    if (Math.abs(b) < PRECISION) {
         this.push( a >= 0 ? Number.MAX_VALUE : -Number.MAX_VALUE );
         return 1;
     }
@@ -398,3 +403,125 @@ Asm.SUB = function() {
     this.push( - this.popAsNumber() + this.popAsNumber() );
     return 1;
 };
+
+/**
+ * Pop 2 numbers and push AND of them.
+ */
+Asm.AND = function() {
+    var b = this.popAsNumber();
+    var a = this.popAsNumber();
+    var c = 1;
+    if (a == 0) c = 0;
+    else if (b == 0) c = 0;
+    this.push( c );
+    return 1;
+};
+
+/**
+ * Pop 2 numbers and push OR of them.
+ */
+Asm.OR = function() {
+    var b = this.popAsNumber();
+    var a = this.popAsNumber();
+    var c = 0;
+    if (a != 0) c = 1;
+    else if (b != 0) c = 1;
+    this.push( c );
+    return 1;
+};
+
+/**
+ * Pop 2 numbers and push XOR of them.
+ */
+Asm.XOR = function() {
+    var b = this.popAsNumber() && 1;
+    var a = this.popAsNumber() && 1;
+    var c = 0;
+    if (a != 0) c = 1;
+    else if (b != 0) c = 1;
+    this.push( c );
+    return 1;
+};
+
+/**
+ * Pop 2 values and push 1 if `a` >= `b`.
+ */
+Asm.GEQ = function() {
+    var b = this.pop();
+    var a = this.pop();
+    this.push( a >= b ? 1 : 0 );
+    return 1;
+};
+
+/**
+ * Pop 2 values and push 1 if `a` <= `b`.
+ */
+Asm.LEQ = function() {
+    var b = this.pop();
+    var a = this.pop();
+    this.push( a <= b ? 1 : 0 );
+    return 1;
+};
+
+/**
+ * Pop 2 values and push 1 if `a` > `b`.
+ */
+Asm.GT = function() {
+    var b = this.pop();
+    var a = this.pop();
+    this.push( a > b ? 1 : 0 );
+    return 1;
+};
+
+/**
+ * Pop 2 values and push 1 if `a` < `b`.
+ */
+Asm.LT = function() {
+    var b = this.pop();
+    var a = this.pop();
+    this.push( a < b ? 1 : 0 );
+    return 1;
+};
+
+/**
+ * Pop 2 numbers and push the modulo of a by b.
+ * If `b` is null, the result is 0.
+ */
+Asm.MOD = function() {
+    var b = this.popAsNumber();
+    var a = this.popAsNumber();
+    if (Math.abs(b) < PRECISION) this.push( 0 );
+    else this.push( a % b );
+    return 1;
+};
+
+/**
+ * Pop 2 numbers and push the expoential of a by b.
+ */
+Asm.EXP = function() {
+    var b = this.popAsNumber();
+    var a = this.popAsNumber();
+    this.push( Math.pow(a, b) );
+    return 15;
+};
+
+/**
+ * Pop 2 values and push 1 if they are equal, 0 otherwise.
+ */
+Asm.EQ = function() {
+    var b = this.pop();
+    var a = this.pop();
+    this.push( a == b ? 1 : 0 );
+    return 1;
+};
+
+/**
+ * Pop 2 values and push 1 if they are NOT equal, 0 otherwise.
+ */
+Asm.NEQ = function() {
+    var b = this.pop();
+    var a = this.pop();
+    this.push( a != b ? 1 : 0 );
+    return 1;
+};
+

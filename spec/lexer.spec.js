@@ -26,7 +26,7 @@ describe('Lexer', function() {
         VAR: ["$hsfhfb", "  $toto"],
         NUM: ["3.27", "1.4", "-48.888", "33"],
         STR: ['"I\'m a string!"', '"Inner\"string"'],
-        COLOR: [":"],
+        COLON: [":"],
         BINOP: [">="],
         PAR_OPEN: ["("],
         PAR_CLOSE: [")"],
