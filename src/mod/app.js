@@ -27,7 +27,7 @@ function check(code, expectedResult) {
     }
 }
 debugger;
-check("(2*3)+1", 28);
+check('"3"=3', 1);
 
 
 

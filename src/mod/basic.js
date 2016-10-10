@@ -89,7 +89,9 @@ var PARSERS = {
         if (!parse.call( this, lex, 'atom' )) return false;
         var tkn = lex.next('BINOP');
         if (tkn) {
-            parse.call( this, lex, 'expression' );
+            if (!parse.call( this, lex, 'expression' )) {
+                lex.fatal(_('missing-expression-after', tkn.val));
+            }
             this._asm.push( BINOP[tkn.val] );
         }
         return true;
@@ -98,8 +100,8 @@ var PARSERS = {
         var tkn = lex.next('NUM', 'STR', 'VAR', 'PAR_OPEN');
         if (tkn) {
             switch(tkn.id) {
-            case 'NUM': this._asm.push(parseFloat(tkn.val)); return true;
-            case 'STR': this._asm.push(tkn.val); return true;
+            case 'NUM': this._asm.push( parseFloat( tkn.val ) ); return true;
+            case 'STR': this._asm.push( parseString( tkn.val ) ); return true;
             case 'VAR': this._asm.push( tkn.val, Asm.GET ); return true;
             case 'PAR_OPEN':
                 parse.call( this, lex, 'expression' );
@@ -123,6 +125,37 @@ function parse( lex ) {
     return false;
 }
 
+
+function parseString( str ) {
+    // Remove surrounding double quotes.
+    str = str.substr( 1, str.length - 2 );
+    var out = '';
+    var lastIndex = 0;
+    var mode = 0;
+    var c;
+    for (var index = 0; index < str.length; index++) {
+        c = str.charAt( index );
+        if (mode == 0) {
+            if (c == '\\') {
+                out += str.substr( lastIndex );
+                mode = 1;
+            }
+        } else {
+            // Escape mode.
+            if (c == 'n') {
+                out += "\n";
+            } else if (c == 't') {
+                out += "\t";
+            } else {
+                out += c;
+            }
+            lastIndex = index + 1;               
+            mode = 1;
+        }
+    }
+    out += str.substr( lastIndex );
+    return out;
+}
 
 
 module.exports = Basic;
