@@ -18,6 +18,8 @@
  * asm.next( runtime )
  *
  * =========================================================
+ * ERASE( var )
+ * FOR( var, a, b, step, jmp )
  * PEN[0-3]( color )
  * AND( a, b )
  * OR( a, b )
@@ -58,6 +60,7 @@ var Asm = function( code, kernel, runtime ) {
     this._cost = 0;
     this._runtime = runtime || {
         stack: [],
+        // Vars are stored lowercase.
         vars: {
             pen0: 0,
             pen1: 1,
@@ -129,6 +132,39 @@ Asm.prototype.popAsNumber = function() {
     return v;
 };
 
+/**
+ * Read a variable.
+ */
+Asm.prototype.get = function( name ) {
+    var v = this.runtime.vars[name.trim().toLowerCase()];
+    if( typeof v === 'undefined' ) v = 0;
+    return v;
+};
+
+/**
+ * Read a variable.
+ */
+Asm.prototype.set = function( name, value ) {
+    this.runtime.vars[name.trim().toLowerCase()] = value;
+};
+
+/**
+ * Read a variable.
+ */
+Asm.prototype.erase = function( name ) {
+    delete this.runtime.vars[name.trim().toLowerCase()];
+};
+
+/**
+ * Read a variable converted into a number.
+ */
+Asm.prototype.getAsNumber = function( name ) {
+    var v = parseFloat(this.runtime.vars[name.trim().toLowerCase()]);
+    if (isNaN(v)) return 0;
+    return v;
+};
+
+
 Asm.prototype.isNumber = function( v ) {
     if (typeof v === 'number') return true;
     var n = parseFloat( v );
@@ -197,10 +233,9 @@ Asm.DEC = function() {
         value--;
         this.runtime.lets[name] = value;
     } else {
-        value = parseFloat(this.runtime.vars[name]);
-        if (isNaN( value )) value = 0;
+        value = this.getAsNumber(name);
         value--;
-        this.runtime.vars[name] = value;
+        this.set(name, value);
     }
     this.push( value );
     return 2;
@@ -211,7 +246,7 @@ Asm.DEC = function() {
  */
 Asm.PEN = function() {
     var color = this.popAsNumber();
-    this.runtime.vars.pen0 = Math.floor(color);
+    this.set('pen0', Math.floor(color) );
     return 0;
 };
 
@@ -220,7 +255,7 @@ Asm.PEN = function() {
  */
 Asm.PEN0 = function() {
     var color = this.popAsNumber();
-    this.runtime.vars.pen0 = Math.floor(color);
+    this.set('pen0', Math.floor(color) );
     return 0;
 };
 
@@ -229,7 +264,7 @@ Asm.PEN0 = function() {
  */
 Asm.PEN1 = function() {
     var color = this.popAsNumber();
-    this.runtime.vars.pen1 = Math.floor(color);
+    this.set('pen1', Math.floor(color) );
     return 0;
 };
 
@@ -238,7 +273,7 @@ Asm.PEN1 = function() {
  */
 Asm.PEN2 = function() {
     var color = this.popAsNumber();
-    this.runtime.vars.pen2 = Math.floor(color);
+    this.set('pen2', Math.floor(color) );
     return 0;
 };
 
@@ -247,18 +282,8 @@ Asm.PEN2 = function() {
  */
 Asm.PEN3 = function() {
     var color = this.popAsNumber();
-    this.runtime.vars.pen3 = Math.floor(color);
+    this.set('pen3', Math.floor(color) );
     return 0;
-};
-
-/**
- * LET( name )
- * Declare a local variable if it does not yet exist.
- */
-Asm.LET = function() {
-    var name = "" + this.pop();
-    if( typeof this.runtime.lets[name] === 'undefined' ) this.runtime.lets[name] = 0;
-    return 1;
 };
 
 /**
@@ -267,11 +292,7 @@ Asm.LET = function() {
  */
 Asm.GET = function() {
     var name = "" + this.pop();
-    var value = this.runtime.lets[name];
-    if (typeof value === 'undefined') {
-        value = this.runtime.vars[name];
-    }
-    if( typeof value === 'undefined' ) value = 0;
+    var value = this.get(name);
     this.push( value );
     return 2;
 };
@@ -282,11 +303,7 @@ Asm.GET = function() {
 Asm.SET = function() {
     var value = this.pop();
     var name = "" + this.pop();
-    if (typeof this.runtime.lets[name] !== 'undefined') {
-        this.runtime.lets[name] = value;
-    } else {
-        this.runtime.vars[name] = value;
-    }
+    this.set( name, value );
     return 3;
 };
 
@@ -581,3 +598,26 @@ Asm.NEQ = function() {
     return 1;
 };
 
+/**
+ * ERASE( var )
+ * Erase the variable `var`.
+ */
+Asm.ERASE = function() {
+    var name = this.pop();
+    delete this.erase(name);
+    return 0;
+};
+
+/**
+ * FOR( var, a, b, step, jmp )
+ */
+Asm.FOR = function() {
+    var jmp = Math.floor(this.popAsNumber());
+    var step = this.popAsNumber();
+    var b = this.popAsNumber();
+    var a = this.popAsNumber();
+    var name = this.pop().toLowerCase();
+    a = Math.min(a, b);
+    b = Math.max(a, b);
+    var c = this.getAsNumber(name);
+};

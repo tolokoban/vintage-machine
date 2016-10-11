@@ -32,10 +32,9 @@ var BINOP = {
 };
 
 function Basic( code ) {
+    this.clear();    
     if( typeof code === 'undefined' ) code = '';
     this._code = code;
-    
-    this.clear();    
     var lex = new Lexer( code );
     while (lex.hasMoreCode()) {
         if (parse.call(this, lex, 'instruction', 'affectation')) continue;
@@ -58,7 +57,13 @@ Basic.prototype.asm = function() {
  */
 Basic.prototype.clear = function() {
     this._code = '';
+    // ASM code before linkage.
     this._asm = [];
+    // Labels are used for branching. This is a map between a label name and the positionin the ASM code.
+    this._labels = {};
+    this._labelId = 0;
+    // Blocs nesting needs context to know (for instance) at which `FOR` belongs a `NEXT`. 
+    this._context = [];
 };
 
 
@@ -66,15 +71,19 @@ var PARSERS = {
     instruction: function( lex ) {
         var tkn = lex.next('INST');
         if (!tkn) return false;
-        switch (tkn.val.toUpperCase()) {
+        var ins = tkn.val.toUpperCase();
+        switch (ins) {
         case "POINT": return parseArgs.call( this, lex, "POINT", 2, ["pen0", Asm.GET]);
         case "TRIANGLE": return parseArgs.call( this, lex, "TRIANGLE", 0);
         case "PEN": return parseArgs.call( this, lex, "PEN1", 1);
         case "PEN0": return parseArgs.call( this, lex, "PEN0", 1);
         case "PEN1": return parseArgs.call( this, lex, "PEN1", 1);
         case "PEN2": return parseArgs.call( this, lex, "PEN2", 1);
-        case "PEN3": return parseArgs.call( this, lex, "PEN3", 1);            
+        case "PEN3": return parseArgs.call( this, lex, "PEN3", 1);
+        case "FOR": return parseFOR.call( this, lex );
+        case "NEXT": return parseNEXT.call( this, lex );
         }
+
         console.error("Instruction " + tkn.val.toUpperCase() + " has not been implemented!");
         return false;
     },
@@ -128,6 +137,62 @@ function parse( lex ) {
         if (parser.call( this, lex )) return true;
     }
     return false;
+}
+
+
+/**
+ * FOR $idx = 1 To 5
+ *   $total = $total + $idx
+ * NEXT
+ * PRINT $total
+ *----------------------------
+ * :A  "$idx", 1, 5, 1, [:B], FOR
+ *     "$total", "$total", GET, "$idx", GET, ADD, SET
+ *     [:A], JPM
+ * :B  "$total", GET, PRINT
+ */
+function parseFOR( lex ) {
+    var tkn = lex.next('VAR');
+    if (!tkn) lex.fatal(_('missing-var-after-for'));
+    var name = tkn.val;
+    if (!lex.next('EQUAL')) lex.fatal(_('missing-equal'));
+    // Label of the FOR
+    var labelA = this._labelId++;
+    // Label of the NEXT
+    var labelB = this._labelId++;
+    this._asm.push( name, Asm.ERASE );
+    this._labels[labelA] = this._asm.length;
+    this._context.push({ type: "FOR", labelA: labelA, labelB: labelB });
+    this._asm.push( name );
+    // Lower bound
+    if (!parse.call( this, lex, 'expression' )) lex.fatal(_('missing-expression'));
+    // To.
+    if (!lex.next('TO')) lex.fatal(_('missing-to'));
+    // Upper bound
+    if (!parse.call( this, lex, 'expression' )) lex.fatal(_('missing-expression'));
+    // Optional STEP
+    if (tkn.next('STEP')) {
+        if (!parse.call( this, lex, 'expression' )) lex.fatal(_('missing-expression'));        
+    } else {
+        // Default step is 1.
+        this._asm.push( 1 );
+    }
+    if (!lex.next('EOL')) lex.fatal(_('expected-eol'));
+    this._asm.push( [labelB], Asm.FOR );
+    return true;
+}
+
+
+function parseNEXT( lex ) {
+    var ctx = this._context.pop();
+    if (!ctx) lex.fatal(_('unexpected-next'));
+    if ( ctx.type == 'FOR' ) {
+        this._asm.push( [ctx.labelA], Asm.JMP );
+        this._labels[ctx.labelB] = this._asm.length;
+    } else {
+        lex.fatal(_('unexpected-next'));
+    }
+    return true;
 }
 
 

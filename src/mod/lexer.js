@@ -28,7 +28,9 @@ var RX = {
     PAR_CLOSE: /^\)/g,
     COMMA: /^,/g,
     FUNC: /^(cos|sin|rnd|max|min|abs|floor|ceil)/gi,
-    INST: /^([a-z][a-z_]*[0-9]*)/gi
+    INST: /^([a-z][a-z_]*[0-9]*)/gi,
+    TO: /^to(?![a-z0-9])/i,
+    STEP: /^step(?![a-z0-9])/i
 };
 
 // All the possible tokens.
