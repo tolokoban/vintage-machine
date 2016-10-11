@@ -31,6 +31,7 @@ var BINOP = {
     '>': Asm.GT
 };
 
+
 function Basic( code ) {
     this.clear();    
     if( typeof code === 'undefined' ) code = '';
@@ -41,6 +42,14 @@ function Basic( code ) {
         // ERROR.
         lex.fatal( "???" );
     }
+    // Linkage: replace all the labels by their address.
+    this._asm.forEach(function (itm, idx, asm) {
+        if (Array.isArray(itm)) {
+            asm[idx] = this._labels[itm[0]];
+        }
+    }, this);
+
+    console.info("[basic] this._asm=...", this._asm);
 }
 
 
@@ -171,7 +180,7 @@ function parseFOR( lex ) {
     // Upper bound
     if (!parse.call( this, lex, 'expression' )) lex.fatal(_('missing-expression'));
     // Optional STEP
-    if (tkn.next('STEP')) {
+    if (lex.next('STEP')) {
         if (!parse.call( this, lex, 'expression' )) lex.fatal(_('missing-expression'));        
     } else {
         // Default step is 1.
