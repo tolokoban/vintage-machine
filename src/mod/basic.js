@@ -31,9 +31,17 @@ var BINOP = {
     '>': Asm.GT
 };
 
-function Basic() {
-    this.clear();
+function Basic( code ) {
+    if( typeof code === 'undefined' ) code = '';
+    this._code = code;
     
+    this.clear();    
+    var lex = new Lexer( code );
+    while (lex.hasMoreCode()) {
+        if (parse.call(this, lex, 'instruction', 'affectation')) continue;
+        // ERROR.
+        lex.fatal( "???" );
+    }
 }
 
 
@@ -42,19 +50,6 @@ function Basic() {
  */
 Basic.prototype.asm = function() {
     return this._asm.slice();
-};
-
-
-/**
- * @return void
- */
-Basic.prototype.add = function( code ) {
-    var lex = new Lexer( code );
-    while (lex.hasMoreCode()) {
-        if (parse.call(this, lex, 'instruction', 'affectation')) break;
-        // ERROR.
-        lex.fatal( "???" );
-    }
 };
 
 
@@ -71,7 +66,17 @@ var PARSERS = {
     instruction: function( lex ) {
         var tkn = lex.next('INST');
         if (!tkn) return false;
-        
+        switch (tkn.val.toUpperCase()) {
+        case "POINT": return parseArgs.call( this, lex, "POINT", 2, ["pen0", Asm.GET]);
+        case "TRIANGLE": return parseArgs.call( this, lex, "TRIANGLE", 0);
+        case "PEN": return parseArgs.call( this, lex, "PEN1", 1);
+        case "PEN0": return parseArgs.call( this, lex, "PEN0", 1);
+        case "PEN1": return parseArgs.call( this, lex, "PEN1", 1);
+        case "PEN2": return parseArgs.call( this, lex, "PEN2", 1);
+        case "PEN3": return parseArgs.call( this, lex, "PEN3", 1);            
+        }
+        console.error("Instruction " + tkn.val.toUpperCase() + " has not been implemented!");
+        return false;
     },
     affectation: function( lex ) {
         var tkn = lex.next('VAR');
@@ -123,6 +128,40 @@ function parse( lex ) {
         if (parser.call( this, lex )) return true;
     }
     return false;
+}
+
+
+function parseArgs( lex, instruction, mandatoryCount ) {
+    var optionalCount = arguments.length - 3;
+    var i, comma, commaIsMissing;
+    for (i = 0; i < mandatoryCount + optionalCount; i++) {
+        commaIsMissing = false;
+        if (i > 0) {
+            commaIsMissing = !lex.next('COMMA');
+        }
+        if (parse.call( this, lex, 'expression' )) {
+            if (commaIsMissing) {
+                // Two consecutive expressions without a separating comma.
+                lex.fatal(_('mising-comma'));
+            }
+        } else {
+            break;
+        }
+    }
+    // Add optional arguments.
+    var base = i - mandatoryCount;
+    var arg;
+    for (i = base; i < optionalCount; i++) {
+        arg = arguments[3 + base];
+        if (Array.isArray(arg)) this._asm.push.apply( this._asm, arg );
+        else this._asm.push( arg );
+    }
+    if (!lex.next('EOL')) {
+        lex.fatal(_('too-many-args', mandatoryCount, mandatoryCount + optionalCount)
+                  + "\n" + _('instr-' + instruction));
+    }
+    this._asm.push( Asm[instruction] );
+    return true;
 }
 
 

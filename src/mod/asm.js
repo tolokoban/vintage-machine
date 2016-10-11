@@ -18,10 +18,10 @@
  * asm.next( runtime )
  *
  * =========================================================
+ * PEN[0-3]( color )
  * AND( a, b )
  * OR( a, b )
  * XOR( a, b )
-
  * ADD( a, b )
  * SUB( a, b )
  * MUL( a, b )
@@ -41,7 +41,7 @@
  * RND() -> number
  * DEC( name ) -> number
  * POINT( x, y, color )
- * TRIANGLES()
+ * TRIANGLE()
  * FRAME( n )
  */
 
@@ -51,29 +51,34 @@ var MAX_COST = 10000;
 var PRECISION = 0.0000000001;
 
 
-var Asm = function( code, kernel ) {
+var Asm = function( code, kernel, runtime ) {
     this._kernel = kernel;
     this._code = code;
     this._cursor = 0;
     this._cost = 0;
-    this._runtime = {
+    this._runtime = runtime || {
         stack: [],
         vars: {
-            pen: 1,
-            paper: 0,
+            pen0: 0,
+            pen1: 1,
+            pen2: 2,
+            pen3: 3,
             locateX: 0,
             locateY: 0,
             cursor: 1
         },
         lets: {}
     };
-    
-    Object.defineProperty( Asm.prototype, 'runtime', {
-        get: function() { return this._runtime; },
-        set: function(v) { this._runtime = v; },
-        configurable: true,
-        enumerable: true
+
+    ['kernel', 'runtime'].forEach(function (name) {
+        Object.defineProperty( Asm.prototype, name, {
+            get: function() { return this['_' + name]; },
+            set: function(v) { this['_' + name] = v; },
+            configurable: true,
+            enumerable: true
+        });        
     });
+
 };
 
 module.exports = Asm;
@@ -160,9 +165,9 @@ Asm.POINT = function() {
 };
 
 /**
- * TRIANGLES()
+ * TRIANGLE()
  */
-Asm.TRIANGLES = function() {
+Asm.TRIANGLE = function() {
     if (this.kernel) {
         this.kernel.triangles();
     }
@@ -199,6 +204,51 @@ Asm.DEC = function() {
     }
     this.push( value );
     return 2;
+};
+
+/**
+ * PEN( color )
+ */
+Asm.PEN = function() {
+    var color = this.popAsNumber();
+    this.runtime.vars.pen0 = Math.floor(color);
+    return 0;
+};
+
+/**
+ * PEN0( color )
+ */
+Asm.PEN0 = function() {
+    var color = this.popAsNumber();
+    this.runtime.vars.pen0 = Math.floor(color);
+    return 0;
+};
+
+/**
+ * PEN1( color )
+ */
+Asm.PEN1 = function() {
+    var color = this.popAsNumber();
+    this.runtime.vars.pen1 = Math.floor(color);
+    return 0;
+};
+
+/**
+ * PEN2( color )
+ */
+Asm.PEN2 = function() {
+    var color = this.popAsNumber();
+    this.runtime.vars.pen2 = Math.floor(color);
+    return 0;
+};
+
+/**
+ * PEN3( color )
+ */
+Asm.PEN3 = function() {
+    var color = this.popAsNumber();
+    this.runtime.vars.pen3 = Math.floor(color);
+    return 0;
 };
 
 /**

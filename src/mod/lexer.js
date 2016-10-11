@@ -21,13 +21,14 @@ var RX = {
     NUM: /^-?([0-9]+(\.[0-9]+)?|\.[0-9]+)/g,
     STR: /^"(\\"|[^"])*"/g,
     EQUAL: /^=/g,
+    LABEL: /^:[a-z0-9_]+/g,
     COLON: /^:/g,
     BINOP: /^(and|or|xor|>=|<=|<>|\^|[=%+*\/<>-])/g,
     PAR_OPEN: /^\(/g,
     PAR_CLOSE: /^\)/g,
     COMMA: /^,/g,
     FUNC: /^(cos|sin|rnd|max|min|abs|floor|ceil)/gi,
-    INST: /^(disk|point|triangles)/gi
+    INST: /^([a-z][a-z_]*[0-9]*)/gi
 };
 
 // All the possible tokens.
@@ -58,7 +59,9 @@ Lexer.prototype.hasMoreCode = function() {
  * @return void
  */
 Lexer.prototype.fatal = function(msg) {
-    throw { pos: this._cursor, code: this._code, msg: msg };
+    var e = { pos: this._cursor, code: this._code, msg: msg };
+    console.error( e );
+    throw e;
 };
 
 
