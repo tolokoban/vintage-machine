@@ -11,7 +11,7 @@ var $ = require("dom");
 
 
 exports.start = function() {
-    var codeEditor = document.getElementById('code');
+    var codeEditor = document.getElementById('CODE');
     var img = new Image();
     img.src = "css/app/symbols.jpg";
     img.onload = function() {
@@ -20,14 +20,12 @@ exports.start = function() {
         var code = Repository.load('sys.test');
         console.log(code);
         var basic = new Basic( code );
-        var asm = new Asm( basic.asm(), kernel );
+        var bytecode = basic.asm();
+        var asm = new Asm( bytecode, kernel );
         kernel.render = function(time) {
-            if (!asm.next()) {
-                // If the program is over, we stop the rendering loop.
-                //kernel.stop();   // If we stop, colors do not blink anymore.
-            }
+            // Never stop the render loop. Otherwise, colors will stop blinking.
+            asm.next();
         };
-        kernel.start();
 
         document.addEventListener('keydown', function(evt) {
             if (evt.key == 'F1') {
@@ -39,11 +37,17 @@ exports.start = function() {
                 try {
                     $.removeClass( document.body, 'show' );
                     basic = new Basic( codeEditor.value );
-                    asm = new Asm( basic.asm(), kernel );
-                    kernel.start();
+                    console.log(codeEditor.value);
+                    bytecode = basic.asm();
+                    console.log(bytecode);
+                    asm = new Asm( bytecode, kernel );
                 }
                 catch (ex) {
-                    Message.error( ex );
+                    $.addClass( document.body, 'show' );
+                    Message.error( ex.msg );
+                    console.log("Unexpected char: " + codeEditor.value.charCodeAt( ex.pos ));
+                    codeEditor.focus();
+                    codeEditor.selectionStart = ex.pos;
                 }
                 evt.preventDefault();
                 evt.stopPropagation();

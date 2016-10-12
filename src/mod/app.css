@@ -68,3 +68,11 @@ body.show #EDITOR {
     background: transparent;
     border: none;
 }
+
+div.tfw-message {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 50vw;
+    margin: 0;
+}

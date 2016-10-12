@@ -311,7 +311,23 @@ function initPalette() {
     this.ink( 38, "88f" );
     this.ink( 39, "8f8" );
 
-    this.ink( 40, "f88" );
+    this.ink( 40, "048" );
+    this.ink( 41, "408" );
+    this.ink( 42, "084" );
+    this.ink( 43, "480" );
+    this.ink( 44, "804" );
+    this.ink( 45, "840" );
+    this.ink( 46, "448" );
+    this.ink( 47, "484" );
+
+    this.ink( 48, "f88" );
+    this.ink( 49, "844" );
+    this.ink( 50, "ff8" );
+    this.ink( 51, "884" );
+    this.ink( 52, "f8f" );
+    this.ink( 53, "848" );
+    this.ink( 54, "8ff" );
+    this.ink( 55, "488" );
 
     for (i = 1 ; i < 8 ; i++) {
         for (j = 1 ; j < 4 ; j++) {

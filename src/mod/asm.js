@@ -245,7 +245,7 @@ Asm.TRIANGLE = function() {
     var color = this.get("pen1");
     if (this.kernel) {
         this.kernel.point( x1, y1, color );
-        this.kernel.point( x2, y3, color );
+        this.kernel.point( x2, y2, color );
         this.kernel.point( x3, y3, color );
         this.kernel.triangles();
     }

@@ -39,9 +39,9 @@ function Basic( code ) {
     var lex = new Lexer( code );
     while (lex.hasMoreCode()) {
         if (parse.call(this, lex, 'instruction', 'affectation')) continue;
-        if (!lex.next('EOL')) {
+        if (lex.hasMoreCode() && !lex.next('EOL')) {
             // ERROR.
-            lex.fatal( "???" );
+            lex.fatal( "Caractère inattendu ! Je suis perdu..." );
         }
     }
     // Linkage: replace all the labels by their address.
@@ -82,7 +82,7 @@ var PARSERS = {
         if (!tkn) return false;
         var ins = tkn.val.toUpperCase();
         switch (ins) {
-        case "FRAME": return parseArgs.call( this, lex, "FRAME", 0);
+        case "FRAME": return parseArgs.call( this, lex, "FRAME", 0, 1);
         case "POINT": return parseArgs.call( this, lex, "POINT", 2, ["pen0", Asm.GET]);
         case "TRI": return parseArgs.call( this, lex, "TRI", 0);
         case "TRIANGLE": return parseArgs.call( this, lex, "TRIANGLE", 0, 0,0,320,480,640,0);
@@ -234,7 +234,7 @@ function parseArgs( lex, instruction, mandatoryCount ) {
     var base = i - mandatoryCount;
     var arg;
     for (i = base; i < optionalCount; i++) {
-        arg = arguments[3 + base];
+        arg = arguments[3 + i];
         if (Array.isArray(arg)) this._asm.push.apply( this._asm, arg );
         else this._asm.push( arg );
     }
