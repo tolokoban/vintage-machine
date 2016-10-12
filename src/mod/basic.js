@@ -123,12 +123,13 @@ var PARSERS = {
         return true;
     },
     atom: function( lex ) {
-        var tkn = lex.next('NUM', 'STR', 'VAR', 'PAR_OPEN');
+        var tkn = lex.next('FUNC', 'NUM', 'STR', 'VAR', 'PAR_OPEN');
         if (tkn) {
             switch(tkn.id) {
             case 'NUM': this._asm.push( parseFloat( tkn.val ) ); return true;
             case 'STR': this._asm.push( parseString( tkn.val ) ); return true;
             case 'VAR': this._asm.push( tkn.val, Asm.GET ); return true;
+            case 'FUNC': return parseFunc.call( this, lex, tkn.val.toUpperCase() );
             case 'PAR_OPEN':
                 parse.call( this, lex, 'expression' );
                 tkn = lex.next('PAR_CLOSE');
@@ -204,6 +205,27 @@ function parseNEXT( lex ) {
     } else {
         lex.fatal(_('unexpected-next'));
     }
+    return true;
+}
+
+
+function parseFunc( lex, func ) {
+    // Remove the trailing parenthesis.
+    func = func.substr( 0, func.length - 1 );
+
+    if (typeof Asm[func] !== 'function') {
+        lex.fatal(_("unknown-function", func));
+    }
+    var argsCount = 0;
+    var tkn;
+    while (parse.call(this, lex, 'expression')) {
+        argsCount++;
+        tkn = lex.next('COMMA', 'PAR_CLOSE');
+        if (!tkn) lex.fatal(_('missing-par-close'));
+        if (tkn.id == 'PAR_CLOSE') break;
+    }
+
+    this._asm.push( argsCount, Asm[func] );
     return true;
 }
 

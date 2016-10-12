@@ -1,5 +1,6 @@
 {
     "var": {
-        "sys.test": "basic/test.bas"
+        "sys.test": "basic/test.bas",
+        "sys.hello-world": "basic/hello-world.bas"
     }
 }

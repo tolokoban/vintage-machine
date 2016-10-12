@@ -2,16 +2,20 @@
 
 var Repository = require("repository");
 var Keyboard = require("keyboard");
+var Storage = require("tfw.storage").local;
 var Message = require("tfw.message");
 var Kernel = require("kernel");
 var Basic = require("basic");
 var Asm = require("asm");
 var $ = require("dom");
 
+// Mettre en langue française.
+require('$').lang( 'fr' );
 
 
 exports.start = function() {
     var codeEditor = document.getElementById('CODE');
+    codeEditor.value = Storage.get( 'default-code', Repository.load("sys.hello-world") );
     var img = new Image();
     img.src = "css/app/symbols.jpg";
     img.onload = function() {
@@ -29,14 +33,23 @@ exports.start = function() {
 
         document.addEventListener('keydown', function(evt) {
             if (evt.key == 'F1') {
-                $.toggleClass( document.body, 'show' );
+                if ($.hasClass( document.body, 'show' )) {
+                    $.removeClass( document.body, 'show' );
+                    Keyboard.preventDefault = true;
+                } else {
+                    $.addClass( document.body, 'show' );
+                    Keyboard.preventDefault = false;
+                }
                 evt.preventDefault();
                 evt.stopPropagation();
             }
             if (evt.key == 'F2') {
                 try {
                     $.removeClass( document.body, 'show' );
-                    basic = new Basic( codeEditor.value );
+                    Keyboard.preventDefault = true;
+                    code = codeEditor.value;
+                    Storage.set('default-code', code);
+                    basic = new Basic( code );
                     console.log(codeEditor.value);
                     bytecode = basic.asm();
                     console.log(bytecode);

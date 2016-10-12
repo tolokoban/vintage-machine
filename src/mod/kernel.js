@@ -66,6 +66,11 @@ function Kernel( canvas, symbols ) {
         vert: GLOBAL.vertRender,
         frag: GLOBAL.fragRender
     });
+    // Program for displaying sprites.
+    this._prgSprite = new WebGL.Program( gl, {
+        vert: GLOBAL.vertSprite,
+        frag: GLOBAL.fragSprite
+    });
 
     // Array of vertices.
     this._arrVertices = new VertexBuffer();
@@ -180,6 +185,36 @@ Kernel.prototype.triStrip = function() {
  */
 Kernel.prototype.triFan = function() {
     draw.call( this, this._gl.TRIANGLE_FAN );
+};
+
+var SQUARE = new Float32Array([ -1, -1, +1, -1, -1, +1, +1, +1 ]);
+/**
+ * @return void
+ */
+Kernel.prototype.sprite = function(layer, xs, ys, xd, yd, w, h) {
+    if( typeof w === 'undefined' ) w = 16;
+    if( typeof h === 'undefined' ) h = 16;
+
+    var gl = this._gl;
+    var prg = this._prgSprite;
+    prg.use();
+    gl.colorMask( this._screen0, this._screen1, this._screen2, this._screen3 );
+    prg.$uniCenterX = xd;
+    prg.$uniCenterY = yd;
+    prg.$uniDstW = w;
+    prg.$uniDstH = h;
+
+    gl.bindBuffer( gl.ARRAY_BUFFER, this._bufVertexAttribs );
+    var datAttributes = SQUARE;
+    gl.bufferData( gl.ARRAY_BUFFER, datAttributes, gl.STATIC_DRAW );
+    var bpe = datAttributes.BYTES_PER_ELEMENT;
+    var blockSize = 2 * bpe;
+    // attPosition
+    var attPosition = gl.getAttribLocation(prg.program, "attPosition");
+    gl.enableVertexAttribArray(attPosition);
+    gl.vertexAttribPointer(attPosition, 2, gl.FLOAT, false, blockSize, 0);
+
+    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
 };
 
 

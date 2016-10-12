@@ -1,5 +1,7 @@
 "use strict";
 
+var Keyboard = require("keyboard");
+
 /**
  * @module asm
  *
@@ -8,7 +10,7 @@
  *
  * The bytecode is an array. Each element which is a function is executed,
  * the others are just pushed on the execution stack.
- * 
+ *
  * @example
  * var Asm = require('asm');
  * var asm = new Asm( kernel, bytecode );
@@ -47,6 +49,7 @@
  * TRIANGLE( x1, y1, x2, y2, x3, y3 )
  * BOX( x, y, w, h )
  * FRAME( n )
+ * KEY( id )
  */
 
 // Every atomic instruction has a time cost.
@@ -80,7 +83,7 @@ var Asm = function( bytecode, kernel, runtime ) {
             set: function(v) { this['_' + name] = v; },
             configurable: true,
             enumerable: true
-        });        
+        });
     });
 
 };
@@ -111,6 +114,7 @@ Asm.prototype.next = function( runtime ) {
         if (typeof cmd === 'function') {
             this._cost += cmd.call( this );
         } else {
+            this._cost++;
             this.push( cmd );
         }
     }
@@ -272,11 +276,29 @@ Asm.BOX = function() {
 };
 
 /**
- * RND()
+ * RND([a[,b]])
  * Push a random number between 0.0 and 1.0.
  */
 Asm.RND = function() {
-    this.push( Math.random() );
+    var count = this.popAsNumber();
+    if (count == 0) this.push( Math.random() );
+    else {
+        var a = this.popAsNumber();
+        if (count == 1) this.push( Math.ceil( Math.random() * a ) );
+        else {
+            var b = this.popAsNumber();
+            if (b < a) {
+                var tmp = a;
+                a = b;
+                b = tmp;
+            }
+            this.push( Math.floor( a + Math.random() * (1 + b - a) ) );
+            while (count > 2) {
+                this.pop();
+                count--;
+            }
+        }
+    }
     return 2;
 };
 
@@ -494,7 +516,7 @@ Asm.ADD = function() {
             this._cost += b.length;
         } else {
             a.push( b );
-            this.push( a );            
+            this.push( a );
         }
         return 1;
     }
@@ -670,6 +692,39 @@ Asm.ERASE = function() {
 };
 
 /**
+ * KEY( id )
+ * @return 1 if the key `id` is currently pressed.
+ */
+Asm.KEY = function() {
+    var count = this.popAsNumber();
+    if (count == 0) {
+        this.push( 0 );
+        return 0;
+    }
+
+    var result = 1;
+    while (count --> 0) {
+        var id = "" + this.pop();
+        if (!Keyboard.test( id )) result = 0;
+    }
+    this.push( result );
+    return 1;
+};
+
+/**
+ * ?( cond, true-value, false-value )
+ */
+Asm['?'] = function() {
+    var count = this.popAsNumber();
+    var b = this.pop();
+    var a = this.pop();
+    var cond = this.popAsNumber();
+    if (cond == 0) this.push( b );
+    else this.push( a );
+    return 1;
+};
+
+/**
  * FOR( var, a, b, step, jmp )
  */
 Asm.FOR = function() {
@@ -681,7 +736,7 @@ Asm.FOR = function() {
     var name = this.pop().toLowerCase();
     if (this.exists( name )) {
         c = this.getAsNumber(name) + step;
-        
+
     } else {
         c = a;
     }
