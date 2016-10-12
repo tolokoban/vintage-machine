@@ -1,10 +1,15 @@
 # Programme de test.
 
+$w = 640 / 8
+$h = 480 / 8
+
 FOR $color = 0 TO 63
-  PEN0 $color
-  POINT $color * 8, $color * 6
-  POINT 640,0
-  POINT 0,480
-  TRIANGLE
+   $x = ($color % 8) * $w
+   $y = (($color - ($color % 8)) / 8) * $h
+   PEN0 $color
+   POINT $x, $y
+   POINT $x + $w, $y
+   POINT $x, $y + $h
+   TRIANGLE
 NEXT
 

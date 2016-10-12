@@ -34,13 +34,15 @@ var BINOP = {
 
 function Basic( code ) {
     this.clear();    
-    if( typeof code === 'undefined' ) code = '';
+    if( typeof code === 'undefined' ) code = '';    
     this._code = code;
     var lex = new Lexer( code );
     while (lex.hasMoreCode()) {
         if (parse.call(this, lex, 'instruction', 'affectation')) continue;
-        // ERROR.
-        lex.fatal( "???" );
+        if (!lex.next('EOL')) {
+            // ERROR.
+            lex.fatal( "???" );
+        }
     }
     // Linkage: replace all the labels by their address.
     this._asm.forEach(function (itm, idx, asm) {
@@ -48,8 +50,6 @@ function Basic( code ) {
             asm[idx] = this._labels[itm[0]];
         }
     }, this);
-
-    console.info("[basic] this._asm=...", this._asm);
 }
 
 
@@ -82,6 +82,7 @@ var PARSERS = {
         if (!tkn) return false;
         var ins = tkn.val.toUpperCase();
         switch (ins) {
+        case "FRAME": return parseArgs.call( this, lex, "FRAME", 0);
         case "POINT": return parseArgs.call( this, lex, "POINT", 2, ["pen0", Asm.GET]);
         case "TRIANGLE": return parseArgs.call( this, lex, "TRIANGLE", 0);
         case "PEN": return parseArgs.call( this, lex, "PEN1", 1);

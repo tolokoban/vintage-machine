@@ -6,12 +6,12 @@
  * @description
  * This is the internal assembly language of the Tlk-64 computer.
  *
- * The code is an array. Each element which is a function is executed,
+ * The bytecode is an array. Each element which is a function is executed,
  * the others are just pushed on the execution stack.
  * 
  * @example
  * var Asm = require('asm');
- * var asm = new Asm( kernel, code );
+ * var asm = new Asm( kernel, bytecode );
  * var runtime = {
  *   stack: []
  * };
@@ -30,13 +30,13 @@
  * DIV( a, b )
  * ABS( a )
  * NEG( a )
- * JMP( delta )
- * JZE( n, delta )
- * JNZ( n, delta )
- * JGT( n, delta )
- * JLT( n, delta )
- * JGE( n, delta )
- * JLE( n, delta )
+ * JMP( addr )
+ * JZE( n, addr )
+ * JNZ( n, addr )
+ * JGT( n, addr )
+ * JLT( n, addr )
+ * JGE( n, addr )
+ * JLE( n, addr )
  * GET( name ) -> valut
  * SET( name, value )
  * LET( name )
@@ -53,9 +53,9 @@ var MAX_COST = 10000;
 var PRECISION = 0.0000000001;
 
 
-var Asm = function( code, kernel, runtime ) {
+var Asm = function( bytecode, kernel, runtime ) {
     this._kernel = kernel;
-    this._code = code;
+    this._bytecode = bytecode;
     this._cursor = 0;
     this._cost = 0;
     this._runtime = runtime || {
@@ -69,8 +69,7 @@ var Asm = function( code, kernel, runtime ) {
             locateX: 0,
             locateY: 0,
             cursor: 1
-        },
-        lets: {}
+        }
     };
 
     ['kernel', 'runtime'].forEach(function (name) {
@@ -86,6 +85,16 @@ var Asm = function( code, kernel, runtime ) {
 
 module.exports = Asm;
 
+
+/**
+ * @return void
+ */
+Asm.prototype.reset = function() {
+    this._cost = 0;
+    this._cursor = 0;
+};
+
+
 /**
  * @return void
  */
@@ -95,8 +104,8 @@ Asm.prototype.next = function( runtime ) {
 
     var cmd;
     while (this._cost < MAX_COST) {
-        if (this._cursor >= this._code.length) return false;
-        cmd = this._code[this._cursor++];
+        if (this._cursor >= this._bytecode.length) return false;
+        cmd = this._bytecode[this._cursor++];
         if (typeof cmd === 'function') {
             this._cost += cmd.call( this );
         } else {
@@ -143,6 +152,7 @@ Asm.prototype.popAsNumber = function() {
  * Read a variable.
  */
 Asm.prototype.get = function( name ) {
+    name = '' + name;
     var v = this.runtime.vars[name.trim().toLowerCase()];
     if( typeof v === 'undefined' ) v = 0;
     return v;
@@ -152,6 +162,7 @@ Asm.prototype.get = function( name ) {
  * Read a variable.
  */
 Asm.prototype.set = function( name, value ) {
+    name = '' + name;
     this.runtime.vars[name.trim().toLowerCase()] = value;
 };
 
@@ -159,6 +170,7 @@ Asm.prototype.set = function( name, value ) {
  * Read a variable.
  */
 Asm.prototype.erase = function( name ) {
+    name = '' + name;
     delete this.runtime.vars[name.trim().toLowerCase()];
 };
 
@@ -166,6 +178,7 @@ Asm.prototype.erase = function( name ) {
  * Read a variable converted into a number.
  */
 Asm.prototype.getAsNumber = function( name ) {
+    name = '' + name;
     var v = parseFloat(this.runtime.vars[name.trim().toLowerCase()]);
     if (isNaN(v)) return 0;
     return v;
@@ -315,89 +328,89 @@ Asm.SET = function() {
 };
 
 /**
- * JMP( delta )
- * Jump of `delta` instructions.
+ * JMP( addr )
+ * Jump to address `addr`.
  */
 Asm.JMP = function() {
-    var delta = this.popAsNumber();
-    this._cursor = Math.max( 0, this._cursor + delta );
+    var addr = this.popAsNumber();
+    this._cursor = addr;
     return 1;
 };
 
 /**
- * JZE( n, delta )
- * Jump of `delta` if `n` is zero.
+ * JZE( n, addr )
+ * Jump to address `addr` if `n` is zero.
  */
 Asm.JZE = function() {
-    var delta = this.popAsNumber();
+    var addr = this.popAsNumber();
     var n = this.popAsNumber();
     if (n == 0) {
-        this._cursor = Math.max( 0, this._cursor + delta );
+        this._cursor = addr;
     }
     return 1;
 };
 
 /**
- * JNZ( n, delta )
- * Jump of `delta` if `n` is NOT zero.
+ * JNZ( n, addr )
+ * Jump to address `addr` if `n` is NOT zero.
  */
 Asm.JNZ = function() {
-    var delta = this.popAsNumber();
+    var addr = this.popAsNumber();
     var n = this.popAsNumber();
     if (n != 0) {
-        this._cursor = Math.max( 0, this._cursor + delta );
+        this._cursor = addr;
     }
     return 1;
 };
 
 /**
- * JGT( n, delta )
- * Jump of `delta` if `n` is greater than zero.
+ * JGT( n, addr )
+ * Jump to address `addr` if `n` is greater than zero.
  */
 Asm.JGT = function() {
-    var delta = this.popAsNumber();
+    var addr = this.popAsNumber();
     var n = this.popAsNumber();
     if (n > 0) {
-        this._cursor = Math.max( 0, this._cursor + delta );
+        this._cursor = addr;
     }
     return 1;
 };
 
 /**
- * JLT( n, delta )
- * Jump of `delta` if `n` is lower than zero.
+ * JLT( n, addr )
+ * Jump to address `addr` if `n` is lower than zero.
  */
 Asm.JLT = function() {
-    var delta = this.popAsNumber();
+    var addr = this.popAsNumber();
     var n = this.popAsNumber();
     if (n < 0) {
-        this._cursor = Math.max( 0, this._cursor + delta );
+        this._cursor = addr;
     }
     return 1;
 };
 
 /**
- * JGT( n, delta )
- * Jump of `delta` if `n` is greater than zero.
+ * JGT( n, addr )
+ * Jump to address `addr` if `n` is greater than zero.
  */
 Asm.JGE = function() {
-    var delta = this.popAsNumber();
+    var addr = this.popAsNumber();
     var n = this.popAsNumber();
     if (n >= 0) {
-        this._cursor = Math.max( 0, this._cursor + delta );
+        this._cursor = addr;
     }
     return 1;
 };
 
 /**
- * JLT( n, delta )
- * Jump of `delta` if `n` is lower than zero.
+ * JLT( n, addr )
+ * Jump to address `addr` if `n` is lower than zero.
  */
 Asm.JLE = function() {
-    var delta = this.popAsNumber();
+    var addr = this.popAsNumber();
     var n = this.popAsNumber();
     if (n <= 0) {
-        this._cursor = Math.max( 0, this._cursor + delta );
+        this._cursor = addr;
     }
     return 1;
 };
@@ -625,7 +638,7 @@ Asm.FOR = function() {
     var a = this.popAsNumber();
     var c;
     var name = this.pop().toLowerCase();
-    if (this.exists()) {
+    if (this.exists( name )) {
         c = this.getAsNumber(name) + step;
         
     } else {
@@ -636,7 +649,7 @@ Asm.FOR = function() {
     b = Math.max(a, b);
     if (c < a || c > b) {
         // Out of range, then jump.
-        this._cursor = jmp - 1;
+        this._cursor = jmp;
     }
     return 5;
 };

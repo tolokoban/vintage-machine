@@ -9,7 +9,6 @@ var Asm = require("asm");
 var basic = new Basic();
 
 
-
 exports.start = function() {
     var img = new Image();
     img.src = "css/app/symbols.jpg";
