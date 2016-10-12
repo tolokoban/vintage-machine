@@ -84,7 +84,9 @@ var PARSERS = {
         switch (ins) {
         case "FRAME": return parseArgs.call( this, lex, "FRAME", 0);
         case "POINT": return parseArgs.call( this, lex, "POINT", 2, ["pen0", Asm.GET]);
-        case "TRIANGLE": return parseArgs.call( this, lex, "TRIANGLE", 0);
+        case "TRI": return parseArgs.call( this, lex, "TRI", 0);
+        case "TRIANGLE": return parseArgs.call( this, lex, "TRIANGLE", 6, [0,0,320,480,640,0]);
+        case "BOX": return parseArgs.call( this, lex, "BOX", 4, [0,0,640,480]);
         case "PEN": return parseArgs.call( this, lex, "PEN1", 1);
         case "PEN0": return parseArgs.call( this, lex, "PEN0", 1);
         case "PEN1": return parseArgs.call( this, lex, "PEN1", 1);
@@ -222,6 +224,11 @@ function parseArgs( lex, instruction, mandatoryCount ) {
         } else {
             break;
         }
+    }
+    // Check if all the mandatory args have been passed.
+    if (i < mandatoryCount) {
+        lex.fatal(_('too-few-args', instruction, mandatoryCount) + "\n"
+                  + _(instruction.toLowerCase()));
     }
     // Add optional arguments.
     var base = i - mandatoryCount;

@@ -5,8 +5,7 @@ var Keyboard = require("keyboard");
 var Kernel = require("kernel");
 var Basic = require("basic");
 var Asm = require("asm");
-
-var basic = new Basic();
+var $ = require("dom");
 
 
 exports.start = function() {
@@ -21,6 +20,11 @@ exports.start = function() {
         kernel.render = function(time) {
             asm.next();
         };
+        document.addEventListener('keydown', function(evt) {
+            if (evt.key == 'f1') {
+                $.toggleClass( document.body, 'show' );
+            }
+        }, true);
     };
     img.onerror = function( err ) {
         console.error( err );

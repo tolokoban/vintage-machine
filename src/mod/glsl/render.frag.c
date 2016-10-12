@@ -10,15 +10,21 @@ uniform sampler2D texPalette;
 varying vec2 varUV;
 // Under this threshold, we consider the color is 0.
 const float threshold = 1.0 / 64.0;
+// In `speed ink` 60 is a blink of a period of 1 second, 30 of 1/2 second and 120 of two seconds.
+const float timeunit = 255000.0 / 60.0;
 
 
 vec4 blend( vec4 target, float color ) {
   if (color < threshold) return target;
-  //float y = (1.0 + sin(uniTime * 0.0031415926535897933)) * 0.5;
-  float y = mod(uniTime * 0.0005, 2.0);
-  if (y > 1.0) y = 2.0 - y;
   vec4 c1 = texture2D(texPalette, vec2(color, .25));
+  float period = max(c1.a * timeunit, timeunit);
+  c1.a = 1.0;
   vec4 c2 = texture2D(texPalette, vec2(color, .75));
+  float shift = c2.a * timeunit;
+  c2.a = 1.0;
+
+  float y = mod((uniTime + shift) / period, 2.0);
+  if (y > 1.0) y = 2.0 - y;
   return mix(c1, c2, y);
 }
 
@@ -34,7 +40,7 @@ void main() {
   }
   */
   vec4 color = texture2D( texSource, vec2(x, y) );
-  // Start with a full transparent color with tint of the pen 0 of the palette.
+  // Start with a full transparent color with tint of the color 0 in the palette.
   vec4 target = vec4( texture2D( texPalette, vec2(0.0, 0.0) ).rgb, 0.0 );
 
   target = blend( target, color.r );

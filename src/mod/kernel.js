@@ -122,29 +122,7 @@ function Kernel( canvas, symbols ) {
         gl.drawArrays( gl.TRIANGLE_STRIP, 0, 4 );
     });
 
-    this._render = function( ker, time ) {
-        ker.screen( true, false, false, false );
-        ker.clearPoints();
-        ker.point( 0, 0, 1 );
-        ker.point( WIDTH, HEIGHT, 20 );
-        ker.point( 490, 200, 63 );
-        ker.triangles();
-        ker.screen( false, true, false, false );
-        ker.point( 0, HEIGHT, 1 );
-        ker.point( WIDTH, HEIGHT, 20 );
-        ker.point( WIDTH, 0, 63 );
-        ker.triangles();
-        ker.screen( false, false, true, false );
-        ker.point( WIDTH / 4, 0, 1 );
-        ker.point( 320, HEIGHT, 63 );
-        ker.point( 3 * WIDTH / 4, 0, 20 );
-        ker.triangles();
-        ker.screen( false, true, false, false );
-        ker.point( WIDTH / 2, HEIGHT / 2, 32 );
-        ker.point( 0, HEIGHT / 4, 32 );
-        ker.point( WIDTH / 4, 0, 32 );
-        ker.triangles();
-    };
+    this._render = function( ker, time ) {};
 
     // Getter/setter for the rendering function.
     Object.defineProperty( Kernel.prototype, 'render', {
@@ -185,6 +163,24 @@ Kernel.prototype.triangles = function() {
 
 
 /**
+ * Draw triangles strips from points on the buffer.
+ * @see point
+ */
+Kernel.prototype.triStrip = function() {
+    draw.call( this, this._gl.TRIANGLE_STRIP );
+};
+
+
+/**
+ * Draw triangles fans from points on the buffer.
+ * @see point
+ */
+Kernel.prototype.triFan = function() {
+    draw.call( this, this._gl.TRIANGLE_FAN );
+};
+
+
+/**
  * Specify on which screens the next operation will be applied.
  */
 Kernel.prototype.screen = function(s0, s1, s2, s3) {
@@ -195,6 +191,65 @@ Kernel.prototype.screen = function(s0, s1, s2, s3) {
     this._gl.colorMask( s0, s1, s2, s3 );
 };
 
+var HEXA = "0123456789abcdef";
+
+/**
+ * Color of the form "ff0" will be converted to [255,255,0].
+ * Color of the form 48 will be converted to [48, 48, 48].
+ */
+function expandColor( value ) {
+    if( Array.isArray( value )) return value;
+    if ( typeof value === 'number' ) {
+        value = Math.floor( value ) % 255;
+        return [value, value, value];
+    }
+    value = value.trim().toLowerCase();
+    var arr = [], c;
+    for (var i=0 ; i<value.length ; i++) {
+        c = HEXA.indexOf( value.charAt( i ) );
+        if (c < 0) c = 0;
+        arr.push(17 * c);
+    }
+    return arr;
+}
+
+/**
+ * @return void
+ */
+Kernel.prototype.ink = function(index, color1, color2) {
+    if( typeof index === 'undefined' ) index = 0;
+    index = Math.floor( index ) % 64;
+    if( typeof color2 === 'undefined' ) color2 = color1;
+
+    color1 = expandColor( color1 );
+    color2 = expandColor( color2 );
+
+    var idx = index * 4;
+    this._palette[idx++] = color1[0];
+    this._palette[idx++] = color1[1];
+    this._palette[idx]   = color1[2];
+    idx = index * 4 + 64 * 4;
+    this._palette[idx++] = color2[0];
+    this._palette[idx++] = color2[1];
+    this._palette[idx]   = color2[2];
+};
+
+/**
+ * @param {number} period - from 0 to 4 seconds.
+ */
+Kernel.prototype.speedInk = function(index, period, shift) {
+    if( typeof shift === 'undefined' ) shift = 0;
+    period = clamp(Math.floor(60 * period), 0, 255);
+    shift = clamp(Math.floor(60 * shift), 0, 255);
+    this._palette[4 * index + 3] = period;
+    this._palette[4 * index + 3 + 64 * 4] = shift;
+};
+
+function clamp(value, min, max) {
+    if (value < min) return min;
+    if (value > max) return max;
+    return value;
+}
 
 /**
  * Push the vertices array to the graphic card.
@@ -228,53 +283,52 @@ function draw( type ) {
  * be used as a texture.
  */
 function initPalette() {
-    var palette = [
-        0x00, 0x00, 0x85, 0xff,  // 0
-        0xff, 0xff, 0x00, 0xff,  // 1
-        0x00, 0xff, 0xff, 0xff,  // 2
-        0xff, 0x00, 0x00, 0xff,  // 3
-        0xff, 0xff, 0xff, 0xff,  // 4
-        0x00, 0x00, 0x00, 0xff,  // 5
-        0x00, 0x00, 0xff, 0xff,  // 6
-        0xff, 0x00, 0xff, 0xff,  // 7
-        0x00, 0x94, 0x85, 0xff,  // 8
-        0x85, 0x94, 0x00, 0xff,  // 9
-        0x85, 0x94, 0xff, 0xff,  // 10
-        0xff, 0x94, 0x85, 0xff,  // 11
-        0x00, 0xff, 0x00, 0xff,  // 12
-        0x85, 0xff, 0x85, 0xff,  // 13
-        0x85, 0x85, 0x85, 0xff,  // 14
-        0x00, 0x00, 0xff, 0xff   // 15
-    ];
     var i, j;
-    for (j=.75; j>0 ; j-=.25) {
-        for (i=0; i<16; i++) {
-            palette.push(
-                Math.floor(palette[i*4 + 0] * j),
-                Math.floor(palette[i*4 + 1] * j),
-                Math.floor(palette[i*4 + 2] * j),
-                0xff
-            );
-        }
-    }
-    // Copy the colors on 2 rows to manage blinking.
-    for (i=0; i<64; i++) {
-        if (i==15) {
-            // Color 15 will blink between color 0  and 1. It is used for text
-            // cursor.
-            palette.push(0xff, 0x85, 0x00, 0xff);
-        } else {
-            palette.push(
-                palette[i*4 + 0],
-                palette[i*4 + 1],
-                palette[i*4 + 2],
-                0xff
-            );
+    
+    this._palette = new Uint8Array(4 * 64 * 2);
+    this._palette.fill( 60 );
+    
+    this.ink( 0, "000" );
+    this.ink( 1, "fff" );
+    this.ink( 2, "f00" );
+    this.ink( 3, "0f0" );
+    this.ink( 4, "00f" );
+    this.ink( 5, "0ff" );
+    this.ink( 6, "f0f" );
+    this.ink( 7, "ff0" );
+
+    this.ink( 8, "000" );
+
+    this.ink( 32, "08f" );
+    this.ink( 33, "80f" );
+    this.ink( 34, "0f8" );
+    this.ink( 35, "8f0" );
+    this.ink( 36, "f08" );
+    this.ink( 37, "f80" );
+    
+    for (i = 1 ; i < 8 ; i++) {
+        for (j = 1 ; j < 4 ; j++) {
+            this._palette[4*(i + 8 * j) + 0] = Math.floor( this._palette[4*i + 0] * (4 - j) * .25 );
+            this._palette[4*(i + 8 * j) + 1] = Math.floor( this._palette[4*i + 1] * (4 - j) * .25 );
+            this._palette[4*(i + 8 * j) + 2] = Math.floor( this._palette[4*i + 2] * (4 - j) * .25 );
         }
     }
 
-    console.info("[kernel] palette=...", palette);
-    this._palette = new Uint8Array( palette );
+    // By default, no color is blinking.
+    for (i = 0; i < 64 ; i++) {
+        j = 4 * i;
+        this._palette[64 * 4 + j + 0] = this._palette[j + 0];
+        this._palette[64 * 4 + j + 1] = this._palette[j + 1];
+        this._palette[64 * 4 + j + 2] = this._palette[j + 2];
+    }
+    
+    // Blinking colors.
+    this.ink( 16, "000", "fff" );
+    this.speedInk( 16, .5, .25 );
+    this.ink( 24, "ff0", "00f" );
+    
+
+    console.info("[kernel] palette=...", this._palette);
 }
 
 

@@ -43,7 +43,9 @@
  * RND() -> number
  * DEC( name ) -> number
  * POINT( x, y, color )
- * TRIANGLE()
+ * TRIS()
+ * TRIANGLE( x1, y1, x2, y2, x3, y3 )
+ * BOX( x, y, w, h )
  * FRAME( n )
  */
 
@@ -221,13 +223,52 @@ Asm.POINT = function() {
 };
 
 /**
- * TRIANGLE()
+ * TRIS()
  */
-Asm.TRIANGLE = function() {
+Asm.TRIS = function() {
     if (this.kernel) {
         this.kernel.triangles();
     }
     return 10;
+};
+
+/**
+ * TRIANGLE( x1, y1, x2, y2, x3, y3 )
+ */
+Asm.TRIANGLE = function() {
+    var y3 = this.popAsNumber();
+    var x3 = this.popAsNumber();
+    var y2 = this.popAsNumber();
+    var x2 = this.popAsNumber();
+    var y1 = this.popAsNumber();
+    var x1 = this.popAsNumber();
+    var color = this.get("pen0");
+    if (this.kernel) {
+        this.kernel.point( x1, y1, color );
+        this.kernel.point( x2, y3, color );
+        this.kernel.point( x3, y3, color );
+        this.kernel.triangles();
+    }
+    return 25;
+};
+
+/**
+ * BOX( x, y, w, h )
+ */
+Asm.BOX = function() {
+    var h = this.popAsNumber();
+    var w = this.popAsNumber();
+    var y = this.popAsNumber();
+    var x = this.popAsNumber();
+    var color = this.get("pen0");
+    if (this.kernel) {
+        this.kernel.point( x, y, color );
+        this.kernel.point( x + w, y, color );
+        this.kernel.point( x, y + h, color );
+        this.kernel.point( x + w, y + h, color );
+        this.kernel.triStrip();
+    }
+    return 30;
 };
 
 /**

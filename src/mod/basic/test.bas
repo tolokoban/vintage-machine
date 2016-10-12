@@ -2,14 +2,13 @@
 
 $w = 640 / 8
 $h = 480 / 8
+$color = 0
 
-FOR $color = 0 TO 63
-   $x = ($color % 8) * $w
-   $y = (($color - ($color % 8)) / 8) * $h
-   PEN0 $color
-   POINT $x, $y
-   POINT $x + $w, $y
-   POINT $x, $y + $h
-   TRIANGLE
+FOR $y = 0 TO 479 STEP $h
+   FOR $x = 0 TO 639 STEP $w
+      PEN0 $color
+      BOX $x, $y, $w, $h
+      $color = $color + 1
+   NEXT
 NEXT
 
