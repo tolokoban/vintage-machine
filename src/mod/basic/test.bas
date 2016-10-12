@@ -6,7 +6,7 @@ $color = 0
 
 FOR $y = 0 TO 479 STEP $h
    FOR $x = 0 TO 639 STEP $w
-      PEN0 $color
+      PEN $color
       BOX $x, $y, $w, $h
       $color = $color + 1
    NEXT

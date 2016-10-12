@@ -242,7 +242,7 @@ Asm.TRIANGLE = function() {
     var x2 = this.popAsNumber();
     var y1 = this.popAsNumber();
     var x1 = this.popAsNumber();
-    var color = this.get("pen0");
+    var color = this.get("pen1");
     if (this.kernel) {
         this.kernel.point( x1, y1, color );
         this.kernel.point( x2, y3, color );
@@ -260,7 +260,7 @@ Asm.BOX = function() {
     var w = this.popAsNumber();
     var y = this.popAsNumber();
     var x = this.popAsNumber();
-    var color = this.get("pen0");
+    var color = this.get("pen1");
     if (this.kernel) {
         this.kernel.point( x, y, color );
         this.kernel.point( x + w, y, color );
@@ -307,7 +307,7 @@ Asm.DEC = function() {
  */
 Asm.PEN = function() {
     var color = this.popAsNumber();
-    this.set('pen0', Math.floor(color) );
+    this.set('pen1', Math.floor(color) );
     return 0;
 };
 

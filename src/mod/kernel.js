@@ -80,6 +80,9 @@ function Kernel( canvas, symbols ) {
 
     var that = this;
 
+    this.stop = renderer.stop.bind( renderer );
+    this.start = renderer.start.bind( renderer );
+    
     renderer.start(function(time) {
         var debugMode = Keyboard.test("d");
 
@@ -305,7 +308,11 @@ function initPalette() {
     this.ink( 35, "8f0" );
     this.ink( 36, "f08" );
     this.ink( 37, "f80" );
-    
+    this.ink( 38, "88f" );
+    this.ink( 39, "8f8" );
+
+    this.ink( 40, "f88" );
+
     for (i = 1 ; i < 8 ; i++) {
         for (j = 1 ; j < 4 ; j++) {
             this._palette[4*(i + 8 * j) + 0] = Math.floor( this._palette[4*i + 0] * (4 - j) * .25 );
