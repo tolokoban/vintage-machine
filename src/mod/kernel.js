@@ -52,6 +52,17 @@ function Kernel( canvas, symbols ) {
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
 
+    // Palette Symbols.
+    var texSymbols = gl.createTexture();
+    gl.bindTexture(gl.TEXTURE_2D, texSymbols);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, symbols);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+    this._texSymbols = texSymbols;
+
+
     // We start with only the first screen (0) enabled.
     this._screen0 = true;
     this._screen1 = this._screen2 = this._screen3 = false;
@@ -187,7 +198,7 @@ Kernel.prototype.triFan = function() {
     draw.call( this, this._gl.TRIANGLE_FAN );
 };
 
-var SQUARE = new Float32Array([ -1, -1, +1, -1, -1, +1, +1, +1 ]);
+var SQUARE = new Float32Array([ -.5, -.5, +.5, -.5, -.5, +.5, +.5, +.5 ]);
 /**
  * @return void
  */
@@ -203,6 +214,10 @@ Kernel.prototype.sprite = function(layer, xs, ys, xd, yd, w, h) {
     prg.$uniCenterY = yd;
     prg.$uniDstW = w;
     prg.$uniDstH = h;
+    prg.$uniSrcX = xs;
+    prg.$uniSrcY = ys;
+    prg.$uniSrcW = w;
+    prg.$uniSrcH = h;
 
     gl.bindBuffer( gl.ARRAY_BUFFER, this._bufVertexAttribs );
     var datAttributes = SQUARE;
