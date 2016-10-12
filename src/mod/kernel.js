@@ -62,7 +62,6 @@ function Kernel( canvas, symbols ) {
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
     this._texSymbols = texSymbols;
 
-
     // We start with only the first screen (0) enabled.
     this._screen0 = true;
     this._screen1 = this._screen2 = this._screen3 = false;
@@ -209,6 +208,10 @@ Kernel.prototype.sprite = function(layer, xs, ys, xd, yd, w, h) {
     var gl = this._gl;
     var prg = this._prgSprite;
     prg.use();
+
+    gl.enable(gl.BLEND);
+    gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA); // gl.ONE);
+
     gl.colorMask( this._screen0, this._screen1, this._screen2, this._screen3 );
     prg.$uniCenterX = xd;
     prg.$uniCenterY = yd;
@@ -218,6 +221,10 @@ Kernel.prototype.sprite = function(layer, xs, ys, xd, yd, w, h) {
     prg.$uniSrcY = ys;
     prg.$uniSrcW = w;
     prg.$uniSrcH = h;
+
+    prg.$texSymbols = 0;
+    gl.activeTexture(gl.TEXTURE0);
+    gl.bindTexture( gl.TEXTURE_2D, this._texSymbols );
 
     gl.bindBuffer( gl.ARRAY_BUFFER, this._bufVertexAttribs );
     var datAttributes = SQUARE;
@@ -230,6 +237,7 @@ Kernel.prototype.sprite = function(layer, xs, ys, xd, yd, w, h) {
     gl.vertexAttribPointer(attPosition, 2, gl.FLOAT, false, blockSize, 0);
 
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+    gl.disable(gl.BLEND);
 };
 
 
@@ -339,7 +347,7 @@ function initPalette() {
     var i, j;
     
     this._palette = new Uint8Array(4 * 64 * 2);
-    this._palette.fill( 60 );
+    this._palette.fill( 240 );
     
     this.ink( 0, "000" );
     this.ink( 1, "fff" );
