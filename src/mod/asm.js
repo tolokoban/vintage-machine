@@ -122,6 +122,13 @@ Asm.prototype.pop = function(value) {
 };
 
 /**
+ * @return void
+ */
+Asm.prototype.exists = function(name) {
+    return typeof this.runtime.vars[('' + name).trim().toLowerCase()] !== 'undefined';
+};
+
+/**
  * Pop a value from the stack and convert it into a number.
  * If such a conversion is impossible, return 0.
  */
@@ -616,8 +623,20 @@ Asm.FOR = function() {
     var step = this.popAsNumber();
     var b = this.popAsNumber();
     var a = this.popAsNumber();
+    var c;
     var name = this.pop().toLowerCase();
+    if (this.exists()) {
+        c = this.getAsNumber(name) + step;
+        
+    } else {
+        c = a;
+    }
+    this.set(name, c);
     a = Math.min(a, b);
     b = Math.max(a, b);
-    var c = this.getAsNumber(name);
+    if (c < a || c > b) {
+        // Out of range, then jump.
+        this._cursor = jmp - 1;
+    }
+    return 5;
 };

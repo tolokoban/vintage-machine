@@ -6,10 +6,9 @@ describe('Module `Basic`', function() {
     describe('expression', function() {
         function check(code, expectedResult) {
             it('should parse "' + code + '"', function() {
-                var basic = new Basic();
                 var result;
                 try {
-                    basic.add( "$result=" + code + "\n");
+                    var basic = new Basic("$result=" + code + "\n");
                     var asm = new Asm( basic.asm() );
                     while (asm.next());
                     result = asm.runtime.vars['$result'];
