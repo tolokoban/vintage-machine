@@ -5,6 +5,7 @@ var Keyboard = require("keyboard");
 var Storage = require("tfw.storage").local;
 var Message = require("tfw.message");
 var Kernel = require("kernel");
+var Editor = require("editor");
 var Basic = require("basic");
 var Asm = require("asm");
 var $ = require("dom");
@@ -14,7 +15,7 @@ require('$').lang( 'fr' );
 
 
 exports.start = function() {
-    var codeEditor = document.getElementById('CODE');
+    var codeEditor = new Editor( document.getElementById('CODE') );
     codeEditor.value = Storage.get( 'default-code', Repository.load("sys.hello-world") );
     var img = new Image();
     img.src = "css/app/symbols.jpg";
