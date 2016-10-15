@@ -39,8 +39,19 @@ function Kernel( canvas, symbols ) {
     this._gl = gl;
     this._renderer = renderer;
 
+    initPencils.call( this );
     initPalette.call( this );
     initFramebuffer.call( this );
+
+    // Pencils texture.
+    var texPencils = gl.createTexture();
+    gl.bindTexture(gl.TEXTURE_2D, texPencils);
+    // No transparency on pencils.
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 8, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, this._pencils);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
 
     // Palette texture.
     var texPalette = gl.createTexture();
@@ -242,6 +253,30 @@ Kernel.prototype.sprite = function(layer, xs, ys, xd, yd, w, h) {
 
 
 /**
+ * @return void
+ */
+Kernel.prototype.pen = function( pencils ) {
+    var arr = this._pencils;
+    pencils.forEach(function (pen, idx) {
+        arr[4 * idx] = pen;
+    });
+};
+
+
+/**
+ * @return void
+ */
+Kernel.prototype.ink = function( index, r1, g1, b1, r2, g2, b2 ) {
+    this._palette[index * 4 + 0] = r1;
+    this._palette[index * 4 + 1] = g1;
+    this._palette[index * 4 + 2] = b1;
+    this._palette[index * 4 + 256] = r2;
+    this._palette[index * 4 + 257] = g2;
+    this._palette[index * 4 + 258] = b2;
+};
+
+
+/**
  * Specify on which screens the next operation will be applied.
  */
 Kernel.prototype.screen = function(s0, s1, s2, s3) {
@@ -336,6 +371,24 @@ function draw( type ) {
     gl.drawArrays(type, 0, this._arrVertices.length / 3);
     this.clearPoints();
 }
+
+
+/**
+ * Pencils are the 8 pencils used for sprites.
+ */
+function initPencils() {
+    this._pencils = new Uint8Array([
+        0, 0, 0, 0,
+        4, 0, 0, 0,
+        8, 0, 0, 0,
+        12, 0, 0, 0,
+        16, 0, 0, 0,
+        20, 0, 0, 0,
+        24, 0, 0, 0,
+        28, 0, 0, 0
+    ]);
+}
+
 
 /**
  * Initialize the main palette of 64 colors.  We take only 4 levels in

@@ -87,13 +87,14 @@ var PARSERS = {
         case "TRI": return parseArgs.call( this, lex, "TRI", 0);
         case "TRIANGLE": return parseArgs.call( this, lex, "TRIANGLE", 0, 0,0,320,480,640,0);
         case "BOX": return parseArgs.call( this, lex, "BOX", 0, 0,0,640,480);
-        case "PEN": return parseArgs.call( this, lex, "PEN1", 1);
+        case "PEN": return parseFunc.call( this, lex, "PEN");
         case "PEN0": return parseArgs.call( this, lex, "PEN0", 1);
         case "PEN1": return parseArgs.call( this, lex, "PEN1", 1);
         case "PEN2": return parseArgs.call( this, lex, "PEN2", 1);
         case "PEN3": return parseArgs.call( this, lex, "PEN3", 1);
         case "FOR": return parseFOR.call( this, lex );
         case "NEXT": return parseNEXT.call( this, lex );
+        case "INK": return parseArgs.call( this, lex, "INK", 3, -1 );
         }
 
         console.error("Instruction " + tkn.val.toUpperCase() + " has not been implemented!");
@@ -127,9 +128,10 @@ var PARSERS = {
         if (tkn) {
             switch(tkn.id) {
             case 'NUM': this._asm.push( parseFloat( tkn.val ) ); return true;
+            case 'HEX': return parseHexa.call( this, tkn.val );
             case 'STR': this._asm.push( parseString( tkn.val ) ); return true;
             case 'VAR': this._asm.push( tkn.val, Asm.GET ); return true;
-            case 'FUNC': return parseFunc.call( this, lex, tkn.val.toUpperCase() );
+            case 'FUNC': return parseFunc.call( this, lex, tkn.val.substr(1).toUpperCase() );
             case 'PAR_OPEN':
                 parse.call( this, lex, 'expression' );
                 tkn = lex.next('PAR_CLOSE');
@@ -150,6 +152,17 @@ function parse( lex ) {
         if (parser.call( this, lex )) return true;
     }
     return false;
+}
+
+
+function parseHexa( str ) {
+    str = str.substr(1).toUpperCase();
+    var hex = "0123456789ABCDEF";
+    var val = 0;
+    for (var i = 1; i < str.length; i++) {
+        val = val * 16 + hex.indexOf( str.charAt(i) );        
+    }
+    this._asm.push( val );
 }
 
 
@@ -210,9 +223,6 @@ function parseNEXT( lex ) {
 
 
 function parseFunc( lex, func ) {
-    // Remove the trailing parenthesis.
-    func = func.substr( 0, func.length - 1 );
-
     if (typeof Asm[func] !== 'function') {
         lex.fatal(_("unknown-function", func));
     }
@@ -220,9 +230,9 @@ function parseFunc( lex, func ) {
     var tkn;
     while (parse.call(this, lex, 'expression')) {
         argsCount++;
-        tkn = lex.next('COMMA', 'PAR_CLOSE');
+        tkn = lex.next('COMMA', 'PAR_CLOSE', 'EOL');
         if (!tkn) lex.fatal(_('missing-par-close'));
-        if (tkn.id == 'PAR_CLOSE') break;
+        if (tkn.id != 'COMMA') break;
     }
 
     this._asm.push( argsCount, Asm[func] );

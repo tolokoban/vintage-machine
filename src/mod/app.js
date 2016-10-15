@@ -58,11 +58,11 @@ exports.start = function() {
                     asm = new Asm( bytecode, kernel );
                 }
                 catch (ex) {
+                    Keyboard.preventDefault = false;
                     $.addClass( document.body, 'show' );
                     Message.error( ex.msg );
                     console.log("Unexpected char: " + codeEditor.value.charCodeAt( ex.pos ));
-                    codeEditor.focus();
-                    codeEditor.selectionStart = ex.pos;
+                    codeEditor.focus( ex.pos );
                 }
                 evt.preventDefault();
                 evt.stopPropagation();

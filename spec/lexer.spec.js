@@ -31,7 +31,7 @@ describe('Lexer', function() {
         PAR_OPEN: ["("],
         PAR_CLOSE: [")"],
         COMMA: [","],
-        FUNC: ["cos", "sin", "rnd", "max", "min", "abs", "floor", "ceil"],
+        FUNC: ["cos(", "sin(", "rnd(", "max("],
         INST: ["disk", "Disk", "DISK", "dISk"]
     };
     for( id in shouldData ) {

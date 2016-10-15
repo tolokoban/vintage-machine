@@ -12,7 +12,7 @@ describe('Module `asm`', function() {
 
     describe('Infinit loop', function() {
         it('should exit of an infinite loop after a predefined cost',
-           check([0, 1, Asm.ADD, 1, Asm.JMP], [2500, 1]));
+           check([0, 1, Asm.ADD, 1, Asm.JMP], [6666, 1]));
     });
     
     describe('GET / SET', function() {
@@ -34,7 +34,12 @@ describe('Module `asm`', function() {
 
     describe('DEC', function() {
         it('should decrement 7 to 6', check(
-            ["x", 7, Asm.SET, "x", Asm.DEC], [6]));
+            ["$x", 7, Asm.SET, "$x", Asm.DEC], [6]));
+    });
+
+    describe('INC', function() {
+        it('should increment 7 to 8', check(
+            ["$x", 7, Asm.SET, "$x", Asm.INC], [8]));
     });
 
     describe('JMP', function() {
