@@ -33,7 +33,7 @@ exports.start = function() {
     img.onerror = function(err) {
         console.error( err );
     };
-    img.src = "css/app/symbols.png";
+    img.src = "css/app/symbols.jpg";
 };
 
 
@@ -174,6 +174,5 @@ function save() {
     canvas.height = 256;
     var ctx = canvas.getContext('2d');
     ctx.putImageData(g_imageData, 0, 0);
-console.info("[page.sprite] g_imageData=...", g_imageData);
-    window.open( canvas.toDataURL('image/png', 1.0), "save" );
+    window.open(canvas.toDataURL('image/jpeg', 1.0), 'save');
 }
