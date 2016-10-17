@@ -37,7 +37,7 @@ exports.start = function() {
         kernel.render = function(time) {
             // Never stop the render loop. Otherwise, colors will stop blinking.
             asm.next();
-            kernel.sprite(0, 0, 0, 320, 240, 256, 256);
+            //kernel.sprite(0, 0, 0, 320, 240, 256, 256);
         };
 
         document.addEventListener('keydown', function(evt) {

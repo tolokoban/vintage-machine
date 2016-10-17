@@ -14,15 +14,18 @@ uniform float uniSrcY;
 uniform float uniSrcW;
 uniform float uniSrcH;
 
+const float UNIT = 1.0 / 256.0;
 
 void main() {
   float x = ( varUV.x * uniSrcW + uniSrcX ) / 256.0;
   float y = ( (1.0 - varUV.y) * uniSrcH + uniSrcY ) / 256.0;
-  float color = texture2D( texSymbols, vec2( x, y ) ).r * 256.0;
-  if (color < 1.0) {
+  float color = texture2D( texSymbols, vec2( x, y ) ).r;
+  if (color < UNIT) {
     gl_FragColor = vec4(0.0, 0.0, 0.0, 0.0);
   } else {
-    color =  color / 64.0;
+  // The palette index is coded on the RED composant of texPencils.
+    color = color * 4.0;
+    float pencil = texture2D( texPencils, vec2(.5 + color * 8.0, .5) ).r;
     gl_FragColor = vec4(color, color, color, 1.0);
   }
 }

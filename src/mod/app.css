@@ -19,11 +19,10 @@ canvas {
     position: absolute;
     left: 50%;
     top: 50%;
-    width: 128vh;
-    height: 96vh;
-    margin: -48vh -64vh;
+    width: 132vh;
+    height: 99vh;
+    margin: -49.5vh -66vh;
 }
-
 @media (orientation: portrait) {
     #CANVAS {
         width: 128vw;

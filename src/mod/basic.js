@@ -82,6 +82,7 @@ var PARSERS = {
         if (!tkn) return false;
         var ins = tkn.val.toUpperCase();
         switch (ins) {
+        case "LOCATE": return parseArgs.call( this, lex, "LOCATE", 2);
         case "SPRITE": return parseArgs.call( this, lex, "SPRITE", 1, 1, 1);
         case "MOVE": return parseArgs.call( this, lex, "MOVE", 0, 320, 240);
         case "MOVER": return parseArgs.call( this, lex, "MOVER", 0, 16, 0);
@@ -134,7 +135,9 @@ var PARSERS = {
             case 'HEX': return parseHexa.call( this, tkn.val );
             case 'STR': this._asm.push( parseString( tkn.val ) ); return true;
             case 'VAR': this._asm.push( tkn.val, Asm.GET ); return true;
-            case 'FUNC': return parseFunc.call( this, lex, tkn.val.substr(1).toUpperCase() );
+            case 'FUNC': return parseFunc.call( 
+                this, lex, tkn.val.substr(0, tkn.val.length - 1).toUpperCase() 
+            );
             case 'PAR_OPEN':
                 parse.call( this, lex, 'expression' );
                 tkn = lex.next('PAR_CLOSE');

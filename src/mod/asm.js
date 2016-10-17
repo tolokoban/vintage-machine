@@ -161,6 +161,7 @@ Asm.prototype.get = function( name ) {
     name = '' + name;
     var v = this.runtime.vars[name.trim().toLowerCase()];
     if( typeof v === 'undefined' ) v = 0;
+    this._cost += 2;
     return v;
 };
 
@@ -170,6 +171,7 @@ Asm.prototype.get = function( name ) {
 Asm.prototype.set = function( name, value ) {
     name = '' + name;
     this.runtime.vars[name.trim().toLowerCase()] = value;
+    this._cost += 3;
 };
 
 /**
@@ -681,7 +683,11 @@ Asm.MOD = function() {
     var b = this.popAsNumber();
     var a = this.popAsNumber();
     if (Math.abs(b) < PRECISION) this.push( 0 );
-    else this.push( a % b );
+    else {
+        var c = a % b;
+        if (c < 0) c += b;
+        this.push( c );
+    }
     return 1;
 };
 
@@ -792,8 +798,8 @@ Asm.LOCATE = function() {
     while( row < 0 ) row += 30;
     var col = Math.floor(this.popAsNumber()) % 40;
     while( col < 0 ) row += 40;
-    this.set("X", col * 16);
-    this.set("Y", row * 16);
+    this.set("X", (col << 4) + 8);
+    this.set("Y", 480 - ((row << 4) + 8));
     return 0;
 };
 
@@ -828,14 +834,14 @@ Asm.SPRITE = function() {
     var w = this.popAsNumber();
     var idx = this.popAsNumber();
     if (this.kernel) {
-        var x = idx & 15;
+        var x = (idx & 15) << 4;
         idx >>= 4;
-        var y = idx & 15;
+        var y = (idx & 15) << 4;
         idx >>= 4;
         var layer = idx;
         this.kernel.sprite(
             layer, x, y,
-            this.get("X"), this.get("Y"), w, h,
+            this.get("X"), this.get("Y"), w << 4, h << 4,
             this.get("SX"), this.get("SY"), this.get("R") );
     }
     return 3*w*h;
