@@ -18,10 +18,17 @@ exports.start = function() {
     var codeEditor = new Editor( document.getElementById('CODE') );
     codeEditor.value = Storage.get( 'default-code', Repository.load("sys.hello-world") );
     var img = new Image();
-    img.src = "css/app/symbols.jpg";
-    img.onload = function() {
+    var xhr = new XMLHttpRequest();
+    xhr.open("GET", "css/app/symbols.arr", true);
+    xhr.responseType = "arraybuffer";
+    xhr.onload = function (oEvent) {
+        var arrayBuffer = xhr.response;
+        if (!arrayBuffer) {
+            console.error("Unable to load `symbols.arr`!");
+            return;
+        }
         var canvas = document.getElementById( 'CANVAS' );
-        var kernel = new Kernel( canvas, img );
+        var kernel = new Kernel( canvas, new Uint8Array(arrayBuffer) );
         var code = Repository.load('sys.test');
         console.log(code);
         var basic = new Basic( code );
@@ -69,8 +76,5 @@ exports.start = function() {
             }
         }, true);
     };
-    img.onerror = function( err ) {
-        console.error( err );
-        console.error("Unable to load image `" + img.src + "`!");
-    };
+    xhr.send( null );
 };

@@ -6,6 +6,14 @@ body {
     overflow: hidden;
 }
 
+body > * {
+    vertical-align: top;
+}
+
+canvas {
+    display: inline-block;
+}
+
 #CANVAS {
     background: transparent;
     position: absolute;

@@ -82,6 +82,9 @@ var PARSERS = {
         if (!tkn) return false;
         var ins = tkn.val.toUpperCase();
         switch (ins) {
+        case "SPRITE": return parseArgs.call( this, lex, "SPRITE", 1, 1, 1);
+        case "MOVE": return parseArgs.call( this, lex, "MOVE", 0, 320, 240);
+        case "MOVER": return parseArgs.call( this, lex, "MOVER", 0, 16, 0);
         case "FRAME": return parseArgs.call( this, lex, "FRAME", 0, 1);
         case "POINT": return parseArgs.call( this, lex, "POINT", 2, ["pen0", Asm.GET]);
         case "TRI": return parseArgs.call( this, lex, "TRI", 0);

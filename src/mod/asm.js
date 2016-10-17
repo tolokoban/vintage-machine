@@ -69,8 +69,11 @@ var Asm = function( bytecode, kernel, runtime ) {
         // Vars are stored lowercase.
         vars: {
             pen: [0, 1, 2, 3, 4, 5, 6, 7],
-            locateX: 0,
-            locateY: 0,
+            X: 0,
+            Y: 0,
+            SX: 1,
+            SY: 1,
+            R: 0,
             cursor: 1
         }
     };
@@ -779,4 +782,61 @@ Asm.FOR = function() {
         this._cursor = jmp;
     }
     return 5;
+};
+
+/**
+ * LOCATE( col, row )
+ */
+Asm.LOCATE = function() {
+    var row = Math.floor(this.popAsNumber()) % 30;
+    while( row < 0 ) row += 30;
+    var col = Math.floor(this.popAsNumber()) % 40;
+    while( col < 0 ) row += 40;
+    this.set("X", col * 16);
+    this.set("Y", row * 16);
+    return 0;
+};
+
+/**
+ * MOVE( x, y )
+ */
+Asm.MOVE = function() {
+    var y = Math.floor(this.popAsNumber());
+    var x = Math.floor(this.popAsNumber());
+    this.set("X", x);
+    this.set("Y", y);
+    return 0;
+};
+
+/**
+ * MOVER( x, y )
+ * More relative.
+ */
+Asm.MOVER = function() {
+    var y = Math.floor(this.popAsNumber());
+    var x = Math.floor(this.popAsNumber());
+    this.set("X", x + this.get("X"));
+    this.set("Y", y + this.get("Y"));
+    return 0;
+};
+
+/**
+ * SPRITE( index[, width, height] )
+ */
+Asm.SPRITE = function() {
+    var h = this.popAsNumber();
+    var w = this.popAsNumber();
+    var idx = this.popAsNumber();
+    if (this.kernel) {
+        var x = idx & 15;
+        idx >>= 4;
+        var y = idx & 15;
+        idx >>= 4;
+        var layer = idx;
+        this.kernel.sprite(
+            layer, x, y,
+            this.get("X"), this.get("Y"), w, h,
+            this.get("SX"), this.get("SY"), this.get("R") );
+    }
+    return 3*w*h;
 };
