@@ -112,7 +112,7 @@ Asm.prototype.next = function( runtime ) {
         if (this._cursor >= this._bytecode.length) return false;
         cmd = this._bytecode[this._cursor++];
         if (typeof cmd === 'function') {
-            this._cost += cmd.call( this );
+            this._cost += cmd.call( this ) || 0;
         } else {
             this._cost++;
             this.push( cmd );
@@ -441,6 +441,18 @@ Asm.RND = function() {
         }
     }
     return 2;
+};
+
+Asm.WAIT = function() {
+    var last = Keyboard.last();
+    if (!last) {
+        // Wait a frame an loop.
+        this._cursor--;
+        return MAX_COST - this._cost;
+    }
+    
+    this.push( last.key );
+    return 0;
 };
 
 /**

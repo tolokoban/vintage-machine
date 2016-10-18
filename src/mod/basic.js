@@ -37,7 +37,8 @@ var FIXED_ARGS = {
     IIF: 3,
     LEN: 1,
     NEG: 1,
-    SHIFT: 1
+    SHIFT: 1,
+    WAIT: 0
 };
 
 
@@ -164,7 +165,10 @@ var PARSERS = {
             case 'VAR': this._asm.push( tkn.val, Asm.GET ); return true;
             case 'FUNC':
                 var name = tkn.val.substr(0, tkn.val.length - 1).toUpperCase();                
-                return parseFunc.call( this, lex, name, FIXED_ARGS[name] );
+                var ret = parseFunc.call( this, lex, name, FIXED_ARGS[name] );
+                if (!ret) return false;
+                //if (name == 'WAIT') return parseFuncWAIT.call( this, lex );
+                return true;
             case 'PAR_OPEN':
                 parse.call( this, lex, 'expression' );
                 tkn = lex.next('PAR_CLOSE');
@@ -316,13 +320,23 @@ function parseFunc( lex, func, fixedArgsCount ) {
         if (tkn.id != 'COMMA') break;
     }
 
+    if (argsCount == 0) {
+        if (!lex.next('PAR_CLOSE')) {
+            lex.fatal(_('missing-par-close'));
+        }
+    }
+
     if (typeof fixedArgsCount === 'number') {
         if (fixedArgsCount != argsCount) {
             lex.fatal(_('fixed-args', func, fixedArgsCount, argsCount));
         }
+    } else {
+        // Les fonctions qui attendent un nombre variable d'arguments,
+        // on besoin de connaitre ce nombre.
+        this._ams.push( argsCount );
     }
     
-    this._asm.push( argsCount, Asm[func] );
+    this._asm.push( Asm[func] );
     return true;
 }
 
