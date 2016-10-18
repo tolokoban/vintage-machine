@@ -90,7 +90,7 @@ var PARSERS = {
         case "POINT": return parseArgs.call( this, lex, "POINT", 2, ["pen0", Asm.GET]);
         case "TRI": return parseArgs.call( this, lex, "TRI", 0);
         case "TRIANGLE": return parseArgs.call( this, lex, "TRIANGLE", 0, 0,0,320,480,640,0);
-        case "BOX": return parseArgs.call( this, lex, "BOX", 0, 0,0,640,480);
+        case "BOX": return parseFunc.call( this, lex, "BOX");
         case "PEN": return parseFunc.call( this, lex, "PEN");
         case "PEN0": return parseArgs.call( this, lex, "PEN0", 1);
         case "PEN1": return parseArgs.call( this, lex, "PEN1", 1);
@@ -101,7 +101,7 @@ var PARSERS = {
         case "INK": return parseArgs.call( this, lex, "INK", 3, -1 );
         }
 
-        console.error("Instruction " + tkn.val.toUpperCase() + " has not been implemented!");
+        lex.fatal(_('unknown-instr', tkn.val.toUpperCase()));
         return false;
     },
     affectation: function( lex ) {

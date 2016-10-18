@@ -20,12 +20,14 @@ void main() {
   float x = ( varUV.x * uniSrcW + uniSrcX ) / 256.0;
   float y = ( (1.0 - varUV.y) * uniSrcH + uniSrcY ) / 256.0;
   float color = texture2D( texSymbols, vec2( x, y ) ).r;
+  // color is between 0 and 7 * UNIT.
   if (color < UNIT) {
     gl_FragColor = vec4(0.0, 0.0, 0.0, 0.0);
   } else {
   // The palette index is coded on the RED composant of texPencils.
-    color = color * 4.0;
-    float pencil = texture2D( texPencils, vec2(.5 + color * 8.0, .5) ).r;
-    gl_FragColor = vec4(color, color, color, 1.0);
+    float pencil = texture2D( texPencils, vec2(color * 64.0, .5) ).r;
+    // pencil is between 0 and 63 UNIT.
+    pencil = pencil * 4.0;
+    gl_FragColor = vec4(pencil, pencil, pencil, 1.0);
   }
 }

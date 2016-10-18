@@ -214,7 +214,10 @@ var SQUARE = new Float32Array([ -.5, -.5, +.5, -.5, -.5, +.5, +.5, +.5 ]);
 /**
  * @return void
  */
-Kernel.prototype.sprite = function(layer, xs, ys, xd, yd, w, h) {
+Kernel.prototype.sprite = function(layer, xs, ys, xd, yd, w, h, scaleX, scaleY, rotation) {
+    if( typeof scaleX === 'undefined' ) scaleX = 1;
+    if( typeof scaleY === 'undefined' ) scaleY = 1;
+    if( typeof rotation === 'undefined' ) rotation = 0;
     if( typeof w === 'undefined' ) w = 16;
     if( typeof h === 'undefined' ) h = 16;
 
@@ -242,6 +245,8 @@ Kernel.prototype.sprite = function(layer, xs, ys, xd, yd, w, h) {
     prg.$texPencils = 1;
     gl.activeTexture(gl.TEXTURE1);
     gl.bindTexture( gl.TEXTURE_2D, this._texPencils );
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 8, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, this._pencils);
+    console.info("[kernel] this._pencils[4]=...", this._pencils[4]);
 
     gl.bindBuffer( gl.ARRAY_BUFFER, this._bufVertexAttribs );
     var datAttributes = SQUARE;
@@ -264,7 +269,7 @@ Kernel.prototype.sprite = function(layer, xs, ys, xd, yd, w, h) {
 Kernel.prototype.pen = function( pencils ) {
     var arr = this._pencils;
     pencils.forEach(function (pen, idx) {
-        arr[4 * idx] = pen;
+        arr[4 * idx + 4] = pen;
     });
 };
 
@@ -384,14 +389,14 @@ function draw( type ) {
  */
 function initPencils() {
     this._pencils = new Uint8Array([
-        0, 0, 0, 0,
-        4, 0, 0, 0,
-        8, 0, 0, 0,
-        12, 0, 0, 0,
-        16, 0, 0, 0,
-        20, 0, 0, 0,
-        24, 0, 0, 0,
-        28, 0, 0, 0
+        0, 0, 0, 255,
+        1, 0, 0, 255,
+        2, 0, 0, 255,
+        3, 0, 0, 255,
+        4, 0, 0, 255,
+        5, 0, 0, 255,
+        6, 0, 0, 255,
+        7, 0, 0, 255
     ]);
 }
 

@@ -281,13 +281,47 @@ Asm.TRIANGLE = function() {
 };
 
 /**
+ * BOX()
+ * BOX( size )
+ * BOX( w, h )
+ * BOX( x, y, size )
  * BOX( x, y, w, h )
  */
 Asm.BOX = function() {
-    var h = this.popAsNumber();
-    var w = this.popAsNumber();
-    var y = this.popAsNumber();
-    var x = this.popAsNumber();
+    var x, y, w, h, count = this.popAsNumber();
+    if (count == 0) {
+        x = 0;
+        y = 0;
+        w = 640;
+        h = 480;
+    }
+    else if (count == 1) {
+        w = this.popAsNumber();
+        h = w;
+        x = this.get("X") - w/2;
+        y = this.get("Y") - h/2;
+    }
+    else if (count == 2) {
+        h = this.popAsNumber();
+        w = this.popAsNumber();
+        x = this.get("X") - w/2;
+        y = this.get("Y") - h/2;
+    }
+    else if (count == 3) {
+        h = this.popAsNumber();
+        w = h;
+        y = this.popAsNumber();
+        x = this.popAsNumber();
+    }
+    else {
+        while (count --> 4) {
+            this.pop();
+        }
+        h = this.popAsNumber();
+        w = this.popAsNumber();
+        y = this.popAsNumber();
+        x = this.popAsNumber();        
+    }
     var color = this.get("pen")[1];
     if (this.kernel) {
         this.kernel.point( x, y, color );
@@ -296,7 +330,7 @@ Asm.BOX = function() {
         this.kernel.point( x + w, y + h, color );
         this.kernel.triStrip();
     }
-    return 30;
+    return w * h / 256;
 };
 
 /**
