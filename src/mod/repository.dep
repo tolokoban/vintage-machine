@@ -1,5 +1,6 @@
 {
     "var": {
+        "sys.startup": "basic/startup.bas",
         "sys.test": "basic/test.bas",
         "sys.hello-world": "basic/hello-world.bas"
     }

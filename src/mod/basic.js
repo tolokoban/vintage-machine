@@ -114,8 +114,10 @@ var PARSERS = {
         case "POINT": return parseArgs.call( this, lex, "POINT", 2, ["pen0", Asm.GET]);
         case "TRI": return parseArgs.call( this, lex, "TRI", 0);
         case "TRIANGLE": return parseArgs.call( this, lex, "TRIANGLE", 0, 0,0,320,480,640,0);
-        case "BOX": return parseFunc.call( this, lex, "BOX");
-        case "PEN": return parseFunc.call( this, lex, "PEN");
+        case "BOX": return parseVarArgs.call( this, lex, "BOX");
+        case "CLS": return parseVarArgs.call( this, lex, "CLS");
+        case "PEN": return parseVarArgs.call( this, lex, "PEN");
+        case "PAPER": return parseArgs.call( this, lex, "PAPER", 1);
         case "PEN0": return parseArgs.call( this, lex, "PEN0", 1);
         case "PEN1": return parseArgs.call( this, lex, "PEN1", 1);
         case "PEN2": return parseArgs.call( this, lex, "PEN2", 1);
@@ -276,6 +278,12 @@ function parsePRINT( lex ) {
         lex.fatal(_('expected-eol'));
     }
 
+    pushPrintBody.call( this );
+    return true;
+}
+
+
+function pushPrintBody() {
     var lblBegin = this.newLabel();
     var lblEnd = this.newLabel();
     
@@ -292,8 +300,6 @@ function parsePRINT( lex ) {
     this._asm.push( 0, [lblBegin], Asm.JLT );
     this._asm.push( [lblBegin], Asm.JMP );
     this.setLabel( lblEnd );
-
-    return true;
 }
 
 
@@ -316,6 +322,24 @@ function parseFunc( lex, func, fixedArgsCount ) {
         }
     }
     
+    this._asm.push( argsCount, Asm[func] );
+    return true;
+}
+
+
+function parseVarArgs( lex, func ) {
+    if (typeof Asm[func] !== 'function') {
+        lex.fatal(_("unknown-instr", func));
+    }
+    var argsCount = 0;
+    var tkn;
+    while (parse.call(this, lex, 'expression')) {
+        argsCount++;
+        tkn = lex.next('COMMA', 'EOL');
+        if (!tkn) lex.fatal(_('unexpected-token'));
+        if (tkn.id != 'COMMA') break;
+    }
+
     this._asm.push( argsCount, Asm[func] );
     return true;
 }

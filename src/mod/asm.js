@@ -69,11 +69,11 @@ var Asm = function( bytecode, kernel, runtime ) {
         // Vars are stored lowercase.
         vars: {
             pen: [0, 1, 2, 3, 4, 5, 6, 7],
-            X: 0,
-            Y: 0,
-            SX: 1,
-            SY: 1,
-            R: 0,
+            x: 8,
+            y: 472,
+            sx: 1,
+            sy: 1,
+            r: 0,
             cursor: 1
         }
     };
@@ -358,6 +358,20 @@ Asm.TRIANGLE = function() {
  * BOX( x, y, w, h )
  */
 Asm.BOX = function() {
+    return box.call( this, this.get("pen")[1]);
+};
+/**
+ * CLS()
+ * CLS( size )
+ * CLS( w, h )
+ * CLS( x, y, size )
+ * CLS( x, y, w, h )
+ */
+Asm.CLS = function() {
+    return box.call( this, this.get("pen")[0]);
+};
+
+function box(color) {
     var x, y, w, h, count = this.popAsNumber();
     if (count == 0) {
         x = 0;
@@ -392,7 +406,6 @@ Asm.BOX = function() {
         y = this.popAsNumber();
         x = this.popAsNumber();        
     }
-    var color = this.get("pen")[1];
     if (this.kernel) {
         this.kernel.point( x, y, color );
         this.kernel.point( x + w, y, color );
@@ -488,8 +501,19 @@ Asm.PEN = function() {
     var count = this.popAsNumber();
     var pen = this.get( 'pen' );
     while (count --> 0) {
-        pen[(count + 80001) % 8] = Math.floor(this.popAsNumber()) % 64;
+        pen[(count + 8000001) % 8] = Math.floor(this.popAsNumber()) % 64;
     }
+    if (this.kernel) this.kernel.pen( pen );
+    return 1;
+};
+
+/**
+ * PAPER( color )
+ * Equivalent to PEN0( color )
+ */
+Asm.PAPER = function() {
+    var pen = this.get('pen');
+    pen[0] = Math.floor( this.popAsNumber() ) % 64;
     if (this.kernel) this.kernel.pen( pen );
     return 1;
 };
