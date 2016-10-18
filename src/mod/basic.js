@@ -75,6 +75,21 @@ Basic.prototype.clear = function() {
     this._context = [];
 };
 
+/**
+ * Create a new label name.
+ */
+Basic.prototype.newLabel = function() {
+    return this._labelId++;
+};
+
+/**
+ * Set a `label` at the current position.
+ */
+Basic.prototype.setLabel = function( label ) {
+    this._labels[label] = this._asm.length;
+};
+
+
 
 var PARSERS = {
     instruction: function( lex ) {
@@ -99,6 +114,7 @@ var PARSERS = {
         case "FOR": return parseFOR.call( this, lex );
         case "NEXT": return parseNEXT.call( this, lex );
         case "INK": return parseArgs.call( this, lex, "INK", 3, -1 );
+        case "PRINT": return parsePRINT.call( this, lex, "PRINT" );
         }
 
         lex.fatal(_('unknown-instr', tkn.val.toUpperCase()));
@@ -189,11 +205,11 @@ function parseFOR( lex ) {
     var name = tkn.val;
     if (!lex.next('EQUAL')) lex.fatal(_('missing-equal'));
     // Label of the FOR
-    var labelA = this._labelId++;
+    var labelA = this.newLabel();
     // Label of the NEXT
-    var labelB = this._labelId++;
+    var labelB = this.newLabel();
     this._asm.push( name, Asm.ERASE );
-    this._labels[labelA] = this._asm.length;
+    this.setLabel( labelA );
     this._context.push({ type: "FOR", labelA: labelA, labelB: labelB });
     this._asm.push( name );
     // Lower bound
@@ -220,11 +236,38 @@ function parseNEXT( lex ) {
     if (!ctx) lex.fatal(_('unexpected-next'));
     if ( ctx.type == 'FOR' ) {
         this._asm.push( [ctx.labelA], Asm.JMP );
-        this._labels[ctx.labelB] = this._asm.length;
+        this.setLabel( ctx.labelB );
     } else {
         lex.fatal(_('unexpected-next'));
     }
     return true;
+}
+
+
+/**
+ * PRINT text[, pause]
+ * If pause is  null, write at once. Otherwise, letters  will be drawn
+ * one  after  the  over,  waiting  for  `pause`  frames  between  two
+ * consecutive symbols.
+ */
+function parsePRINT( lex ) {
+    if (!parse.call(this, lex, 'expression')) {
+        lex.fatal(_('print-missing-arg'));
+    }
+    this.asm.push( "print.txt", Asm.SET );
+    if (lex.next('COMMA')) {
+        if (!parse.call(this, lex, 'expression')) {
+            lex.fatal(_('print-missing-arg'));
+        }
+        this.asm.push( "print.frm", Asm.SET );        
+    } else {
+        this.asm.push( "print.frm", Asm.SET );
+    }    
+    if (!lex.next('EOL')) {
+        lex.fatal(_('expected-eol'));
+    }
+
+    var lblBegin = this.newLabel();
 }
 
 

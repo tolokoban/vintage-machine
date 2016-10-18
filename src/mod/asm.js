@@ -155,6 +155,28 @@ Asm.prototype.popAsNumber = function() {
 };
 
 /**
+ * Les appels de fonctions se font  en plaçant les arguments ainsi que
+ * le nombre d'arguments  sur la pile.  `popArgs`  retourne un tbaleau
+ * avec  les  arguments  dans  l'ordre,  en  ignorant  si  besoin  les
+ * arguments en trop.
+ */
+Asm.prototype.popArgs = function( maxCount ) {
+    if( typeof maxCount === 'undefined' ) maxCount = Number.MAX_VALUE;
+    maxCount = Math.max( 0, Math.floor( maxCount ) );
+    var count = this.popAsNumber();
+    while (count --> maxCount) {
+        // On ignore les arguments en trop.
+        this.pop();
+    }
+    var args = [];
+    while (count --> 0) {
+        args.unshift( this.pop() );
+    }
+    return args;
+};
+
+
+/**
  * Read a variable.
  */
 Asm.prototype.get = function( name ) {
@@ -203,6 +225,42 @@ Asm.prototype.asNumber = function( v ) {
     if (typeof v === 'number') return v;
     var n = parseFloat( v );
     return isNaN( n ) ? 0 : n;
+};
+
+/**
+ * LEN( str )
+ */
+Asm.LEN = function() {
+    var args = this.popArgs(1);
+    var arg = args[0];
+    var result = 0;
+    if (Array.isArray( arg ) || typeof arg === 'string') result = arg.length;
+    else if (typeof arg === 'number') result = ("" + arg).length;
+    this.push( result );
+    return 1;
+};
+
+/**
+ * SHIFT( $var )
+ */
+Asm.SHIFT = function() {
+    var args = this.popArgs(1);
+    var varName = args[0];
+    var value = this.get(varName);
+    if (Array.isArray( value )) {
+        if (value.length > 0) {
+            this.push( value .shift() );
+            this.set( varName, value );
+        } else {
+            this.push( 0 );
+        }
+    }
+    else {
+        value = "" + value;
+        this.push( value.charAt(0) );
+        this.set( varName, value.substr( 1 ) );
+    }
+    return 1;
 };
 
 /**
