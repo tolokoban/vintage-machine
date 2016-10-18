@@ -2,11 +2,11 @@ exports.config={
     name:"vintage-machine",
     description:"Virtual old-fashion machine to learn basic concepts of computer programming.",
     author:"tolokoban",
-    version:"0.0.2",
+    version:"0.0.4",
     major:0,
     minor:0,
-    revision:2,
-    date:new Date(2016,9,6,23,5,19)
+    revision:4,
+    date:new Date(2016,9,18,20,30,6)
 };
 var currentLang = null;
 exports.lang = function(lang) {

@@ -34,6 +34,7 @@ var BINOP = {
 var FIXED_ARGS = {
     ABS: 1,
     ASC: 1,
+    ASK: 0,
     IIF: 3,
     LEN: 1,
     NEG: 1,

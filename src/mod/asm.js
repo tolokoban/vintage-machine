@@ -228,6 +228,15 @@ Asm.prototype.asNumber = function( v ) {
 };
 
 /**
+ * @return void
+ */
+Asm.prototype.skipFrame = function( nbFrames ) {
+    if( typeof nbFrames === 'undefined' ) nbFrames = 1;
+    this._cost = MAX_COST * nbFrames;
+};
+
+
+/**
  * LEN( str )
  */
 Asm.LEN = function() {
@@ -443,6 +452,9 @@ Asm.RND = function() {
     return 2;
 };
 
+/**
+ * Attend qu'une touche soit frappée et place sa KEY sur la pile.
+ */
 Asm.WAIT = function() {
     var last = Keyboard.last();
     if (!last) {
@@ -453,6 +465,46 @@ Asm.WAIT = function() {
     
     this.push( last.key );
     return 0;
+};
+
+
+Asm.ASK = function() {
+    if (!this.kernel) return 0;
+
+    var last = Keyboard.last();
+    if (!last) {
+        // Wait a frame an loop.
+        this._cursor--;
+        return MAX_COST - this._cost;
+    }
+    
+    if (this.get("ask.txt") === 0) {
+        this.set("ask.txt", '');
+        this.set("ask.cursor", 0);        
+    }
+    var key = last.key;
+    if (key.length == 1) {
+        // C'est un caractère à écrire.
+        if (!Keyboard.test("SHIFT")) key = key.toLowerCase();
+        this.set("ask.txt", this.get("ask.txt") + key);
+        var asc = key.charCodeAt(0);
+        this.kernel.sprite(0, 16 * (asc % 16), 16 * Math.floor( asc / 16 ), 
+                           this.get("X"), this.get("Y"),
+                           16, 16, 1, 1, 0);
+        var x = this.get("X") +16;
+        if (x > 639) {
+            x -= 640;
+            this.set("Y", this.get("Y") - 16);
+        }
+        this.set("X", x);
+    } else if (key == 'ENTER') {
+        this.push(this.get("ask.txt"));
+        this.set("X", 8);
+        this.set("Y", this.get("Y") - 16);
+        return 0;
+    }
+    this._cursor--;
+    return MAX_COST - this._cost;
 };
 
 /**
