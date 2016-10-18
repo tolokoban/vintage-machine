@@ -31,6 +31,15 @@ var BINOP = {
     '>': Asm.GT
 };
 
+var FIXED_ARGS = {
+    ABS: 1,
+    ASC: 1,
+    IIF: 3,
+    LEN: 1,
+    NEG: 1,
+    SHIFT: 1
+};
+
 
 function Basic( code ) {
     this.clear();    
@@ -115,6 +124,7 @@ var PARSERS = {
         case "NEXT": return parseNEXT.call( this, lex );
         case "INK": return parseArgs.call( this, lex, "INK", 3, -1 );
         case "PRINT": return parsePRINT.call( this, lex, "PRINT" );
+        case "DEBUGGER": return parseArgs.call( this, lex, "DEBUGGER", 0);
         }
 
         lex.fatal(_('unknown-instr', tkn.val.toUpperCase()));
@@ -124,12 +134,11 @@ var PARSERS = {
         var tkn = lex.next('VAR');
         if (!tkn) return false;
         var name = tkn.val;
-        this._asm.push( name );
         if (!lex.next('EQUAL')) {
             lex.fatal( _('missing-equal') );
         }
         if (!parse.call( this, lex, 'expression' )) lex.fatal(_('missing-expression'));
-        this._asm.push( Asm.SET );
+        this._asm.push( name, Asm.SET );
         return true;
     },
     expression: function( lex ) {
@@ -151,9 +160,9 @@ var PARSERS = {
             case 'HEX': return parseHexa.call( this, tkn.val );
             case 'STR': this._asm.push( parseString( tkn.val ) ); return true;
             case 'VAR': this._asm.push( tkn.val, Asm.GET ); return true;
-            case 'FUNC': return parseFunc.call( 
-                this, lex, tkn.val.substr(0, tkn.val.length - 1).toUpperCase() 
-            );
+            case 'FUNC':
+                var name = tkn.val.substr(0, tkn.val.length - 1).toUpperCase();                
+                return parseFunc.call( this, lex, name, FIXED_ARGS[name] );
             case 'PAR_OPEN':
                 parse.call( this, lex, 'expression' );
                 tkn = lex.next('PAR_CLOSE');
@@ -254,24 +263,41 @@ function parsePRINT( lex ) {
     if (!parse.call(this, lex, 'expression')) {
         lex.fatal(_('print-missing-arg'));
     }
-    this.asm.push( "print.txt", Asm.SET );
+    this._asm.push( "print.txt", Asm.SET );
     if (lex.next('COMMA')) {
         if (!parse.call(this, lex, 'expression')) {
             lex.fatal(_('print-missing-arg'));
         }
-        this.asm.push( "print.frm", Asm.SET );        
+        this._asm.push( "print.frm", Asm.SET );        
     } else {
-        this.asm.push( "print.frm", Asm.SET );
+        this._asm.push( 0, "print.frm", Asm.SET );
     }    
     if (!lex.next('EOL')) {
         lex.fatal(_('expected-eol'));
     }
 
     var lblBegin = this.newLabel();
+    var lblEnd = this.newLabel();
+    
+    this.setLabel( lblBegin );
+    this._asm.push( "print.txt", Asm.GET, Asm.LEN, [lblEnd], Asm.JZE );
+    this._asm.push( "print.txt", Asm.SHIFT, Asm.ASC, 1, 1, Asm.SPRITE );
+    this._asm.push( "print.frm", Asm.GET, Asm.FRAME );
+    this._asm.push( 16, "X", Asm.VARADD );
+    this._asm.push( 640, [lblBegin], Asm.JLT );
+    this._asm.push( "X", Asm.GET, -640, Asm.ADD, "X", Asm.SET );
+    this._asm.push( -16, "Y", Asm.VARADD );
+    this._asm.push( 0, [lblBegin], Asm.JGT );
+    this._asm.push( "Y", Asm.GET, 480, Asm.ADD, "Y", Asm.SET );
+    this._asm.push( 0, [lblBegin], Asm.JLT );
+    this._asm.push( [lblBegin], Asm.JMP );
+    this.setLabel( lblEnd );
+
+    return true;
 }
 
 
-function parseFunc( lex, func ) {
+function parseFunc( lex, func, fixedArgsCount ) {
     if (typeof Asm[func] !== 'function') {
         lex.fatal(_("unknown-function", func));
     }
@@ -284,6 +310,12 @@ function parseFunc( lex, func ) {
         if (tkn.id != 'COMMA') break;
     }
 
+    if (typeof fixedArgsCount === 'number') {
+        if (fixedArgsCount != argsCount) {
+            lex.fatal(_('fixed-args', func, fixedArgsCount, argsCount));
+        }
+    }
+    
     this._asm.push( argsCount, Asm[func] );
     return true;
 }

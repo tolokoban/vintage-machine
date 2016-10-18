@@ -1,16 +1,18 @@
-# Bienvenue !
+PEN 0
+BOX
 
+LOCATE 0,0
 
-$w = 640 / 8
-$h = 480 / 8
-$color = 0
+PEN 7
+PRINT "Bienvenue !  Je suis ", 1
+PEN 3
+PRINT "TLK-64", 5
+PEN 7
+PRINT ", ton ordinateur personnel.", 1
 
-FOR $y = 0 TO 479 STEP $h
-   FOR $x = 0 TO 639 STEP $w
-      PEN $color
-      BOX $x, $y, $w, $h
-      $color = $color + 1
-      FRAME
-   NEXT
-NEXT
-
+LOCATE 0,4
+PRINT "Appuie sur la touche ", 1
+PEN 16
+PRINT "F1"
+PEN 7
+PRINT " pour commencer.", 1

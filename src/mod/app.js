@@ -29,7 +29,7 @@ exports.start = function() {
         }
         var canvas = document.getElementById( 'CANVAS' );
         var kernel = new Kernel( canvas, new Uint8Array(arrayBuffer) );
-        var code = Repository.load('sys.test');
+        var code = Repository.load('sys.hello-world');
         console.log(code);
         var basic = new Basic( code );
         var bytecode = basic.asm();
@@ -37,7 +37,6 @@ exports.start = function() {
         kernel.render = function(time) {
             // Never stop the render loop. Otherwise, colors will stop blinking.
             asm.next();
-            //kernel.sprite(0, 0, 0, 320, 240, 256, 256);
         };
 
         document.addEventListener('keydown', function(evt) {

@@ -231,8 +231,7 @@ Asm.prototype.asNumber = function( v ) {
  * LEN( str )
  */
 Asm.LEN = function() {
-    var args = this.popArgs(1);
-    var arg = args[0];
+    var arg = this.pop();
     var result = 0;
     if (Array.isArray( arg ) || typeof arg === 'string') result = arg.length;
     else if (typeof arg === 'number') result = ("" + arg).length;
@@ -241,11 +240,24 @@ Asm.LEN = function() {
 };
 
 /**
+ * ASC( str )
+ */
+Asm.ASC = function() {
+    var arg = this.pop();
+    if (typeof arg === 'number' || typeof arg === 'string') {
+        var c = ("" + arg).charCodeAt(0);
+        this.push( c );
+    } else {
+        this.push( 0 );
+    }
+    return 0;
+};
+
+/**
  * SHIFT( $var )
  */
 Asm.SHIFT = function() {
-    var args = this.popArgs(1);
-    var varName = args[0];
+    var varName = "" + this.pop();
     var value = this.get(varName);
     if (Array.isArray( value )) {
         if (value.length > 0) {
@@ -433,7 +445,7 @@ Asm.DEC = function() {
 
 /**
  * INC( name )
- * Substract 1 to the variable `name` and push the result on the stack.
+ * Add 1 to the variable `name` and push the result on the stack.
  * Usefull for loops.
  */
 Asm.INC = function() {
@@ -441,6 +453,31 @@ Asm.INC = function() {
     var val = this.get( name ) + 1;
     this.set( name, val );
     this.push( val );
+    return 1;
+};
+
+/**
+ * VARADD( name, value )
+ * Add `value` to the variable `name` and push the result on the stack.
+ */
+Asm.VARADD = function() {
+    var name = "" + this.pop();
+    var value = this.pop();
+    var out = this.get( name );
+    if (Array.isArray( out )) {
+        if (Array.isArray( value )) {
+            // L'ajout de deux tableaux force la concaténation des deux.
+            out.push.apply( out, value );
+        } else {
+            // Sinon, on ajoute l'élément à la fin du tableau.
+            out.push( value );
+        }
+    }
+    else {
+        out += value;
+    }
+    this.set( name, out );
+    this.push( out );
     return 1;
 };
 
@@ -505,17 +542,17 @@ Asm.GET = function() {
     var name = "" + this.pop();
     var value = this.get(name);
     this.push( value );
-    return 2;
+    return 0;
 };
 
 /**
- * SET( name, value )
+ * SET( value, name )
  */
 Asm.SET = function() {
-    var value = this.pop();
     var name = "" + this.pop();
+    var value = this.pop();
     this.set( name, value );
-    return 3;
+    return 0;
 };
 
 /**
@@ -555,55 +592,64 @@ Asm.JNZ = function() {
 };
 
 /**
- * JGT( n, addr )
- * Jump to address `addr` if `n` is greater than zero.
+ * JGT( a, b, addr )
+ * Jump to address `addr` if `a` is greater than `b`.
  */
 Asm.JGT = function() {
     var addr = this.popAsNumber();
-    var n = this.popAsNumber();
-    if (n > 0) {
+    var b = this.popAsNumber();
+    var a = this.popAsNumber();
+    if (a > b) {
         this._cursor = addr;
     }
-    return 1;
+    return 0;
 };
 
 /**
- * JLT( n, addr )
- * Jump to address `addr` if `n` is lower than zero.
+ * JLT( a, b, addr )
+ * Jump to address `addr` if `a` is lower than `b`.
  */
 Asm.JLT = function() {
     var addr = this.popAsNumber();
-    var n = this.popAsNumber();
-    if (n < 0) {
+    var b = this.popAsNumber();
+    var a = this.popAsNumber();
+    if (a < b) {
         this._cursor = addr;
     }
-    return 1;
+    return 0;
 };
 
 /**
- * JGT( n, addr )
- * Jump to address `addr` if `n` is greater than zero.
+ * JGT( a, b, addr )
+ * Jump to address `addr` if `a` is greater or equal than `b`.
  */
 Asm.JGE = function() {
     var addr = this.popAsNumber();
-    var n = this.popAsNumber();
-    if (n >= 0) {
+    var b = this.popAsNumber();
+    var a = this.popAsNumber();
+    if (a >= b) {
         this._cursor = addr;
     }
-    return 1;
+    return 0;
 };
 
 /**
- * JLT( n, addr )
- * Jump to address `addr` if `n` is lower than zero.
+ * JLE( a, b, addr )
+ * Jump to address `addr` if `a` is lower or equal than `b`.
  */
 Asm.JLE = function() {
     var addr = this.popAsNumber();
-    var n = this.popAsNumber();
-    if (n <= 0) {
+    var b = this.popAsNumber();
+    var a = this.popAsNumber();
+    if (a <= b) {
         this._cursor = addr;
     }
-    return 1;
+    return 0;
+};
+
+Asm.DEBUGGER = function() {
+    debugger;
+    return 0;
 };
 
 /**
@@ -846,14 +892,13 @@ Asm.KEY = function() {
 /**
  * ?( cond, true-value, false-value )
  */
-Asm['?'] = function() {
-    var count = this.popAsNumber();
-    var b = this.pop();
-    var a = this.pop();
+Asm.IIF = function() {
+    var falseVal = this.pop();
+    var trueVal = this.pop();
     var cond = this.popAsNumber();
-    if (cond == 0) this.push( b );
-    else this.push( a );
-    return 1;
+    if (cond == 0) this.push( falseVal );
+    else this.push( trueVal );
+    return 0;
 };
 
 /**
