@@ -242,6 +242,42 @@ Asm.LEN = function() {
 };
 
 /**
+ * RGB( red, green, blue )
+ * Values between 0 and 15.
+ */
+Asm.RGB = function() {
+    var b = Math.floor(this.popAsNumber()) % 16;
+    while (b < 0) b += 16;
+    var g = Math.floor(this.popAsNumber()) % 16;
+    while (g < 0) g += 16;
+    var r = Math.floor(this.popAsNumber()) % 16;
+    while (r < 0) r += 16;
+
+    this.push( b + g << 4 + r << 8 );
+    return 1;
+};
+
+/**
+ * COS( ang )
+ * Angles in degree.
+ */
+Asm.COS = function() {
+    var ang = this.popAsNumber() * Math.PI / 180;
+    this.push( Math.cos(ang) );
+    return 15;
+};
+
+/**
+ * SIN( ang )
+ * Angles in degree.
+ */
+Asm.SIN = function() {
+    var ang = this.popAsNumber() * Math.PI / 180;
+    this.push( Math.sin(ang) );
+    return 15;
+};
+
+/**
  * ASC( str )
  */
 Asm.ASC = function() {

@@ -35,10 +35,13 @@ var BINOP = {
 var FIXED_ARGS = {
     ABS: 1,
     ASC: 1,
+    COS: 1,
     IIF: 3,
     LEN: 1,
     NEG: 1,
+    RGB: 3,
     SHIFT: 1,
+    SIN: 1,
     WAIT: 0
 };
 

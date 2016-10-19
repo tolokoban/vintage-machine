@@ -151,7 +151,11 @@ Kernel.prototype.clearPoints = function() {
  */
 Kernel.prototype.point = function(x, y, color) {
     color = this.expandColor( color );
-    this._arrVertices.push( x, y, color[0], color[1], color[2], color[3] );
+    this._arrVertices.push( x, y,
+                            color[0] / 256,
+                            color[1] / 256,
+                            color[2] / 256,
+                            color[3] / 256 );
 };
 
 /**
