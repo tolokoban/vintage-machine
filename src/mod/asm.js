@@ -68,8 +68,7 @@ var Asm = function( bytecode, kernel, runtime ) {
         stack: [],
         // Vars are stored lowercase.
         vars: {
-            color: 0xf90,
-            pen: [0, 1, 2, 3, 4, 5, 6, 7],
+            pen: [0xF000, 0xFFF, 0xF00, 0x0F0, 0x00F, 0x0FF, 0xF0F, 0xFF0],
             x: 8,
             y: 472,
             sx: 1,
@@ -229,12 +228,6 @@ Asm.prototype.skipFrame = function( nbFrames ) {
 };
 
 
-Asm.COLOR = function() {
-    var color = this.popAsNumber();
-    this.set("color", color);
-    return 0;
-};
-
 /**
  * LEN( str )
  */
@@ -245,6 +238,42 @@ Asm.LEN = function() {
     else if (typeof arg === 'number') result = ("" + arg).length;
     this.push( result );
     return 1;
+};
+
+/**
+ * RGB( red, green, blue )
+ * Values between 0 and 15.
+ */
+Asm.RGB = function() {
+    var b = Math.floor(this.popAsNumber()) % 16;
+    while (b < 0) b += 16;
+    var g = Math.floor(this.popAsNumber()) % 16;
+    while (g < 0) g += 16;
+    var r = Math.floor(this.popAsNumber()) % 16;
+    while (r < 0) r += 16;
+
+    this.push( b + g << 4 + r << 8 );
+    return 1;
+};
+
+/**
+ * COS( ang )
+ * Angles in degree.
+ */
+Asm.COS = function() {
+    var ang = this.popAsNumber() * Math.PI / 180;
+    this.push( Math.cos(ang) );
+    return 15;
+};
+
+/**
+ * SIN( ang )
+ * Angles in degree.
+ */
+Asm.SIN = function() {
+    var ang = this.popAsNumber() * Math.PI / 180;
+    this.push( Math.sin(ang) );
+    return 15;
 };
 
 /**
@@ -361,7 +390,7 @@ Asm.TRIANGLE = function() {
     var x2 = this.popAsNumber();
     var y1 = this.popAsNumber();
     var x1 = this.popAsNumber();
-    var color = this.get("color");
+    var color = this.get("pen")[1];
     if (this.kernel) {
         this.kernel.point( x1, y1, color );
         this.kernel.point( x2, y2, color );
@@ -582,9 +611,14 @@ Asm.VARADD = function() {
  * PEN( color )
  */
 Asm.PEN = function() {
+    var pen = this.get('pen');
     var count = this.popAsNumber();
+    var color, idx;
     while (count --> 0) {
-        this.kernel.pen((count + 8000001) % 8, Math.floor(this.popAsNumber()));
+        color = Math.floor(this.popAsNumber());
+        idx = (count + 8000001) % 8;
+        this.kernel.pen(idx, color);
+        pen[idx] = color;
     }
     return 7;
 };
@@ -594,7 +628,10 @@ Asm.PEN = function() {
  * Equivalent to PEN0( color )
  */
 Asm.PAPER = function() {
-    this.kernel.pen(0, Math.floor(this.popAsNumber()));
+    var pen = this.get('pen');
+    var color = Math.floor(this.popAsNumber());
+    this.kernel.pen(0, color);
+    pen[0] = color;
     return 1;
 };
 

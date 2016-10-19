@@ -145,7 +145,11 @@ Kernel.prototype.clearPoints = function() {
  */
 Kernel.prototype.point = function(x, y, color) {
     color = this.expandColor( color );
-    this._arrVertices.push( x, y, color[0], color[1], color[2], color[3] );
+    this._arrVertices.push( x, y,
+                            color[0] / 256,
+                            color[1] / 256,
+                            color[2] / 256,
+                            color[3] / 256 );
 };
 
 /**
@@ -232,7 +236,6 @@ Kernel.prototype.sprite = function(layer, xs, ys, xd, yd, w, h, scaleX, scaleY, 
     gl.activeTexture(gl.TEXTURE1);
     gl.bindTexture( gl.TEXTURE_2D, this._texPencils );
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 8, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, this._pencils);
-    console.info("[kernel] this._pencils=...", this._pencils);
 
     gl.bindBuffer( gl.ARRAY_BUFFER, this._bufVertexAttribs );
     var datAttributes = SQUARE;
@@ -274,6 +277,9 @@ function draw( type ) {
     var gl = this._gl;
     var prg = this._prgTri;
     prg.use();
+
+    gl.disable(gl.BLEND);
+    
     gl.bindBuffer( gl.ARRAY_BUFFER, this._bufVertexAttribs );
     var datAttributes = this._arrVertices.array;
     gl.bufferData( gl.ARRAY_BUFFER, datAttributes, gl.STATIC_DRAW );

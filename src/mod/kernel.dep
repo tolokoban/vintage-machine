@@ -2,8 +2,6 @@
   "var": {
     "vert": "glsl/tri.vert.c",
     "frag": "glsl/tri.frag.c",
-    "vertRender": "glsl/render.vert.c",
-    "fragRender": "glsl/render.frag.c",
     "vertSprite": "glsl/sprite.vert.c",
     "fragSprite": "glsl/sprite.frag.c"
   }

@@ -34,10 +34,13 @@ var BINOP = {
 var FIXED_ARGS = {
     ABS: 1,
     ASC: 1,
+    COS: 1,
     IIF: 3,
     LEN: 1,
     NEG: 1,
+    RGB: 3,
     SHIFT: 1,
+    SIN: 1,
     WAIT: 0
 };
 
@@ -113,11 +116,10 @@ var PARSERS = {
         case "MOVER": return parseArgs.call( this, lex, "MOVER", 0, 16, 0);
         case "FRAME": return parseArgs.call( this, lex, "FRAME", 0, 1);
         case "POINT": return parseArgs.call( this, lex, "POINT", 2, ["color", Asm.GET]);
-        case "TRI": return parseArgs.call( this, lex, "TRI", 0);
+        case "TRIS": return parseArgs.call( this, lex, "TRIS", 0);
         case "TRIANGLE": return parseArgs.call( this, lex, "TRIANGLE", 0, 0,0,320,480,640,0);
         case "BOX": return parseVarArgs.call( this, lex, "BOX");
         case "CLS": return parseVarArgs.call( this, lex, "CLS");
-        case "COLOR": return parseArgs.call( this, lex, "COLOR", 0, 0xf80 );
         case "PEN": return parseVarArgs.call( this, lex, "PEN");
         case "PAPER": return parseArgs.call( this, lex, "PAPER", 0, 0xf000);
         case "FOR": return parseFOR.call( this, lex );
@@ -359,37 +361,39 @@ function parseVarArgs( lex, func ) {
 
 function parseArgs( lex, instruction, mandatoryCount ) {
     var optionalCount = arguments.length - 3;
-    var i, comma, commaIsMissing;
-    for (i = 0; i < mandatoryCount + optionalCount; i++) {
-        commaIsMissing = false;
-        if (i > 0) {
-            commaIsMissing = !lex.next('COMMA');
-        }
-        if (parse.call( this, lex, 'expression' )) {
-            if (commaIsMissing) {
-                // Two consecutive expressions without a separating comma.
-                lex.fatal(_('mising-comma'));
+    if (mandatoryCount + optionalCount > 0) {
+        var i, comma, commaIsMissing;
+        for (i = 0; i < mandatoryCount + optionalCount; i++) {
+            commaIsMissing = false;
+            if (i > 0) {
+                commaIsMissing = !lex.next('COMMA');
             }
-        } else {
-            break;
+            if (parse.call( this, lex, 'expression' )) {
+                if (commaIsMissing) {
+                    // Two consecutive expressions without a separating comma.
+                    lex.fatal(_('mising-comma'));
+                }
+            } else {
+                break;
+            }
         }
-    }
-    // Check if all the mandatory args have been passed.
-    if (i < mandatoryCount) {
-        lex.fatal(_('too-few-args', instruction, mandatoryCount) + "\n"
-                  + _(instruction.toLowerCase()));
-    }
-    // Add optional arguments.
-    var base = i - mandatoryCount;
-    var arg;
-    for (i = base; i < optionalCount; i++) {
-        arg = arguments[3 + i];
-        if (Array.isArray(arg)) this._asm.push.apply( this._asm, arg );
-        else this._asm.push( arg );
-    }
-    if (!lex.next('EOL')) {
-        lex.fatal(_('too-many-args', mandatoryCount, mandatoryCount + optionalCount)
-                  + "\n" + _('instr-' + instruction));
+        // Check if all the mandatory args have been passed.
+        if (i < mandatoryCount) {
+            lex.fatal(_('too-few-args', instruction, mandatoryCount) + "\n"
+                      + _(instruction.toLowerCase()));
+        }
+        // Add optional arguments.
+        var base = i - mandatoryCount;
+        var arg;
+        for (i = base; i < optionalCount; i++) {
+            arg = arguments[3 + i];
+            if (Array.isArray(arg)) this._asm.push.apply( this._asm, arg );
+            else this._asm.push( arg );
+        }
+        if (!lex.next('EOL')) {
+            lex.fatal(_('too-many-args', mandatoryCount, mandatoryCount + optionalCount)
+                      + "\n" + _('instr-' + instruction));
+        }
     }
     this._asm.push( Asm[instruction] );
     return true;
