@@ -19,6 +19,7 @@ var RX = {
     //-----------------------------------
     EOL: /^[\n\r]+/g,
     VAR: /^\$[a-z0-9\._]+/gi,
+    HEX: /^&[0-9a-f]+/gi,
     NUM: /^-?([0-9]+(\.[0-9]+)?|\.[0-9]+)/g,
     STR: /^"(\\"|[^"])*"/g,
     EQUAL: /^=/g,
@@ -28,7 +29,7 @@ var RX = {
     PAR_OPEN: /^\(/g,
     PAR_CLOSE: /^\)/g,
     COMMA: /^,/g,
-    FUNC: /^(cos|sin|rnd|max|min|abs|floor|ceil)/gi,
+    FUNC: /^[a-z?]+\(/i,
     INST: /^([a-z][a-z_]*[0-9]*)/gi,
     TO: /^to(?![a-z0-9])/i,
     STEP: /^step(?![a-z0-9])/i

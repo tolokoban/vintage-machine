@@ -1,9 +1,9 @@
 /** @module kernel */require( 'kernel', function(exports, module) { var _intl_={"en":{},"fr":{}},_$=require("$").intl;function _(){return _$(_intl_, arguments);}
  var GLOBAL = {
-  "vert": "attribute vec2 attPosition;\r\nattribute float attColor;\r\n\r\nconst float W = 2.0 / 640.0;\r\nconst float H = 2.0 / 480.0;\r\n\r\nvarying float varColor;\r\n\r\nvoid main() {\r\n  varColor = clamp( attColor, 0.0, 63.0 ) / 63.0;\r\n  gl_Position = vec4( attPosition.x * W - 1.0, attPosition.y * H - 1.0, 0.0, 1.0 );\r\n}\r\n",
-  "frag": "precision mediump float;\r\n\r\nvarying float varColor;\r\n\r\nvoid main() {\r\n  gl_FragColor = vec4( varColor );\r\n}\r\n",
-  "vertRender": "attribute vec2 attPosition;\r\n\r\nconst float W = 2.0 / 640.0;\r\nconst float H = 2.0 / 480.0;\r\n\r\nvarying vec2 varUV;\r\n\r\nvoid main() {\r\n  float x = attPosition.x * W - 1.0;\r\n  float y = attPosition.y * H - 1.0;\r\n  gl_Position = vec4( x, y, 0.0, 1.0 );\r\n  varUV = vec2( (x + 1.0) / 2.0, (y + 1.0) / 2.0 );\r\n}\r\n",
-  "fragRender": "precision mediump float;\r\n\r\n// Time for blinking.\r\nuniform float uniTime;\r\n// The framebuffer\r\nuniform sampler2D texSource;\r\n// The palette\r\nuniform sampler2D texPalette;\r\n// Coords of the current pixel. (0,0) is le left bottom one and (1,1) is the upper right one.\r\nvarying vec2 varUV;\r\n// Under this threshold, we consider the color is 0.\r\nconst float threshold = 1.0 / 64.0;\r\n// In `speed ink` 60 is a blink of a period of 1 second, 30 of 1/2 second and 120 of two seconds.\r\nconst float timeunit = 255000.0 / 60.0;\r\n\r\n\r\nvec4 blend( vec4 target, float color ) {\r\n  if (color < threshold) return target;\r\n  vec4 c1 = texture2D(texPalette, vec2(color, .25));\r\n  float period = max(c1.a * timeunit, timeunit);\r\n  c1.a = 1.0;\r\n  vec4 c2 = texture2D(texPalette, vec2(color, .75));\r\n  float shift = c2.a * timeunit;\r\n  c2.a = 1.0;\r\n\r\n  float y = mod((uniTime + shift) / period, 2.0);\r\n  if (y > 1.0) y = 2.0 - y;\r\n  return mix(c1, c2, y);\r\n}\r\n\r\n\r\nvoid main() {\r\n  float x = mod( varUV.x, 1.0 );\r\n  float y = mod( varUV.y, 1.0 );\r\n\r\n  /* DISPLAY CURRENT PALETTE.\r\n  if (y < .1) {\r\n    gl_FragColor = texture2D( texPalette, vec2(x, y * 10.0) );\r\n    return;\r\n  }\r\n  */\r\n  vec4 color = texture2D( texSource, vec2(x, y) );\r\n  // Start with a full transparent color with tint of the color 0 in the palette.\r\n  vec4 target = vec4( texture2D( texPalette, vec2(0.0, 0.0) ).rgb, 0.0 );\r\n\r\n  target = blend( target, color.r );\r\n  target = blend( target, color.g );\r\n  target = blend( target, color.b );\r\n  target = blend( target, color.a );\r\n  \r\n  gl_FragColor = target;\r\n}\r\n"};
+  "vert": "attribute vec2 attPosition;\r\nattribute vec4 attColor;\r\n\r\nconst float W = 2.0 / 640.0;\r\nconst float H = 2.0 / 480.0;\r\n\r\nvarying vec4 varColor;\r\n\r\nvoid main() {\r\n  varColor = attColor;\r\n  gl_Position = vec4( attPosition.x * W - 1.0, attPosition.y * H - 1.0, 0.0, 1.0 );\r\n}\r\n",
+  "frag": "precision mediump float;\r\n\r\nvarying vec4 varColor;\r\n\r\nvoid main() {\r\n  gl_FragColor = varColor;\r\n}\r\n",
+  "vertSprite": "// attPosition.x is +1 or -1\r\n// attPosition.y is +1 or -1\r\nattribute vec2 attPosition;\r\n\r\n// In Tlk-space: 640x480.\r\nuniform float uniDstW;\r\nuniform float uniDstH;\r\nuniform float uniCenterX;\r\nuniform float uniCenterY;\r\n\r\n\r\nconst float W = 2.0 / 640.0;\r\nconst float H = 2.0 / 480.0;\r\n\r\n\r\nvarying vec2 varUV;\r\n\r\n\r\nvoid main() {\r\n  float cx = uniCenterX * W - 1.0;\r\n  float cy = uniCenterY * H - 1.0;\r\n  float x = attPosition.x * uniDstW * W;\r\n  float y = attPosition.y * uniDstH * H;\r\n\r\n  gl_Position = vec4( cx + x, cy + y, 0.0, 1.0 );\r\n  varUV = vec2( attPosition.x + .5, attPosition.y + .5 );\r\n}\r\n",
+  "fragSprite": "precision mediump float;\r\n\r\n// The symbols' page.\r\nuniform sampler2D texSymbols;\r\n// The pencils used.\r\nuniform sampler2D texPencils;\r\n\r\n// Coords of the current pixel. (0,0) is le left bottom one and (1,1) is the upper right one.\r\nvarying vec2 varUV;\r\n\r\n// In pixels of the symbols' page.\r\nuniform float uniSrcX;\r\nuniform float uniSrcY;\r\nuniform float uniSrcW;\r\nuniform float uniSrcH;\r\n\r\nconst float UNIT = 1.0 / 256.0;\r\n\r\nvoid main() {\r\n  float x = ( varUV.x * uniSrcW + uniSrcX ) / 256.0;\r\n  float y = ( (1.0 - varUV.y) * uniSrcH + uniSrcY ) / 256.0;\r\n  float color = texture2D( texSymbols, vec2( x, y ) ).r;\r\n  // color is between 0 and 7 * UNIT.\r\n  if (color < UNIT) {\r\n    gl_FragColor = vec4(0.0, 0.0, 0.0, 0.0);\r\n  } else {\r\n  // The palette index is coded on the RED composant of texPencils.\r\n    gl_FragColor = texture2D( texPencils, vec2(color * 32.0, .5) );\r\n  }\r\n}\r\n\r\n"};
   "use strict";
 
 var WebGL = require("tfw.webgl");
@@ -18,10 +18,8 @@ var HEIGHT = 480;
  *
  * @description
  * Graphical unit is here.
- * All graphical  operations are made  in a FrameBuffer in  which each
- * channel represent one of the four available screens. The value in a
- * channel is  discretized to 64  to indicate  the index in  the color
- * palette.
+ * Primitives are used with real  colors, except for the sprites which
+ * contain up to 8 indexed colors to pick into the pencils palette.
  *
  *********************************************************************
  * Private variables
@@ -29,48 +27,52 @@ var HEIGHT = 480;
  * _gl: webgl context.
  * _renderer: WebGL instance (from module `tfw.webgl`).
  * _prgTri: webgl program used for triangles drawing on framebuffer.
- * _prgRender: webgl program used for final rendering.
- *
- * _screen0 {boolean}: enable/disable drawings on screen 0.
- * _screen1 {boolean}: enable/disable drawings on screen 1.
- * _screen2 {boolean}: enable/disable drawings on screen 2.
- * _screen3 {boolean}: enable/disable drawings on screen 3.
  */
 function Kernel( canvas, symbols ) {
     canvas.width = WIDTH;
     canvas.height = HEIGHT;
 
-    var renderer = new WebGL( canvas );
+    var renderer = new WebGL(canvas, {
+        alpha: true,
+        antialias: false,
+        preserveDrawingBuffer: true
+    });
     var gl = renderer.gl;
     this._gl = gl;
     this._renderer = renderer;
 
-    initPalette.call( this );
-    initFramebuffer.call( this );
+    initPencils.call( this );
 
-    // Palette texture.
-    var texPalette = gl.createTexture();
-    gl.bindTexture(gl.TEXTURE_2D, texPalette);
-    // No transparency on palette.
-    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 64, 2, 0, gl.RGBA, gl.UNSIGNED_BYTE, this._palette);
+    // Pencils texture.
+    var texPencils = gl.createTexture();
+    gl.bindTexture(gl.TEXTURE_2D, texPencils);
+    // No transparency on pencils.
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 8, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, this._pencils);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+    this._texPencils = texPencils;
 
-    // We start with only the first screen (0) enabled.
-    this._screen0 = true;
-    this._screen1 = this._screen2 = this._screen3 = false;
+    // Palette Symbols.
+    var texSymbols = gl.createTexture();
+    gl.bindTexture(gl.TEXTURE_2D, texSymbols);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 256, 256, 0, gl.RGBA, gl.UNSIGNED_BYTE, symbols);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+    this._texSymbols = texSymbols;
 
     // Program for triangles and lines.
     this._prgTri = new WebGL.Program( gl, {
         vert: GLOBAL.vert,
         frag: GLOBAL.frag
     });
-    // Program for finale rendering.
-    this._prgRender = new WebGL.Program( gl, {
-        vert: GLOBAL.vertRender,
-        frag: GLOBAL.fragRender
+    // Program for displaying sprites.
+    this._prgSprite = new WebGL.Program( gl, {
+        vert: GLOBAL.vertSprite,
+        frag: GLOBAL.fragSprite
     });
 
     // Array of vertices.
@@ -79,33 +81,21 @@ function Kernel( canvas, symbols ) {
     // Buffer for triangles vertices.
     this._bufVertexAttribs = gl.createBuffer();
 
-    var bufRectangle = gl.createBuffer();
-    var datRectangle = new Float32Array([
-        0, 0, WIDTH, 0, 0, HEIGHT, WIDTH, HEIGHT
-    ]);
-
     var that = this;
 
     this.stop = renderer.stop.bind( renderer );
     this.start = renderer.start.bind( renderer );
-    
-    renderer.start(function(time) {
-        var debugMode = Keyboard.test("d");
 
+    renderer.start(function(time) {
+        gl.colorMask( true, true, true, true );
+        gl.bindFramebuffer( gl.FRAMEBUFFER, null );
         gl.viewport(0, 0, WIDTH, HEIGHT);
         if (typeof that._render === 'function') {
-            // All user's operations are performed in the framebuffer.
-            gl.bindFramebuffer( gl.FRAMEBUFFER, that._framebuffer );
-            if (debugMode) gl.bindFramebuffer( gl.FRAMEBUFFER, null );
-            //gl.viewport(0, 0, WIDTH << 1, HEIGHT << 1);
-            gl.disable( gl.BLEND );
-            gl.disable( gl.DEPTH_TEST );
-            gl.colorMask( that._screen0, that._screen1, that._screen2, that._screen3 );
             // Do the user rendering.
             that._render( time, that );
         }
-        if (debugMode) return;
 
+        /*
         gl.bindFramebuffer( gl.FRAMEBUFFER, null );
         var prg = that._prgRender;
         prg.use();
@@ -129,6 +119,7 @@ function Kernel( canvas, symbols ) {
         gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 64, 2, 0, gl.RGBA, gl.UNSIGNED_BYTE, that._palette);
 
         gl.drawArrays( gl.TRIANGLE_STRIP, 0, 4 );
+*/
     });
 
     this._render = function( ker, time ) {};
@@ -159,7 +150,31 @@ Kernel.prototype.clearPoints = function() {
  * @param {float} color - Color, between 0 and 63.
  */
 Kernel.prototype.point = function(x, y, color) {
-    this._arrVertices.push( x, y, color );
+    color = this.expandColor( color );
+    this._arrVertices.push( x, y, color[0], color[1], color[2], color[3] );
+};
+
+/**
+ * Color is a number. Its hexadecimal representation helps to understand how channels are packed.
+ * &FFF -> RGBA(255, 255, 255, 255)
+ * &5FFF -> RGBA(255, 255, 255, 170)
+ * &5F00 -> RGBA(255, 0, 0, 170)
+ * &50F0 -> RGBA(0, 255, 0, 170)
+ *
+ * Eeach channel has a velue between 0 and 15 (F).
+ * For R, G and B, the convertion consist in mulitplying by 17.
+ * For A, the formula is: 255 - 17 * A.
+ */
+Kernel.prototype.expandColor = function( color ) {
+    var b = 17 * (color & 15);
+    color >>= 4;
+    var g = 17 * (color & 15);
+    color >>= 4;
+    var r = 17 * (color & 15);
+    color >>= 4;
+    var a = 255 - 17 * color;
+
+    return [r, g, b, a];
 };
 
 /**
@@ -188,71 +203,68 @@ Kernel.prototype.triFan = function() {
     draw.call( this, this._gl.TRIANGLE_FAN );
 };
 
-
+var SQUARE = new Float32Array([ -.5, -.5, +.5, -.5, -.5, +.5, +.5, +.5 ]);
 /**
- * Specify on which screens the next operation will be applied.
+ * @return void
  */
-Kernel.prototype.screen = function(s0, s1, s2, s3) {
-    this._screen0 = s0;
-    this._screen1 = s1;
-    this._screen2 = s2;
-    this._screen3 = s3;
-    this._gl.colorMask( s0, s1, s2, s3 );
+Kernel.prototype.sprite = function(layer, xs, ys, xd, yd, w, h, scaleX, scaleY, rotation) {
+    if( typeof scaleX === 'undefined' ) scaleX = 1;
+    if( typeof scaleY === 'undefined' ) scaleY = 1;
+    if( typeof rotation === 'undefined' ) rotation = 0;
+    if( typeof w === 'undefined' ) w = 16;
+    if( typeof h === 'undefined' ) h = 16;
+
+    var gl = this._gl;
+    var prg = this._prgSprite;
+    prg.use();
+
+    gl.enable(gl.BLEND);
+    gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA); // gl.ONE);
+
+    prg.$uniCenterX = xd;
+    prg.$uniCenterY = yd;
+    prg.$uniDstW = w;
+    prg.$uniDstH = h;
+    prg.$uniSrcX = xs;
+    prg.$uniSrcY = ys;
+    prg.$uniSrcW = w;
+    prg.$uniSrcH = h;
+
+    prg.$texSymbols = 0;
+    gl.activeTexture(gl.TEXTURE0);
+    gl.bindTexture( gl.TEXTURE_2D, this._texSymbols );
+
+    prg.$texPencils = 1;
+    gl.activeTexture(gl.TEXTURE1);
+    gl.bindTexture( gl.TEXTURE_2D, this._texPencils );
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 8, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, this._pencils);
+
+    gl.bindBuffer( gl.ARRAY_BUFFER, this._bufVertexAttribs );
+    var datAttributes = SQUARE;
+    gl.bufferData( gl.ARRAY_BUFFER, datAttributes, gl.STATIC_DRAW );
+    var bpe = datAttributes.BYTES_PER_ELEMENT;
+    var blockSize = 2 * bpe;
+    // attPosition
+    var attPosition = gl.getAttribLocation(prg.program, "attPosition");
+    gl.enableVertexAttribArray(attPosition);
+    gl.vertexAttribPointer(attPosition, 2, gl.FLOAT, false, blockSize, 0);
+
+    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+    gl.disable(gl.BLEND);
 };
 
-var HEXA = "0123456789abcdef";
-
-/**
- * Color of the form "ff0" will be converted to [255,255,0].
- * Color of the form 48 will be converted to [48, 48, 48].
- */
-function expandColor( value ) {
-    if( Array.isArray( value )) return value;
-    if ( typeof value === 'number' ) {
-        value = Math.floor( value ) % 255;
-        return [value, value, value];
-    }
-    value = value.trim().toLowerCase();
-    var arr = [], c;
-    for (var i=0 ; i<value.length ; i++) {
-        c = HEXA.indexOf( value.charAt( i ) );
-        if (c < 0) c = 0;
-        arr.push(17 * c);
-    }
-    return arr;
-}
 
 /**
  * @return void
  */
-Kernel.prototype.ink = function(index, color1, color2) {
-    if( typeof index === 'undefined' ) index = 0;
-    index = Math.floor( index ) % 64;
-    if( typeof color2 === 'undefined' ) color2 = color1;
-
-    color1 = expandColor( color1 );
-    color2 = expandColor( color2 );
-
-    var idx = index * 4;
-    this._palette[idx++] = color1[0];
-    this._palette[idx++] = color1[1];
-    this._palette[idx]   = color1[2];
-    idx = index * 4 + 64 * 4;
-    this._palette[idx++] = color2[0];
-    this._palette[idx++] = color2[1];
-    this._palette[idx]   = color2[2];
+Kernel.prototype.pen = function( pencil, color ) {
+    var arr = this._pencils;
+    color = this.expandColor( color );
+    color.forEach(function (channel, idx) {
+        arr[4 * pencil + idx] = channel;
+    });
 };
 
-/**
- * @param {number} period - from 0 to 4 seconds.
- */
-Kernel.prototype.speedInk = function(index, period, shift) {
-    if( typeof shift === 'undefined' ) shift = 0;
-    period = clamp(Math.floor(60 * period), 0, 255);
-    shift = clamp(Math.floor(60 * shift), 0, 255);
-    this._palette[4 * index + 3] = period;
-    this._palette[4 * index + 3 + 64 * 4] = shift;
-};
 
 function clamp(value, min, max) {
     if (value < min) return min;
@@ -267,11 +279,14 @@ function draw( type ) {
     var gl = this._gl;
     var prg = this._prgTri;
     prg.use();
+
+    gl.disable(gl.BLEND);
+    
     gl.bindBuffer( gl.ARRAY_BUFFER, this._bufVertexAttribs );
     var datAttributes = this._arrVertices.array;
     gl.bufferData( gl.ARRAY_BUFFER, datAttributes, gl.STATIC_DRAW );
     var bpe = datAttributes.BYTES_PER_ELEMENT;
-    var blockSize = 3 * bpe;
+    var blockSize = 6 * bpe;
     // attPosition
     var attPosition = gl.getAttribLocation(prg.program, "attPosition");
     gl.enableVertexAttribArray(attPosition);
@@ -279,102 +294,27 @@ function draw( type ) {
     // attColor
     var attColor = gl.getAttribLocation(prg.program, "attColor");
     gl.enableVertexAttribArray(attColor);
-    gl.vertexAttribPointer(attColor, 1, gl.FLOAT, false, blockSize, 2 * bpe);
+    gl.vertexAttribPointer(attColor, 4, gl.FLOAT, false, blockSize, 2 * bpe);
 
-    gl.drawArrays(type, 0, this._arrVertices.length / 3);
+    gl.drawArrays(type, 0, this._arrVertices.length / 6);
     this.clearPoints();
 }
 
-/**
- * Initialize the main palette of 64 colors.  We take only 4 levels in
- * each of the 3 channels (R, G and B).
- * The palette is stored in `this._palette` as a Float32Array and will
- * be used as a texture.
- */
-function initPalette() {
-    var i, j;
-    
-    this._palette = new Uint8Array(4 * 64 * 2);
-    this._palette.fill( 60 );
-    
-    this.ink( 0, "000" );
-    this.ink( 1, "fff" );
-    this.ink( 2, "f00" );
-    this.ink( 3, "0f0" );
-    this.ink( 4, "00f" );
-    this.ink( 5, "0ff" );
-    this.ink( 6, "f0f" );
-    this.ink( 7, "ff0" );
-
-    this.ink( 8, "000" );
-
-    this.ink( 32, "08f" );
-    this.ink( 33, "80f" );
-    this.ink( 34, "0f8" );
-    this.ink( 35, "8f0" );
-    this.ink( 36, "f08" );
-    this.ink( 37, "f80" );
-    this.ink( 38, "88f" );
-    this.ink( 39, "8f8" );
-
-    this.ink( 40, "048" );
-    this.ink( 41, "408" );
-    this.ink( 42, "084" );
-    this.ink( 43, "480" );
-    this.ink( 44, "804" );
-    this.ink( 45, "840" );
-    this.ink( 46, "448" );
-    this.ink( 47, "484" );
-
-    this.ink( 48, "f88" );
-    this.ink( 49, "844" );
-    this.ink( 50, "ff8" );
-    this.ink( 51, "884" );
-    this.ink( 52, "f8f" );
-    this.ink( 53, "848" );
-    this.ink( 54, "8ff" );
-    this.ink( 55, "488" );
-
-    for (i = 1 ; i < 8 ; i++) {
-        for (j = 1 ; j < 4 ; j++) {
-            this._palette[4*(i + 8 * j) + 0] = Math.floor( this._palette[4*i + 0] * (4 - j) * .25 );
-            this._palette[4*(i + 8 * j) + 1] = Math.floor( this._palette[4*i + 1] * (4 - j) * .25 );
-            this._palette[4*(i + 8 * j) + 2] = Math.floor( this._palette[4*i + 2] * (4 - j) * .25 );
-        }
-    }
-
-    // By default, no color is blinking.
-    for (i = 0; i < 64 ; i++) {
-        j = 4 * i;
-        this._palette[64 * 4 + j + 0] = this._palette[j + 0];
-        this._palette[64 * 4 + j + 1] = this._palette[j + 1];
-        this._palette[64 * 4 + j + 2] = this._palette[j + 2];
-    }
-    
-    // Blinking colors.
-    this.ink( 16, "000", "fff" );
-    this.speedInk( 16, .5, .25 );
-    this.ink( 24, "ff0", "00f" );
-    
-
-    console.info("[kernel] palette=...", this._palette);
-}
-
 
 /**
- * Every user's operation  are performed in a framebuffer  which will be
- * transformed afterward using the palette.
- * This framebuffer is stored in `this._framebuffer`.
+ * Pencils are the 8 pencils used for sprites.
  */
-function initFramebuffer() {
-    var gl = this._gl;
-    var texture = this._renderer.createTextureForFB( WIDTH, HEIGHT );
-    var fb = gl.createFramebuffer();
-    gl.bindFramebuffer(gl.FRAMEBUFFER, fb);
-    gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, texture, 0);
-    gl.bindFramebuffer(gl.FRAMEBUFFER, null);
-    this._framebuffer = fb;
-    this._fbTexture = texture;
+function initPencils() {
+    this._pencils = new Uint8Array([
+        0,   0,   0,   0,
+        255, 255, 255, 255,
+        255,   0,   0, 255,
+        0, 255,   0, 255,
+        0,   0, 255, 255,
+        0, 255, 255, 255,
+        255,   0, 255, 255,
+        255, 255,   0, 255
+    ]);
 }
 
 

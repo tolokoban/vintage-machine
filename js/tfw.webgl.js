@@ -2,9 +2,9 @@
     var BPE = (new Float32Array()).BYTES_PER_ELEMENT;
 
 
-function Webgl(canvas) {
+function Webgl(canvas, config) {
     Object.defineProperty( this, 'gl', {
-        value: canvas.getContext('webgl') || canvas.getContext('experimental-webgl'),
+        value: canvas.getContext('webgl', config) || canvas.getContext('experimental-webgl', config),
         writable: false,
         configurable: false,
         enumerable: true

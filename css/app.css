@@ -2,8 +2,16 @@ body {
     width: 100%;
     height: 100%;
     background: #00f;
-    font-size: 3vmin;
+    font-size: 1vmax;
     overflow: hidden;
+}
+
+body > * {
+    vertical-align: top;
+}
+
+canvas {
+    display: inline-block;
 }
 
 #CANVAS {
@@ -11,11 +19,10 @@ body {
     position: absolute;
     left: 50%;
     top: 50%;
-    width: 128vh;
-    height: 96vh;
-    margin: -48vh -64vh;
+    width: 132vh;
+    height: 99vh;
+    margin: -49.5vh -66vh;
 }
-
 @media (orientation: portrait) {
     #CANVAS {
         width: 128vw;
@@ -63,7 +70,7 @@ body.show #EDITOR {
     bottom: 1vh;
     width: 48vw;
     height: 98vh;
-    font-size: 2vmin;
+    font-size: 1vmax;
     font-family: monospace;
     background: transparent;
     border: none;
