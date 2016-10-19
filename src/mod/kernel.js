@@ -112,13 +112,10 @@ function Kernel( canvas, symbols ) {
     this.start = renderer.start.bind( renderer );
     
     renderer.start(function(time) {
-        var debugMode = Keyboard.test("d");
-
         gl.viewport(0, 0, WIDTH, HEIGHT);
         if (typeof that._render === 'function') {
             // All user's operations are performed in the framebuffer.
             gl.bindFramebuffer( gl.FRAMEBUFFER, that._framebuffer );
-            if (debugMode) gl.bindFramebuffer( gl.FRAMEBUFFER, null );
             //gl.viewport(0, 0, WIDTH << 1, HEIGHT << 1);
             gl.disable( gl.BLEND );
             gl.disable( gl.DEPTH_TEST );
@@ -126,7 +123,6 @@ function Kernel( canvas, symbols ) {
             // Do the user rendering.
             that._render( time, that );
         }
-        if (debugMode) return;
 
         gl.bindFramebuffer( gl.FRAMEBUFFER, null );
         var prg = that._prgRender;

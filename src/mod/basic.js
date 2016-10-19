@@ -34,7 +34,6 @@ var BINOP = {
 var FIXED_ARGS = {
     ABS: 1,
     ASC: 1,
-    ASK: 0,
     IIF: 3,
     LEN: 1,
     NEG: 1,
@@ -334,7 +333,7 @@ function parseFunc( lex, func, fixedArgsCount ) {
     } else {
         // Les fonctions qui attendent un nombre variable d'arguments,
         // on besoin de connaitre ce nombre.
-        this._ams.push( argsCount );
+        this._asm.push( argsCount );
     }
     
     this._asm.push( Asm[func] );

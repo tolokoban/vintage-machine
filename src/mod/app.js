@@ -67,6 +67,7 @@ exports.start = function() {
                 catch (ex) {
                     Keyboard.preventDefault = false;
                     $.addClass( document.body, 'show' );
+                    console.error( ex );
                     Message.error( ex.msg );
                     console.log("Unexpected char: " + codeEditor.value.charCodeAt( ex.pos ));
                     codeEditor.focus( ex.pos );
