@@ -43,8 +43,8 @@ var FIXED_ARGS = {
 
 
 function Basic( code ) {
-    this.clear();    
-    if( typeof code === 'undefined' ) code = '';    
+    this.clear();
+    if( typeof code === 'undefined' ) code = '';
     this._code = code;
     var lex = new Lexer( code );
     while (lex.hasMoreCode()) {
@@ -81,7 +81,7 @@ Basic.prototype.clear = function() {
     // Labels are used for branching. This is a map between a label name and the positionin the ASM code.
     this._labels = {};
     this._labelId = 0;
-    // Blocs nesting needs context to know (for instance) at which `FOR` belongs a `NEXT`. 
+    // Blocs nesting needs context to know (for instance) at which `FOR` belongs a `NEXT`.
     this._context = [];
 };
 
@@ -119,11 +119,7 @@ var PARSERS = {
         case "CLS": return parseVarArgs.call( this, lex, "CLS");
         case "COLOR": return parseArgs.call( this, lex, "COLOR", 0, 0xf80 );
         case "PEN": return parseVarArgs.call( this, lex, "PEN");
-        case "PAPER": return parseArgs.call( this, lex, "PAPER", 1);
-        case "PEN0": return parseArgs.call( this, lex, "PEN0", 1);
-        case "PEN1": return parseArgs.call( this, lex, "PEN1", 1);
-        case "PEN2": return parseArgs.call( this, lex, "PEN2", 1);
-        case "PEN3": return parseArgs.call( this, lex, "PEN3", 1);
+        case "PAPER": return parseArgs.call( this, lex, "PAPER", 0, 0xf000);
         case "FOR": return parseFOR.call( this, lex );
         case "NEXT": return parseNEXT.call( this, lex );
         case "INK": return parseArgs.call( this, lex, "INK", 3, -1 );
@@ -165,7 +161,7 @@ var PARSERS = {
             case 'STR': this._asm.push( parseString( tkn.val ) ); return true;
             case 'VAR': this._asm.push( tkn.val, Asm.GET ); return true;
             case 'FUNC':
-                var name = tkn.val.substr(0, tkn.val.length - 1).toUpperCase();                
+                var name = tkn.val.substr(0, tkn.val.length - 1).toUpperCase();
                 var ret = parseFunc.call( this, lex, name, FIXED_ARGS[name] );
                 if (!ret) return false;
                 //if (name == 'WAIT') return parseFuncWAIT.call( this, lex );
@@ -197,10 +193,11 @@ function parseHexa( str ) {
     str = str.substr(1).toUpperCase();
     var hex = "0123456789ABCDEF";
     var val = 0;
-    for (var i = 1; i < str.length; i++) {
-        val = val * 16 + hex.indexOf( str.charAt(i) );        
+    for (var i = 0; i < str.length; i++) {
+        val = (val << 4) + hex.indexOf( str.charAt(i) );
     }
     this._asm.push( val );
+    return true;
 }
 
 
@@ -236,7 +233,7 @@ function parseFOR( lex ) {
     if (!parse.call( this, lex, 'expression' )) lex.fatal(_('missing-expression'));
     // Optional STEP
     if (lex.next('STEP')) {
-        if (!parse.call( this, lex, 'expression' )) lex.fatal(_('missing-expression'));        
+        if (!parse.call( this, lex, 'expression' )) lex.fatal(_('missing-expression'));
     } else {
         // Default step is 1.
         this._asm.push( 1 );
@@ -275,10 +272,10 @@ function parsePRINT( lex ) {
         if (!parse.call(this, lex, 'expression')) {
             lex.fatal(_('print-missing-arg'));
         }
-        this._asm.push( "print.frm", Asm.SET );        
+        this._asm.push( "print.frm", Asm.SET );
     } else {
         this._asm.push( 0, "print.frm", Asm.SET );
-    }    
+    }
     if (!lex.next('EOL')) {
         lex.fatal(_('expected-eol'));
     }
@@ -291,7 +288,7 @@ function parsePRINT( lex ) {
 function pushPrintBody() {
     var lblBegin = this.newLabel();
     var lblEnd = this.newLabel();
-    
+
     this.setLabel( lblBegin );
     this._asm.push( "print.txt", Asm.GET, Asm.LEN, [lblEnd], Asm.JZE );
     this._asm.push( "print.txt", Asm.SHIFT, Asm.ASC, 1, 1, Asm.SPRITE );
@@ -336,7 +333,7 @@ function parseFunc( lex, func, fixedArgsCount ) {
         // on besoin de connaitre ce nombre.
         this._asm.push( argsCount );
     }
-    
+
     this._asm.push( Asm[func] );
     return true;
 }
@@ -422,7 +419,7 @@ function parseString( str ) {
             } else {
                 out += c;
             }
-            lastIndex = index + 1;               
+            lastIndex = index + 1;
             mode = 1;
         }
     }

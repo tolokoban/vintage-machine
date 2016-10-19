@@ -232,7 +232,7 @@ Kernel.prototype.sprite = function(layer, xs, ys, xd, yd, w, h, scaleX, scaleY, 
     gl.activeTexture(gl.TEXTURE1);
     gl.bindTexture( gl.TEXTURE_2D, this._texPencils );
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 8, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, this._pencils);
-    console.info("[kernel] this._pencils[4]=...", this._pencils[4]);
+    console.info("[kernel] this._pencils=...", this._pencils);
 
     gl.bindBuffer( gl.ARRAY_BUFFER, this._bufVertexAttribs );
     var datAttributes = SQUARE;

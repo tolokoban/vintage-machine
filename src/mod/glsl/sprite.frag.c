@@ -25,9 +25,7 @@ void main() {
     gl_FragColor = vec4(0.0, 0.0, 0.0, 0.0);
   } else {
   // The palette index is coded on the RED composant of texPencils.
-    float pencil = texture2D( texPencils, vec2(color * 64.0, .5) ).r;
-    // pencil is between 0 and 63 UNIT.
-    pencil = pencil * 4.0;
-    gl_FragColor = vec4(pencil, pencil, pencil, 1.0);
+    gl_FragColor = texture2D( texPencils, vec2(color * 32.0, .5) );
   }
 }
+

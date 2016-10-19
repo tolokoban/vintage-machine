@@ -148,7 +148,7 @@ Asm.prototype.popAsNumber = function() {
 
 /**
  * Les appels de fonctions se font  en plaçant les arguments ainsi que
- * le nombre d'arguments  sur la pile.  `popArgs`  retourne un tbaleau
+ * le nombre d'arguments  sur la pile.  `popArgs`  retourne un tableau
  * avec  les  arguments  dans  l'ordre,  en  ignorant  si  besoin  les
  * arguments en trop.
  */
@@ -156,9 +156,10 @@ Asm.prototype.popArgs = function( maxCount ) {
     if( typeof maxCount === 'undefined' ) maxCount = Number.MAX_VALUE;
     maxCount = Math.max( 0, Math.floor( maxCount ) );
     var count = this.popAsNumber();
-    while (count --> maxCount) {
+    while (count > maxCount) {
         // On ignore les arguments en trop.
         this.pop();
+        count--;
     }
     var args = [];
     while (count --> 0) {
@@ -257,6 +258,19 @@ Asm.ASC = function() {
     } else {
         this.push( 0 );
     }
+    return 0;
+};
+
+/**
+ * CHR( code, ... )
+ */
+Asm.CHR = function() {
+    var arg = this.popArgs();
+    var txt = '';
+    arg.forEach(function (code) {
+        txt += String.fromCharCode(parseInt( code ) || 0);
+    });
+    this.push( txt );
     return 0;
 };
 
@@ -569,11 +583,10 @@ Asm.VARADD = function() {
  */
 Asm.PEN = function() {
     var count = this.popAsNumber();
-    var pen = this.get( 'pen' );
     while (count --> 0) {
         this.kernel.pen((count + 8000001) % 8, Math.floor(this.popAsNumber()));
     }
-    return 1;
+    return 7;
 };
 
 /**

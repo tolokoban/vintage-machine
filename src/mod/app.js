@@ -29,7 +29,7 @@ exports.start = function() {
         }
         var canvas = document.getElementById( 'CANVAS' );
         var kernel = new Kernel( canvas, new Uint8Array(arrayBuffer) );
-        var code = Repository.load('sys.hello-world');
+        var code = Repository.load('sys.startup');
         console.log(code);
         var basic = new Basic( code );
         var bytecode = basic.asm();
