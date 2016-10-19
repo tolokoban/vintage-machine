@@ -112,11 +112,12 @@ var PARSERS = {
         case "MOVE": return parseArgs.call( this, lex, "MOVE", 0, 320, 240);
         case "MOVER": return parseArgs.call( this, lex, "MOVER", 0, 16, 0);
         case "FRAME": return parseArgs.call( this, lex, "FRAME", 0, 1);
-        case "POINT": return parseArgs.call( this, lex, "POINT", 2, ["pen0", Asm.GET]);
+        case "POINT": return parseArgs.call( this, lex, "POINT", 2, ["color", Asm.GET]);
         case "TRI": return parseArgs.call( this, lex, "TRI", 0);
         case "TRIANGLE": return parseArgs.call( this, lex, "TRIANGLE", 0, 0,0,320,480,640,0);
         case "BOX": return parseVarArgs.call( this, lex, "BOX");
         case "CLS": return parseVarArgs.call( this, lex, "CLS");
+        case "COLOR": return parseArgs.call( this, lex, "COLOR", 0, 0xf80 );
         case "PEN": return parseVarArgs.call( this, lex, "PEN");
         case "PAPER": return parseArgs.call( this, lex, "PAPER", 1);
         case "PEN0": return parseArgs.call( this, lex, "PEN0", 1);
@@ -156,7 +157,7 @@ var PARSERS = {
         return true;
     },
     atom: function( lex ) {
-        var tkn = lex.next('FUNC', 'NUM', 'STR', 'VAR', 'PAR_OPEN');
+        var tkn = lex.next('FUNC', 'NUM', 'HEX', 'STR', 'VAR', 'PAR_OPEN');
         if (tkn) {
             switch(tkn.id) {
             case 'NUM': this._asm.push( parseFloat( tkn.val ) ); return true;

@@ -17,6 +17,7 @@ var CodeMirror = require("codemirror");
 var RX_LETTER = /[a-z]/i;
 var RX_ID = /[a-z0-9_]/i;
 var RX_DIGIT = /[0-9]/;
+var RX_HEXA = /[0-9a-f]/;
 var RX_SYM = /[+*\/%,()=<>-]/;
 
 CodeMirror.defineMode('basic', function(cfg, modeCfg) {
@@ -34,6 +35,13 @@ CodeMirror.defineMode('basic', function(cfg, modeCfg) {
             if (stream.eat('#')) {
                 stream.skipToEnd();
                 return "comment";
+            }
+            if (stream.eat('&')) {
+                if (stream.eatWhile( RX_HEXA )) {
+                    return 'number';
+                } else {
+                    return 'error';
+                }
             }
             if (stream.eat('$')) {
                 stream.eatWhile( RX_ID );

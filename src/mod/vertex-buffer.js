@@ -17,8 +17,11 @@ function VertexBuffer(capacity) {
 
     if( typeof capacity === 'undefined' ) capacity = 1024;
     var arr = new Float32Array( capacity );
+    this._arr = arr;
     Prop.readonly( this, 'capacity', capacity );
-    Prop.readonly( this, 'array', arr );
+    Prop.readonly( this, 'array', function() {
+        return arr.slice(0, this._cursor);
+    } );
     this._cursor = 0;
     Prop.readonly( this, 'length', function() { return that._cursor; } );    
 }
@@ -33,7 +36,7 @@ VertexBuffer.prototype.push = function() {
     for (i = 0 ; i < arguments.length ; i++) {
         arg = arguments[i];
         if (this._cursor >= this.capacity) return false;
-        this.array[this._cursor++] = arg;
+        this._arr[this._cursor++] = arg;
     }
     return true;
 };

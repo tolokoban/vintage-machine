@@ -22,8 +22,8 @@ var Keyboard = require("keyboard");
  * =========================================================
  * ERASE( var )
  * FOR( var, a, b, step, jmp )
- * PEN[0-3]( color )
  * PEN( color1, [color2, color3, ..., color 7] )
+ * PAPER( color0 )
  * AND( a, b )
  * OR( a, b )
  * XOR( a, b )
@@ -60,14 +60,15 @@ var PRECISION = 0.0000000001;
 
 
 var Asm = function( bytecode, kernel, runtime ) {
-    this._kernel = kernel;
     this._bytecode = bytecode;
     this._cursor = 0;
     this._cost = 0;
-    this._runtime = runtime || {
+    this.kernel = kernel;
+    this.runtime = runtime || {
         stack: [],
         // Vars are stored lowercase.
         vars: {
+            color: 0xf90,
             pen: [0, 1, 2, 3, 4, 5, 6, 7],
             x: 8,
             y: 472,
@@ -77,15 +78,6 @@ var Asm = function( bytecode, kernel, runtime ) {
             cursor: 1
         }
     };
-
-    ['kernel', 'runtime'].forEach(function (name) {
-        Object.defineProperty( Asm.prototype, name, {
-            get: function() { return this['_' + name]; },
-            set: function(v) { this['_' + name] = v; },
-            configurable: true,
-            enumerable: true
-        });
-    });
 };
 
 module.exports = Asm;
@@ -104,8 +96,8 @@ Asm.prototype.reset = function() {
  * @return void
  */
 Asm.prototype.next = function( runtime ) {
-    if( !runtime ) runtime = this._runtime;
-    else this._runtime = runtime;
+    if( !runtime ) runtime = this.runtime;
+    else this.runtime = runtime;
 
     var cmd;
     while (this._cost < MAX_COST) {
@@ -236,6 +228,12 @@ Asm.prototype.skipFrame = function( nbFrames ) {
 };
 
 
+Asm.COLOR = function() {
+    var color = this.popAsNumber();
+    this.set("color", color);
+    return 0;
+};
+
 /**
  * LEN( str )
  */
@@ -349,7 +347,7 @@ Asm.TRIANGLE = function() {
     var x2 = this.popAsNumber();
     var y1 = this.popAsNumber();
     var x1 = this.popAsNumber();
-    var color = this.get("pen")[1];
+    var color = this.get("color");
     if (this.kernel) {
         this.kernel.point( x1, y1, color );
         this.kernel.point( x2, y2, color );
@@ -471,17 +469,24 @@ Asm.WAIT = function() {
 Asm.ASK = function() {
     if (!this.kernel) return 0;
 
+    if (this.get("ask.txt") === 0) {
+        this.set("ask.txt", '');
+        this.set("ask.cursor", 0);
+        var args = this.popArgs();
+        var msg = args.join("\n");
+        console.info("[asm] msg=...", msg);
+        // Wait a frame and loop.
+        this._cursor--;
+        return MAX_COST - this._cost;
+    }
+
     var last = Keyboard.last();
     if (!last) {
-        // Wait a frame an loop.
+        // Wait a frame and loop.
         this._cursor--;
         return MAX_COST - this._cost;
     }
     
-    if (this.get("ask.txt") === 0) {
-        this.set("ask.txt", '');
-        this.set("ask.cursor", 0);        
-    }
     var key = last.key;
     if (key.length == 1) {
         // C'est un caractère à écrire.
@@ -501,6 +506,7 @@ Asm.ASK = function() {
         this.push(this.get("ask.txt"));
         this.set("X", 8);
         this.set("Y", this.get("Y") - 16);
+        this.set("ask.txt", 0);
         return 0;
     }
     this._cursor--;
@@ -565,9 +571,8 @@ Asm.PEN = function() {
     var count = this.popAsNumber();
     var pen = this.get( 'pen' );
     while (count --> 0) {
-        pen[(count + 8000001) % 8] = Math.floor(this.popAsNumber()) % 64;
+        this.kernel.pen((count + 8000001) % 8, Math.floor(this.popAsNumber()));
     }
-    if (this.kernel) this.kernel.pen( pen );
     return 1;
 };
 
@@ -576,49 +581,7 @@ Asm.PEN = function() {
  * Equivalent to PEN0( color )
  */
 Asm.PAPER = function() {
-    var pen = this.get('pen');
-    pen[0] = Math.floor( this.popAsNumber() ) % 64;
-    if (this.kernel) this.kernel.pen( pen );
-    return 1;
-};
-
-/**
- * PEN0( color )
- */
-Asm.PEN0 = function() {
-    var pen = this.get('pen');
-    pen[0] = Math.floor( this.popAsNumber() ) % 64;
-    if (this.kernel) this.kernel.pen( pen );
-    return 1;
-};
-
-/**
- * PEN1( color )
- */
-Asm.PEN1 = function() {
-    var pen = this.get('pen');
-    pen[1] = Math.floor( this.popAsNumber() ) % 64;
-    if (this.kernel) this.kernel.pen( pen );
-    return 1;
-};
-
-/**
- * PEN2( color )
- */
-Asm.PEN2 = function() {
-    var pen = this.get('pen');
-    pen[2] = Math.floor( this.popAsNumber() ) % 64;
-    if (this.kernel) this.kernel.pen( pen );
-    return 1;
-};
-
-/**
- * PEN3( color )
- */
-Asm.PEN3 = function() {
-    var pen = this.get('pen');
-    pen[3] = Math.floor( this.popAsNumber() ) % 64;
-    if (this.kernel) this.kernel.pen( pen );
+    this.kernel.pen(0, Math.floor(this.popAsNumber()));
     return 1;
 };
 
