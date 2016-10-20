@@ -496,6 +496,19 @@ Asm.CLS = function() {
     return cost;
 };
 
+/**
+ * BACK( color )
+ * Chnge la couleur de l'arrière plan.
+ */
+Asm.BACK = function() {
+    var duration = this.popAsNumber();
+    var color = this.kernel.expandColor( this.popAsNumber() );
+    document.body.style.transition = "background " + duration + "ms";
+    document.body.style.background = "rgb(" + (color[0] * 17) + "," 
+        + (color[1] * 17) + "," 
+        + (color[2] * 17) + ")";
+};
+
 function box(color) {
     var x, y, w, h, count = this.popAsNumber();
     if (count == 0) {
