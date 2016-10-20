@@ -82,6 +82,41 @@ var Asm = function( bytecode, kernel, runtime ) {
 module.exports = Asm;
 
 
+Asm.prototype.printChar = function(code) {
+    var i = (code & 15) << 4;
+    code >>= 4;
+    var j = (code & 15) << 4;
+    code >>= 4;
+    var layer = code;
+    var x = this.get("X");
+    var y = this.get("Y");
+
+    if ("^~°`´".indexOf(String.fromCharCode(code))) {
+        // This is an accent, we should go back.
+        x -= this.get("SX") * 16;
+        if (x < 0) {
+            x += 640;
+            y += this.get("SY") * 16;
+            if (y > 479) y -= 480;
+        }
+    }
+    
+    this.kernel.sprite(
+        layer, i, j,
+        x, y, 16, 16,
+        this.get("SX"), this.get("SY"), this.get("R")
+    );
+
+    x += this.get("SX") * 16;
+    if (x > 639) {
+        this.set("x", x - 640);
+        y -= this.get("SY") * 16;
+        if (y < 0) {
+            this.set("y", y + 480);
+        }
+    }
+};
+
 /**
  * @return void
  */
@@ -98,12 +133,15 @@ Asm.prototype.next = function( runtime ) {
     if( !runtime ) runtime = this.runtime;
     else this.runtime = runtime;
 
-    var cmd;
+    var cmd, cost;
     while (this._cost < MAX_COST) {
         if (this._cursor >= this._bytecode.length) return false;
         cmd = this._bytecode[this._cursor++];
         if (typeof cmd === 'function') {
-            this._cost += cmd.call( this ) || 0;
+            cost = parseInt(cmd.call( this ));
+            if (isNaN( cost )) cost = 0;
+            this._cost += cost;
+            console.info("[asm] this._cost=...", this._cost);
         } else {
             this._cost++;
             this.push( cmd );
@@ -225,6 +263,7 @@ Asm.prototype.asNumber = function( v ) {
 Asm.prototype.skipFrame = function( nbFrames ) {
     if( typeof nbFrames === 'undefined' ) nbFrames = 1;
     this._cost = MAX_COST * nbFrames;
+    return 0;
 };
 
 
@@ -454,7 +493,7 @@ function box(color) {
         h = this.popAsNumber();
         w = this.popAsNumber();
         y = this.popAsNumber();
-        x = this.popAsNumber();        
+        x = this.popAsNumber();
     }
     if (this.kernel) {
         this.kernel.point( x, y, color );
@@ -503,15 +542,13 @@ Asm.WAIT = function() {
         this._cursor--;
         return MAX_COST - this._cost;
     }
-    
+
     this.push( last.key );
     return 0;
 };
 
 
 Asm.ASK = function() {
-    if (!this.kernel) return 0;
-
     if (this.get("ask.txt") === 0) {
         this.set("ask.txt", '');
         this.set("ask.cursor", 0);
@@ -520,23 +557,23 @@ Asm.ASK = function() {
         console.info("[asm] msg=...", msg);
         // Wait a frame and loop.
         this._cursor--;
-        return MAX_COST - this._cost;
+        return this.skipFrame();
     }
 
     var last = Keyboard.last();
     if (!last) {
         // Wait a frame and loop.
         this._cursor--;
-        return MAX_COST - this._cost;
+        return this.skipFrame();
     }
-    
+
     var key = last.key;
     if (key.length == 1) {
         // C'est un caractère à écrire.
         if (!Keyboard.test("SHIFT")) key = key.toLowerCase();
         this.set("ask.txt", this.get("ask.txt") + key);
         var asc = key.charCodeAt(0);
-        this.kernel.sprite(0, 16 * (asc % 16), 16 * Math.floor( asc / 16 ), 
+        this.kernel.sprite(0, 16 * (asc % 16), 16 * Math.floor( asc / 16 ),
                            this.get("X"), this.get("Y"),
                            16, 16, 1, 1, 0);
         var x = this.get("X") +16;
@@ -553,7 +590,7 @@ Asm.ASK = function() {
         return 0;
     }
     this._cursor--;
-    return MAX_COST - this._cost;
+    return this.skipFrame();
 };
 
 /**
@@ -1083,4 +1120,15 @@ Asm.SPRITE = function() {
             this.get("SX"), this.get("SY"), this.get("R") );
     }
     return 3*w*h;
+};
+
+/**
+ * PRINTCHAR( code )
+ * Print the char from its code. Then, push the cursor forward.
+ * For special chars, get back to previous char : ^"`´~°
+ */
+Asm.PRINTCHAR = function() {
+    var code = this.floor(this.popAsNumber());
+    this.printChar( code );
+    return 1;
 };
