@@ -490,7 +490,10 @@ Asm.BOX = function() {
  * CLS( x, y, w, h )
  */
 Asm.CLS = function() {
-    return box.call( this, this.get("pen")[0]);
+    this.kernel.blend( false );
+    var cost = box.call( this, this.get("pen")[0]);
+    this.kernel.blend( true );
+    return cost;
 };
 
 function box(color) {
@@ -584,7 +587,7 @@ Asm.WAIT = function() {
 Asm.ASK = function() {
     if (this.get("ask.txt") === 0) {
         this.set("ask.txt", '');
-        this.set("ask.cursor", 0);
+        this.set("ask.cursor", Date.now());
         var args = this.popArgs();
         var msg = args.join("\n");
         console.info("[asm] msg=...", msg);
@@ -595,6 +598,20 @@ Asm.ASK = function() {
         this._cursor--;
         return this.skipFrame();
     }
+
+    // Display cursor.
+    var x = this.get('x');
+    var y = this.get('y');
+    var sx = this.get('sx');
+    var sy = this.get('sy');
+    var time = (Date.now() - this.get('ask.cursor')) % 1000;
+    var pen = this.get('pen');
+    var color = pen[time < 500 ? 1 : 0];
+    this.kernel.point(x-8, y-8, color);
+    this.kernel.point(x+8, y-8, color);
+    this.kernel.point(x-8, y+8, color);
+    this.kernel.point(x+8, y+8, color);
+    this.kernel.triStrip();
 
     var last = Keyboard.last();
     if (!last) {
@@ -609,13 +626,38 @@ Asm.ASK = function() {
         if (!Keyboard.test("SHIFT")) key = key.toLowerCase();
         this.set("ask.txt", this.get("ask.txt") + key);
         var asc = key.charCodeAt(0);
+        color = pen[0];
+        this.kernel.point(x-8, y-8, color);
+        this.kernel.point(x+8, y-8, color);
+        this.kernel.point(x-8, y+8, color);
+        this.kernel.point(x+8, y+8, color);
+        this.kernel.triStrip();
         this.kernel.sprite(0, 16 * (asc % 16), 16 * Math.floor( asc / 16 ),
                            this.get("X"), this.get("Y"),
                            16, 16, 1, 1, 0);
-        var x = this.get("X") +16;
+        x = this.get("X") + 16;
         if (x > 639) {
             x -= 640;
             this.set("Y", this.get("Y") - 16);
+        }
+        this.set("X", x);
+    } else if (key == 'BACKSPACE' && this.get('ask.txt').length > 0) {
+        color = pen[0];
+        this.kernel.point(x-8, y-8, color);
+        this.kernel.point(x+8, y-8, color);
+        this.kernel.point(x-8, y+8, color);
+        this.kernel.point(x+8, y+8, color);
+        this.kernel.triStrip();
+        var txt = this.get('ask.txt');
+        this.set('ask.txt', txt.substr(0, txt.length - 1));
+        x = this.get("X") - 16;
+        if (x < 0) {
+            x += 640;
+            y = this.get('Y') + 16;
+            if (y > 479) {
+                y -= 480;
+                this.set('Y', y);
+            }
         }
         this.set("X", x);
     } else if (key == 'ENTER') {

@@ -248,7 +248,7 @@ Kernel.prototype.sprite = function(layer, xs, ys, xd, yd, w, h, scaleX, scaleY, 
     gl.vertexAttribPointer(attPosition, 2, gl.FLOAT, false, blockSize, 0);
 
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
-    gl.disable(gl.BLEND);
+    //gl.disable(gl.BLEND);
 };
 
 
@@ -262,6 +262,16 @@ Kernel.prototype.pen = function( pencil, color ) {
         arr[4 * pencil + idx] = channel;
     });
 };
+
+/**
+ * @return void
+ */
+Kernel.prototype.blend = function(value) {
+    var gl = this._gl;
+    if (value) gl.enable(gl.BLEND);
+    else gl.disable(gl.BLEND);
+};
+
 
 
 function clamp(value, min, max) {
@@ -278,7 +288,7 @@ function draw( type ) {
     var prg = this._prgTri;
     prg.use();
 
-    gl.disable(gl.BLEND);
+    //gl.disable(gl.BLEND);
     
     gl.bindBuffer( gl.ARRAY_BUFFER, this._bufVertexAttribs );
     var datAttributes = this._arrVertices.array;

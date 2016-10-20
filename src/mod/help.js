@@ -2,6 +2,22 @@
 
 var $ = require("dom");
 var DB = require("tfw.data-binding");
+var Marked = require("marked");
+
+Marked.setOptions(
+    {
+        // Git Flavoured Markdown.
+        gfm: true,
+        // Use tables.
+        tables: true
+        /*
+         highlight: function (code, lang) {
+         return Highlight.parseCode(code, lang, libs);
+         }
+         */
+    }
+);
+
 
 /**
  * @class Help
@@ -15,7 +31,7 @@ var DB = require("tfw.data-binding");
  */
 var Help = function(opts) {
     var elem = $.elem( this, 'div', 'help' );
-    
+
     DB.propString( this, 'value' )(function(v) {
         var xhr = new XMLHttpRequest();
         xhr.open("GET", "css/help/" + v + ".md", true);
@@ -25,7 +41,7 @@ var Help = function(opts) {
         };
         xhr.send(null);
     });
-    
+
     opts = DB.extend({
         value: 'main'
     }, opts, this);
@@ -36,5 +52,5 @@ module.exports = Help;
 
 
 function toMarkDown( elem, text ) {
-    elem.innerHTML = text;
+    elem.innerHTML = Marked( text );
 }
