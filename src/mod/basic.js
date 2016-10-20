@@ -31,6 +31,11 @@ var BINOP = {
     '>': Asm.GT
 };
 
+var CONSTS = {
+    NL: "\n",
+    PI: Math.PI
+};
+
 var FIXED_ARGS = {
     ABS: 1,
     ASC: 1,
@@ -38,7 +43,6 @@ var FIXED_ARGS = {
     IIF: 3,
     LEN: 1,
     NEG: 1,
-    RGB: 3,
     SHIFT: 1,
     SIN: 1,
     WAIT: 0
@@ -155,13 +159,19 @@ var PARSERS = {
         return true;
     },
     atom: function( lex ) {
-        var tkn = lex.next('FUNC', 'NUM', 'HEX', 'STR', 'VAR', 'PAR_OPEN');
+        var tkn = lex.next('FUNC', 'NUM', 'HEX', 'STR', 'VAR', 'PAR_OPEN', 'CONST');
         if (tkn) {
             switch(tkn.id) {
             case 'NUM': this._asm.push( parseFloat( tkn.val ) ); return true;
             case 'HEX': return parseHexa.call( this, tkn.val );
             case 'STR': this._asm.push( parseString( tkn.val ) ); return true;
             case 'VAR': this._asm.push( tkn.val, Asm.GET ); return true;
+            case 'CONST':
+                var cst = CONSTS[tkn.val.toUpperCase()];
+                if (!cst) lex.fatal(_('unknown-const', tkn.val));
+                if (!Array.isArray( cst )) this._asm.push( cst );
+                else this._asm.push.apply( this._asm, cst );
+                return true;
             case 'FUNC':
                 var name = tkn.val.substr(0, tkn.val.length - 1).toUpperCase();
                 var ret = parseFunc.call( this, lex, name, FIXED_ARGS[name] );
@@ -213,12 +223,23 @@ function parseHexa( str ) {
  *     "$total", "$total", GET, "$idx", GET, ADD, SET
  *     [:A], JPM
  * :B  "$total", GET, PRINT
+ *
+ * Il existe aussi la forme suivante :
+ * FOR $c IN "Bonjour"
+ *   PRINT $c + NL
+ * NEXT
+ *
+ * FOR $c, $i IN "Bonjour"
+ *   PEN COLOR($i % 16)
+ *   PRINT $c + NL
+ * NEXT
  */
 function parseFOR( lex ) {
     var tkn = lex.next('VAR');
     if (!tkn) lex.fatal(_('missing-var-after-for'));
     var name = tkn.val;
-    if (!lex.next('EQUAL')) lex.fatal(_('missing-equal'));
+    tkn = lex.next('EQUAL', 'IN');
+    if (!tkn) lex.fatal(_('missing-for-equal-or-to'));
     // Label of the FOR
     var labelA = this.newLabel();
     // Label of the NEXT
@@ -282,28 +303,17 @@ function parsePRINT( lex ) {
         lex.fatal(_('expected-eol'));
     }
 
-    pushPrintBody.call( this );
-    return true;
-}
-
-
-function pushPrintBody() {
     var lblBegin = this.newLabel();
     var lblEnd = this.newLabel();
 
     this.setLabel( lblBegin );
     this._asm.push( "print.txt", Asm.GET, Asm.LEN, [lblEnd], Asm.JZE );
-    this._asm.push( "print.txt", Asm.SHIFT, Asm.ASC, 1, 1, Asm.SPRITE );
+    this._asm.push( "print.txt", Asm.SHIFT, Asm.ASC, Asm.PRINTCHAR );
     this._asm.push( "print.frm", Asm.GET, Asm.FRAME );
-    this._asm.push( 16, "X", Asm.VARADD );
-    this._asm.push( 640, [lblBegin], Asm.JLT );
-    this._asm.push( "X", Asm.GET, -640, Asm.ADD, "X", Asm.SET );
-    this._asm.push( -16, "Y", Asm.VARADD );
-    this._asm.push( 0, [lblBegin], Asm.JGT );
-    this._asm.push( "Y", Asm.GET, 480, Asm.ADD, "Y", Asm.SET );
-    this._asm.push( 0, [lblBegin], Asm.JLT );
     this._asm.push( [lblBegin], Asm.JMP );
     this.setLabel( lblEnd );
+
+    return true;
 }
 
 

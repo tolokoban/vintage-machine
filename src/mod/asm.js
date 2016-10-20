@@ -83,15 +83,18 @@ module.exports = Asm;
 
 
 Asm.prototype.printChar = function(code) {
-    var i = (code & 15) << 4;
-    code >>= 4;
-    var j = (code & 15) << 4;
-    code >>= 4;
-    var layer = code;
     var x = this.get("X");
     var y = this.get("Y");
-
-    if ("^~°`´".indexOf(String.fromCharCode(code)) != -1) {
+    if (code == 10) {
+        // New line.
+        this.set("X", 8);
+        y -= this.get("SY") * 16;
+        if (y < 0) y += 480;
+        this.set("Y", y);
+        return;
+    }
+    
+    if ("^~°`´¨".indexOf(String.fromCharCode(code)) != -1) {
         // This is an accent, we should go back.
         x -= this.get("SX") * 16;
         if (x < 0) {
@@ -103,6 +106,12 @@ Asm.prototype.printChar = function(code) {
         this.set("x", x);
     }
     
+    var i = (code & 15) << 4;
+    code >>= 4;
+    var j = (code & 15) << 4;
+    code >>= 4;
+    var layer = code;
+
     this.kernel.sprite(
         layer, i, j,
         x, y, 16, 16,
@@ -113,9 +122,8 @@ Asm.prototype.printChar = function(code) {
     if (x > 639) {
         this.set("x", x - 640);
         y -= this.get("SY") * 16;
-        if (y < 0) {
-            this.set("y", y + 480);
-        }
+        if (y < 0) y += 480;
+        this.set("y", y);
     } else {
         this.set("X", x);
     }
@@ -145,7 +153,6 @@ Asm.prototype.next = function( runtime ) {
             cost = parseInt(cmd.call( this ));
             if (isNaN( cost )) cost = 0;
             this._cost += cost;
-            console.info("[asm] this._cost=...", this._cost);
         } else {
             this._cost++;
             this.push( cmd );
@@ -284,18 +291,40 @@ Asm.LEN = function() {
 };
 
 /**
- * RGB( red, green, blue )
+ * COLOR( val ) : gris
+ * COLOR( val, alpha )
+ * COLOR( red, green, blue )
+ * COLOR( red, green, blue, alpha )
+ * 
  * Values between 0 and 15.
  */
-Asm.RGB = function() {
-    var b = Math.floor(this.popAsNumber()) % 16;
-    while (b < 0) b += 16;
-    var g = Math.floor(this.popAsNumber()) % 16;
-    while (g < 0) g += 16;
-    var r = Math.floor(this.popAsNumber()) % 16;
-    while (r < 0) r += 16;
+Asm.COLOR = function() {
+    var args = this.popArgs(4);
+    args.map(function(itm) {
+        var v = parseInt(itm);
+        if (isNaN(v)) v = 0;
+        v %= 16;
+        while (v < 0) v += 16;
+        return v;
+    });
 
-    this.push( b + g << 4 + r << 8 );
+    var color = 0;
+    switch( args.length ) {
+    case 1:
+        color = args[0] * 0x111;
+        break;
+    case 2:
+        color = args[0] * 0x111 + (15 - args[3]) * 0x1000;
+        break;
+    case 3:
+        color = args[0] * 0x100 + args[1] * 0x10 + args[2];
+        break;
+    case 4:
+        color = args[0] * 0x100 + args[1] * 0x10 + args[2] + (15 - args[3]) * 0x1000;;
+        break;
+    }
+    
+    this.push( color );
     return 1;
 };
 
@@ -1135,7 +1164,7 @@ Asm.SPRITE = function() {
  * For special chars, get back to previous char : ^"`´~°
  */
 Asm.PRINTCHAR = function() {
-    var code = this.floor(this.popAsNumber());
+    var code = Math.floor(this.popAsNumber());
     this.printChar( code );
     return 1;
 };

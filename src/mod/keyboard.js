@@ -6,7 +6,7 @@ var LAST_CODE = null;
 
 document.addEventListener("keydown", function(evt) {
     if ("áàâäéèêëíìîïóòôöúùûüç".indexOf(evt.key) != -1) return;
-    console.info(evt.key, evt.code);
+    console.info(evt.key, evt.code, evt.keyCode);
     LAST_KEY = evt.key.toUpperCase();
     KEYS[LAST_KEY] = true;
     LAST_CODE = evt.code.toUpperCase();

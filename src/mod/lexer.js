@@ -28,10 +28,12 @@ var RX = {
     PAR_OPEN: /^\(/g,
     PAR_CLOSE: /^\)/g,
     COMMA: /^,/g,
-    FUNC: /^[a-z?]+\(/i,
-    INST: /^([a-z][a-z_]*[0-9]*)/gi,
+    FUNC: /^[a-z]+\(/i,
+    INST: /^[a-z][a-z_]*[0-9]*/gi,
     TO: /^to(?![a-z0-9])/i,
-    STEP: /^step(?![a-z0-9])/i
+    IN: /^to(?![a-z0-9])/i,
+    STEP: /^step(?![a-z0-9])/i,
+    CONST: /^[a-z]+/i
 };
 
 // All the possible tokens.
