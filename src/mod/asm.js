@@ -91,14 +91,16 @@ Asm.prototype.printChar = function(code) {
     var x = this.get("X");
     var y = this.get("Y");
 
-    if ("^~°`´".indexOf(String.fromCharCode(code))) {
+    if ("^~°`´".indexOf(String.fromCharCode(code)) != -1) {
         // This is an accent, we should go back.
         x -= this.get("SX") * 16;
         if (x < 0) {
             x += 640;
             y += this.get("SY") * 16;
             if (y > 479) y -= 480;
+            this.set("y", y);
         }
+        this.set("x", x);
     }
     
     this.kernel.sprite(
@@ -114,6 +116,8 @@ Asm.prototype.printChar = function(code) {
         if (y < 0) {
             this.set("y", y + 480);
         }
+    } else {
+        this.set("X", x);
     }
 };
 
@@ -555,6 +559,9 @@ Asm.ASK = function() {
         var args = this.popArgs();
         var msg = args.join("\n");
         console.info("[asm] msg=...", msg);
+        for (var k = 0; k < msg.length; k++) {
+            this.printChar(msg.charCodeAt(k));
+        }
         // Wait a frame and loop.
         this._cursor--;
         return this.skipFrame();
