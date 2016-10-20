@@ -1,0 +1,1 @@
+body{background:#ddd}canvas{box-shadow:0 12px 24px rgba(0,0,0,0.5);background:#888;margin:0}#editor{position:relative;padding:0;display:inline-block;width:641px;height:641px;overflow:hidden}#cursor{position:absolute;left:0;top:0;width:9px;height:9px;border:2px solid #f80}
