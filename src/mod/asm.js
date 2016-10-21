@@ -504,9 +504,7 @@ Asm.BACK = function() {
     var duration = this.popAsNumber();
     var color = this.kernel.expandColor( this.popAsNumber() );
     document.body.style.transition = "background " + duration + "ms";
-    document.body.style.background = "rgb(" + (color[0] * 17) + "," 
-        + (color[1] * 17) + "," 
-        + (color[2] * 17) + ")";
+    document.body.style.background = "rgb(" + color[0] + "," + color[1] + "," + color[2] + ")";
 };
 
 function box(color) {
@@ -603,7 +601,6 @@ Asm.ASK = function() {
         this.set("ask.cursor", Date.now());
         var args = this.popArgs();
         var msg = args.join("\n");
-        console.info("[asm] msg=...", msg);
         for (var k = 0; k < msg.length; k++) {
             this.printChar(msg.charCodeAt(k));
         }
@@ -675,6 +672,98 @@ Asm.ASK = function() {
         this.set("X", x);
     } else if (key == 'ENTER') {
         this.push(this.get("ask.txt"));
+        this.set("X", 8);
+        this.set("Y", this.get("Y") - 16);
+        this.set("ask.txt", 0);
+        return 0;
+    }
+    this._cursor--;
+    return this.skipFrame();
+};
+
+Asm.ASKNUM = function() {
+    if (this.get("ask.txt") === 0) {
+        this.set("ask.txt", '');
+        this.set("ask.cursor", Date.now());
+        var args = this.popArgs();
+        var msg = args.join("\n");
+        for (var k = 0; k < msg.length; k++) {
+            this.printChar(msg.charCodeAt(k));
+        }
+        // Wait a frame and loop.
+        this._cursor--;
+        return this.skipFrame();
+    }
+
+    // Display cursor.
+    var x = this.get('x');
+    var y = this.get('y');
+    var sx = this.get('sx');
+    var sy = this.get('sy');
+    var time = (Date.now() - this.get('ask.cursor')) % 1000;
+    var pen = this.get('pen');
+    var color = pen[time < 500 ? 1 : 0];
+    this.kernel.point(x-8, y-8, color);
+    this.kernel.point(x+8, y-8, color);
+    this.kernel.point(x-8, y+8, color);
+    this.kernel.point(x+8, y+8, color);
+    this.kernel.triStrip();
+
+    var last = Keyboard.last();
+    if (!last) {
+        // Wait a frame and loop.
+        this._cursor--;
+        return this.skipFrame();
+    }
+
+    var key = last.key;
+    if (key.length == 1 && "0123456789.-".indexOf(key) != -1) {
+        // C'est un caractère à écrire.
+        if (!Keyboard.test("SHIFT")) key = key.toLowerCase();
+        this.set("ask.txt", this.get("ask.txt") + key);
+        var asc = key.charCodeAt(0);
+        color = pen[0];
+        this.kernel.point(x-8, y-8, color);
+        this.kernel.point(x+8, y-8, color);
+        this.kernel.point(x-8, y+8, color);
+        this.kernel.point(x+8, y+8, color);
+        this.kernel.blend(false);
+        this.kernel.triStrip();
+        this.kernel.blend(true);
+        this.kernel.sprite(0, 16 * (asc % 16), 16 * Math.floor( asc / 16 ),
+                           this.get("X"), this.get("Y"),
+                           16, 16, 1, 1, 0);
+        x = this.get("X") + 16;
+        if (x > 639) {
+            x -= 640;
+            this.set("Y", this.get("Y") - 16);
+        }
+        this.set("X", x);
+    } else if (key == 'BACKSPACE' && this.get('ask.txt').length > 0) {
+        color = pen[0];
+        this.kernel.point(x-8, y-8, color);
+        this.kernel.point(x+8, y-8, color);
+        this.kernel.point(x-8, y+8, color);
+        this.kernel.point(x+8, y+8, color);
+        this.kernel.blend(false);
+        this.kernel.triStrip();
+        this.kernel.blend(true);
+        var txt = this.get('ask.txt');
+        this.set('ask.txt', txt.substr(0, txt.length - 1));
+        x = this.get("X") - 16;
+        if (x < 0) {
+            x += 640;
+            y = this.get('Y') + 16;
+            if (y > 479) {
+                y -= 480;
+                this.set('Y', y);
+            }
+        }
+        this.set("X", x);
+    } else if (key == 'ENTER') {
+        var number = parseFloat(this.get("ask.txt"));
+        if (isNaN(number)) number = 0;
+        this.push(number);
         this.set("X", 8);
         this.set("Y", this.get("Y") - 16);
         this.set("ask.txt", 0);
@@ -906,7 +995,8 @@ Asm.ADD = function() {
     var b = this.pop();
     var a = this.pop();
     // Addnig to a string.
-    if (typeof a === 'string') {
+    if (typeof a === 'string' || typeof b === 'string') {
+        a = '' + a;
         b = '' + b;
         this.push( a + b );
         return a.length + b.length + 2;
