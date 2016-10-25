@@ -131,6 +131,7 @@ var PARSERS = {
         case "NEXT": return parseNEXT.call( this, lex );
         case "INK": return parseArgs.call( this, lex, "INK", 3, -1 );
         case "PRINT": return parsePRINT.call( this, lex, "PRINT" );
+        case "SPEAK": return parseArgs.call( this, lex, "SPEAK", 0, "Je suis TLK-74." );
         case "BACK": return parseArgs.call( this, lex, "BACK", 0, 0x007, 0 );
         case "DEBUGGER": return parseArgs.call( this, lex, "DEBUGGER", 0);
         }

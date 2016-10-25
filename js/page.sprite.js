@@ -60,32 +60,40 @@ function  init() {
             break;
         case "ARROWRIGHT":
             if (Keyboard.test("CONTROL")) {
-                g_x = (g_x + 1) % 16;
-                refresh();
+                if (g_x < 12) {
+                    g_x = (g_x + 1) % 16;
+                    refresh();
+                }
             } else {
                 cursor(g_cursorX + 1, g_cursorY);
             }
             break;
         case "ARROWLEFT":
             if (Keyboard.test("CONTROL")) {
-                g_x = (g_x + 15) % 16;
-                refresh();
+                if (g_x > 0) {
+                    g_x = (g_x + 15) % 16;
+                    refresh();
+                }
             } else {
                 cursor(g_cursorX - 1, g_cursorY);
             }
             break;
         case "ARROWDOWN":
             if (Keyboard.test("CONTROL")) {
-                g_y = (g_y + 1) % 16;
-                refresh();
+                if (g_y < 12) {
+                    g_y = (g_y + 1) % 16;
+                    refresh();
+                }
             } else {
                 cursor(g_cursorX, g_cursorY + 1);
             }
             break;
         case "ARROWUP":
             if (Keyboard.test("CONTROL")) {
-                g_y = (g_y + 15) % 16;
-                refresh();
+                if (g_y > 0) {
+                    g_y = (g_y + 15) % 16;
+                    refresh();
+                }
             } else {
                 cursor(g_cursorX, g_cursorY - 1);
             }
@@ -193,7 +201,7 @@ function load() {
         var imageData = ctx.getImageData(0, 0, 256, 256);
         var data = imageData.data;
         g_symbols = new Uint8Array(256*256*4);
-        for (var idx=0 ; idx<data.length ; idx+=4) {            
+        for (var idx=0 ; idx<data.length ; idx+=4) {
             g_symbols[idx] = data[idx] > 127 ? 1 : 0;
             g_symbols[idx + 1] = g_symbols[idx + 2] = g_symbols[idx + 3] = 0;
         }

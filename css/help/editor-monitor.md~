@@ -1,0 +1,16 @@
+# Editeur et Moniteur
+
+Ton __TLK-74__ est composé de deux écrans :
+* L'__Éditeur__ : celui que tu regardes en ce moment même.
+* Le __Moniteur__ : celui qui avait un fond bleu quand tu démarre le __TLK-74__.
+
+Tu peux passer de l'un à l'autre en appuyant sur la touche __F1__ comme tu l'as déjà fait.
+
+Sur l'__Éditeur__ tu as ton fidèle manuel sur la gauche et ton programme sur la droite.
+Sur le __Moniteur__ tu vois le résultat de ton programme.
+
+Quand tu tapes un programme dans la partie droite de l'__Éditeur__ et que tu veux voir le résultat, tape sur la touche __F4__.
+
+## Comment écrire un programme dans l'éditeur
+
+Avant de programmer, il faut apprendre à écrire un programme dans l'éditeur.
