@@ -1,6 +1,7 @@
 "use strict";
 
 var Keyboard = require("keyboard");
+var Speak = require("speak");
 
 /**
  * @module asm
@@ -277,6 +278,11 @@ Asm.prototype.skipFrame = function( nbFrames ) {
     return 0;
 };
 
+Asm.SPEAK = function() {
+    var txt = "" + this.pop();
+    Speak.speak( txt );
+    return 10;
+};
 
 /**
  * LEN( str )
@@ -596,92 +602,35 @@ Asm.WAIT = function() {
 
 
 Asm.ASK = function() {
-    if (this.get("ask.txt") === 0) {
-        this.set("ask.txt", '');
-        this.set("ask.cursor", Date.now());
-        var args = this.popArgs();
-        var msg = args.join("\n");
-        for (var k = 0; k < msg.length; k++) {
-            this.printChar(msg.charCodeAt(k));
-        }
-        // Wait a frame and loop.
-        this._cursor--;
-        return this.skipFrame();
-    }
-
-    // Display cursor.
-    var x = this.get('x');
-    var y = this.get('y');
-    var sx = this.get('sx');
-    var sy = this.get('sy');
-    var time = (Date.now() - this.get('ask.cursor')) % 1000;
-    var pen = this.get('pen');
-    var color = pen[time < 500 ? 1 : 0];
-    this.kernel.point(x-8, y-8, color);
-    this.kernel.point(x+8, y-8, color);
-    this.kernel.point(x-8, y+8, color);
-    this.kernel.point(x+8, y+8, color);
-    this.kernel.triStrip();
-
-    var last = Keyboard.last();
-    if (!last) {
-        // Wait a frame and loop.
-        this._cursor--;
-        return this.skipFrame();
-    }
-
-    var key = last.key;
-    if (key.length == 1) {
-        // C'est un caractère à écrire.
-        if (!Keyboard.test("SHIFT")) key = key.toLowerCase();
-        this.set("ask.txt", this.get("ask.txt") + key);
-        var asc = key.charCodeAt(0);
-        color = pen[0];
-        this.kernel.point(x-8, y-8, color);
-        this.kernel.point(x+8, y-8, color);
-        this.kernel.point(x-8, y+8, color);
-        this.kernel.point(x+8, y+8, color);
-        this.kernel.triStrip();
-        this.kernel.sprite(0, 16 * (asc % 16), 16 * Math.floor( asc / 16 ),
-                           this.get("X"), this.get("Y"),
-                           16, 16, 1, 1, 0);
-        x = this.get("X") + 16;
-        if (x > 639) {
-            x -= 640;
-            this.set("Y", this.get("Y") - 16);
-        }
-        this.set("X", x);
-    } else if (key == 'BACKSPACE' && this.get('ask.txt').length > 0) {
-        color = pen[0];
-        this.kernel.point(x-8, y-8, color);
-        this.kernel.point(x+8, y-8, color);
-        this.kernel.point(x-8, y+8, color);
-        this.kernel.point(x+8, y+8, color);
-        this.kernel.triStrip();
-        var txt = this.get('ask.txt');
-        this.set('ask.txt', txt.substr(0, txt.length - 1));
-        x = this.get("X") - 16;
-        if (x < 0) {
-            x += 640;
-            y = this.get('Y') + 16;
-            if (y > 479) {
-                y -= 480;
-                this.set('Y', y);
-            }
-        }
-        this.set("X", x);
-    } else if (key == 'ENTER') {
-        this.push(this.get("ask.txt"));
-        this.set("X", 8);
-        this.set("Y", this.get("Y") - 16);
-        this.set("ask.txt", 0);
-        return 0;
-    }
-    this._cursor--;
-    return this.skipFrame();
+    ask.call(this);
 };
 
+
 Asm.ASKNUM = function() {
+    ask.call(this, function(key) {
+        return "0123456789.-".indexOf( key ) != -1;
+    }, function(val) {
+        return parseFloat(val);
+    });
+};
+
+/**
+ * Displays a cursor at a text position.
+ */
+function showCursor(x, y, color) {
+    this.kernel.blend( false );
+    this.kernel.point( x-8, y-8, color );
+    this.kernel.point( x+8, y-8, color );
+    this.kernel.point( x-8, y+8, color );
+    this.kernel.point( x+8, y+8, color );
+    this.kernel.triStrip();
+    this.kernel.blend( true );
+}
+
+function ask(filter, converter) {
+    if( typeof filter === 'undefined' ) filter = function() { return true; };
+    if( typeof converter === 'undefined' ) converter = function(v) { return v; };
+
     if (this.get("ask.txt") === 0) {
         this.set("ask.txt", '');
         this.set("ask.cursor", Date.now());
@@ -703,11 +652,7 @@ Asm.ASKNUM = function() {
     var time = (Date.now() - this.get('ask.cursor')) % 1000;
     var pen = this.get('pen');
     var color = pen[time < 500 ? 1 : 0];
-    this.kernel.point(x-8, y-8, color);
-    this.kernel.point(x+8, y-8, color);
-    this.kernel.point(x-8, y+8, color);
-    this.kernel.point(x+8, y+8, color);
-    this.kernel.triStrip();
+    showCursor.call(this, x, y, color);
 
     var last = Keyboard.last();
     if (!last) {
@@ -717,19 +662,13 @@ Asm.ASKNUM = function() {
     }
 
     var key = last.key;
-    if (key.length == 1 && "0123456789.-".indexOf(key) != -1) {
+    if (key.length == 1 && filter(key)) {
         // C'est un caractère à écrire.
         if (!Keyboard.test("SHIFT")) key = key.toLowerCase();
         this.set("ask.txt", this.get("ask.txt") + key);
         var asc = key.charCodeAt(0);
         color = pen[0];
-        this.kernel.point(x-8, y-8, color);
-        this.kernel.point(x+8, y-8, color);
-        this.kernel.point(x-8, y+8, color);
-        this.kernel.point(x+8, y+8, color);
-        this.kernel.blend(false);
-        this.kernel.triStrip();
-        this.kernel.blend(true);
+        showCursor.call( this, x, y, color );
         this.kernel.sprite(0, 16 * (asc % 16), 16 * Math.floor( asc / 16 ),
                            this.get("X"), this.get("Y"),
                            16, 16, 1, 1, 0);
@@ -741,13 +680,7 @@ Asm.ASKNUM = function() {
         this.set("X", x);
     } else if (key == 'BACKSPACE' && this.get('ask.txt').length > 0) {
         color = pen[0];
-        this.kernel.point(x-8, y-8, color);
-        this.kernel.point(x+8, y-8, color);
-        this.kernel.point(x-8, y+8, color);
-        this.kernel.point(x+8, y+8, color);
-        this.kernel.blend(false);
-        this.kernel.triStrip();
-        this.kernel.blend(true);
+        showCursor.call( this, x, y, color );
         var txt = this.get('ask.txt');
         this.set('ask.txt', txt.substr(0, txt.length - 1));
         x = this.get("X") - 16;
@@ -761,9 +694,9 @@ Asm.ASKNUM = function() {
         }
         this.set("X", x);
     } else if (key == 'ENTER') {
-        var number = parseFloat(this.get("ask.txt"));
-        if (isNaN(number)) number = 0;
-        this.push(number);
+        color = pen[0];
+        showCursor.call( this, x, y, color );
+        this.push(converter(this.get("ask.txt")));
         this.set("X", 8);
         this.set("Y", this.get("Y") - 16);
         this.set("ask.txt", 0);
