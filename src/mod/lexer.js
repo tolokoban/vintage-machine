@@ -31,7 +31,7 @@ var RX = {
     FUNC: /^[a-z]+\(/i,
     INST: /^[a-z][a-z_]*[0-9]*/gi,
     TO: /^to(?![a-z0-9])/i,
-    IN: /^to(?![a-z0-9])/i,
+    IN: /^in(?![a-z0-9])/i,
     STEP: /^step(?![a-z0-9])/i,
     CONST: /^[a-z]+/i
 };
