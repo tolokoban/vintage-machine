@@ -3,6 +3,8 @@
     "vert": "glsl/tri.vert.c",
     "frag": "glsl/tri.frag.c",
     "vertSprite": "glsl/sprite.vert.c",
-    "fragSprite": "glsl/sprite.frag.c"
+    "fragSprite": "glsl/sprite.frag.c",
+    "vertDisk": "glsl/disk.vert.c",
+    "fragDisk": "glsl/disk.frag.c"
   }
 }

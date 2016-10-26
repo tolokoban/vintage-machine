@@ -61,10 +61,11 @@ var PRECISION = 0.0000000001;
 
 
 var Asm = function( bytecode, kernel, runtime ) {
+    var that = this;
+
     this._bytecode = bytecode;
     this._cursor = 0;
     this._cost = 0;
-    this.kernel = kernel;
     this.runtime = runtime || {
         stack: [],
         // Vars are stored lowercase.
@@ -78,6 +79,18 @@ var Asm = function( bytecode, kernel, runtime ) {
             cursor: 1
         }
     };
+    Object.defineProperty( Asm.prototype, 'kernel', {
+        get: function() { return this._kernel; },
+        set: function(v) { 
+            this._kernel = v; 
+            that.runtime.vars.pen.forEach(function (color, pencil) {
+                v.pen( pencil, color );
+            });
+        },
+        configurable: true,
+        enumerable: true
+    });
+    if (typeof kernel !== 'undefined') this.kernel = kernel;
 };
 
 module.exports = Asm;
@@ -335,6 +348,36 @@ Asm.COLOR = function() {
 };
 
 /**
+ * DISK( radius )
+ * DISK( rx, ry )
+ */
+Asm.DISK = function() {
+    var x = this.get("x");
+    var y = this.get("y");
+    var pen = this.get("pen")[1];
+    var color = this.kernel.expandColor(pen);
+    var args = this.popArgs(3);
+    var rx = 100;
+    var ry = 100;
+    var ang = 0;
+    if (args.length == 1) {
+        rx = parseFloat(args[0]);
+        ry = rx;
+    }
+    else if (args.length == 2) {
+        rx = parseFloat(args[0]);
+        ry = parseFloat(args[1]);
+    }
+    else if (args.length == 3) {
+        rx = parseFloat(args[0]);
+        ry = parseFloat(args[1]);
+        ang = parseFloat(args[2]);
+    }
+    this.kernel.disk( x, y, rx, ry, ang, color[0], color[1], color[2], color[3] );
+    return rx * ry / 256;
+};
+
+/**
  * COS( ang )
  * Angles in degree.
  */
@@ -510,7 +553,10 @@ Asm.BACK = function() {
     var duration = this.popAsNumber();
     var color = this.kernel.expandColor( this.popAsNumber() );
     document.body.style.transition = "background " + duration + "ms";
-    document.body.style.background = "rgb(" + color[0] + "," + color[1] + "," + color[2] + ")";
+    document.body.style.background = "rgb(" 
+        + color[0]*16 + "," 
+        + color[1]*16 + "," 
+        + color[2]*16 + ")";
 };
 
 function box(color) {

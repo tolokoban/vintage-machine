@@ -3,6 +3,8 @@
 var $ = require("dom");
 var DB = require("tfw.data-binding");
 var Marked = require("marked");
+var HashWatcher = require("tfw.hash-watcher");
+
 
 Marked.setOptions(
     {
@@ -46,6 +48,10 @@ var Help = function(opts) {
     opts = DB.extend({
         value: 'main'
     }, opts, this);
+
+    HashWatcher(function(hash) {
+        that.value = hash[0];
+    });
 };
 
 
@@ -59,15 +65,6 @@ function toMarkDown( elem, text ) {
     var i, link;
     for (i=0; i<links.length; i++) {
         link = links[i];
-        link.setAttribute("data-page", link.getAttribute("href"));
-        link.setAttribute("href", "#");
-        $.on(link, gotoPage(link, that));
+        link.setAttribute("href", "#" + link.getAttribute("href"));
     }
-}
-
-function gotoPage( link, help ) {
-    return function() {
-        var href = link.getAttribute("data-page");
-        help.value = href;
-    };
 }
