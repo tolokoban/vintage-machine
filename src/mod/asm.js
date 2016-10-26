@@ -1217,9 +1217,9 @@ Asm.FORE = function() {
         return 1;
     }
     if (typeof lst === 'string') {
-        this.set(varChr, varLst.charAt(idx));
+        this.set(varChr, lst.charAt(idx));
     } else {
-        this.set(varChr, varLst[idx]);
+        this.set(varChr, lst[idx]);
     }
     this.set(varIdx, idx + 1);
     return 3;
