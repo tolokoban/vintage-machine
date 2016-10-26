@@ -75,7 +75,7 @@ function compileAndRun() {
         Keyboard.preventDefault = true;
         var code = g_codeEditor.value;
         Storage.set('default-code', code);
-        var basic = new Basic( code );
+        var basic = new Basic( "CLS\n" + code );
         console.log(g_codeEditor.value);
         var bytecode = basic.asm();
         console.log(bytecode);
@@ -86,8 +86,8 @@ function compileAndRun() {
         $.addClass( document.body, 'show' );
         console.error( ex );
         Message.error( ex.msg );
-        console.log("Unexpected char: " + codeEditor.value.charCodeAt( ex.pos ));
-        codeEditor.focus( ex.pos );
+        console.log("Unexpected char: " + g_codeEditor.value.charCodeAt( ex.pos ));
+        g_codeEditor.focus( ex.pos );
     }
 }
 

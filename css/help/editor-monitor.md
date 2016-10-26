@@ -40,7 +40,7 @@ Maintenant, place ton curseur au début d'une ligne (avec la souris ou la touche
 > Bon, c'est bien beau tout ça, mais à quoi ça sert à part supprimer du texte ?
 
 Ça sert à faire du _copier/coller_. C'est-à-dire que tu peux copier du texte à un endroit et le coller ailleurs autant de fois que tu veux. Ça évite de tout retaper lettre par lettre.
-Pour _copier_, il faut utiliser la touche __CTRL__+__C__. Et pour _coller__, la touche __CTRL__+__V__.
+Pour _copier_, il faut utiliser la touche __CTRL__+__C__. Et pour _coller_, la touche __CTRL__+__V__.
 
 Mais le plus fort, c'est que tu peux copier du texte qui vient de n'importe où ! De ce manuel, par exemple, ou même d'une page web.
 

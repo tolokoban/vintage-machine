@@ -123,6 +123,7 @@ var PARSERS = {
         case "POINT": return parseArgs.call( this, lex, "POINT", 2, ["color", Asm.GET]);
         case "TRIS": return parseArgs.call( this, lex, "TRIS", 0);
         case "TRIANGLE": return parseArgs.call( this, lex, "TRIANGLE", 0, 0,0,320,480,640,0);
+        case "DISK": return parseVarArgs.call( this, lex, "DISK");
         case "BOX": return parseVarArgs.call( this, lex, "BOX");
         case "CLS": return parseVarArgs.call( this, lex, "CLS");
         case "PEN": return parseVarArgs.call( this, lex, "PEN");

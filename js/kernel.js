@@ -3,7 +3,9 @@
   "vert": "attribute vec2 attPosition;\nattribute vec4 attColor;\n\nconst float W = 2.0 / 640.0;\nconst float H = 2.0 / 480.0;\n\nvarying vec4 varColor;\n\nvoid main() {\n  varColor = attColor;\n  gl_Position = vec4( attPosition.x * W - 1.0, attPosition.y * H - 1.0, 0.0, 1.0 );\n}\n",
   "frag": "precision mediump float;\n\nvarying vec4 varColor;\n\nvoid main() {\n  gl_FragColor = varColor;\n}\n",
   "vertSprite": "// attPosition.x is +1 or -1\n// attPosition.y is +1 or -1\nattribute vec2 attPosition;\n\n// In Tlk-space: 640x480.\nuniform float uniDstW;\nuniform float uniDstH;\nuniform float uniCenterX;\nuniform float uniCenterY;\n\n\nconst float W = 2.0 / 640.0;\nconst float H = 2.0 / 480.0;\n\n\nvarying vec2 varUV;\n\n\nvoid main() {\n  float cx = uniCenterX * W - 1.0;\n  float cy = uniCenterY * H - 1.0;\n  float x = attPosition.x * uniDstW * W;\n  float y = attPosition.y * uniDstH * H;\n\n  gl_Position = vec4( cx + x, cy + y, 0.0, 1.0 );\n  varUV = vec2( attPosition.x + .5, attPosition.y + .5 );\n}\n",
-  "fragSprite": "precision mediump float;\n\n// The symbols' page.\nuniform sampler2D texSymbols;\n// The pencils used.\nuniform sampler2D texPencils;\n\n// Coords of the current pixel. (0,0) is le left bottom one and (1,1) is the upper right one.\nvarying vec2 varUV;\n\n// In pixels of the symbols' page.\nuniform float uniSrcX;\nuniform float uniSrcY;\nuniform float uniSrcW;\nuniform float uniSrcH;\n\nconst float UNIT = 1.0 / 256.0;\n\nvoid main() {\n  float x = ( varUV.x * uniSrcW + uniSrcX ) / 256.0;\n  float y = ( (1.0 - varUV.y) * uniSrcH + uniSrcY ) / 256.0;\n  float color = texture2D( texSymbols, vec2( x, y ) ).r;\n  // color is between 0 and 7 * UNIT.\n  if (color < UNIT) {\n    gl_FragColor = vec4(0.0, 0.0, 0.0, 0.0);\n  } else {\n  // The palette index is coded on the RED composant of texPencils.\n    gl_FragColor = texture2D( texPencils, vec2(color * 32.0, .5) );\n  }\n}\n\n"};
+  "fragSprite": "precision mediump float;\n\n// The symbols' page.\nuniform sampler2D texSymbols;\n// The pencils used.\nuniform sampler2D texPencils;\n\n// Coords of the current pixel. (0,0) is le left bottom one and (1,1) is the upper right one.\nvarying vec2 varUV;\n\n// In pixels of the symbols' page.\nuniform float uniSrcX;\nuniform float uniSrcY;\nuniform float uniSrcW;\nuniform float uniSrcH;\n\nconst float UNIT = 1.0 / 256.0;\n\nvoid main() {\n  float x = ( varUV.x * uniSrcW + uniSrcX ) / 256.0;\n  float y = ( (1.0 - varUV.y) * uniSrcH + uniSrcY ) / 256.0;\n  float color = texture2D( texSymbols, vec2( x, y ) ).r;\n  // color is between 0 and 7 * UNIT.\n  if (color < UNIT) {\n    gl_FragColor = vec4(0.0, 0.0, 0.0, 0.0);\n  } else {\n  // The palette index is coded on the RED composant of texPencils.\n    gl_FragColor = texture2D( texPencils, vec2(color * 32.0, .5) );\n  }\n}\n\n",
+  "vertDisk": "uniform float uniX;\nuniform float uniY;\nuniform float uniW;\nuniform float uniH;\n\nattribute vec2 attPosition;\n\nconst float W = 2.0 / 640.0;\nconst float H = 2.0 / 480.0;\n\nvarying vec2 varPosition;\n\nvoid main() {\n  varPosition = attPosition;\n  float x = (uniX + attPosition.x * uniW) * W - 1.0;\n  float y = (uniY + attPosition.y * uniH) * H - 1.0;\n  gl_Position = vec4( x, y, 0.0, 1.0 );\n}\n",
+  "fragDisk": "precision mediump float;\n\nuniform float uniR;\nuniform float uniG;\nuniform float uniB;\nuniform float uniA;\nvarying vec2 varPosition;\n\nvoid main() {\n  float radius = varPosition.x * varPosition.x + varPosition.y * varPosition.y;\n  if (radius > 1.0) gl_FragColor = vec4(0.0,0.0,0.0,0.0);\n  else gl_FragColor = vec4(uniR, uniG, uniB, uniA);\n}\n"};
   "use strict";
 
 var WebGL = require("tfw.webgl");
@@ -46,7 +48,6 @@ function Kernel( canvas, symbols ) {
     // Pencils texture.
     var texPencils = gl.createTexture();
     gl.bindTexture(gl.TEXTURE_2D, texPencils);
-    // No transparency on pencils.
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 8, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, this._pencils);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
@@ -68,6 +69,11 @@ function Kernel( canvas, symbols ) {
     this._prgTri = new WebGL.Program( gl, {
         vert: GLOBAL.vert,
         frag: GLOBAL.frag
+    });
+    // Program for disks.
+    this._prgDisk = new WebGL.Program( gl, {
+        vert: GLOBAL.vertDisk,
+        frag: GLOBAL.fragDisk
     });
     // Program for displaying sprites.
     this._prgSprite = new WebGL.Program( gl, {
@@ -94,32 +100,6 @@ function Kernel( canvas, symbols ) {
             // Do the user rendering.
             that._render( time, that );
         }
-
-        /*
-        gl.bindFramebuffer( gl.FRAMEBUFFER, null );
-        var prg = that._prgRender;
-        prg.use();
-        gl.colorMask( true, true, true, true );
-        gl.disable( gl.BLEND );
-        gl.disable( gl.DEPTH_TEST );
-        gl.bindBuffer( gl.ARRAY_BUFFER, bufRectangle );
-        gl.enableVertexAttribArray( prg.$attPosition );
-        gl.vertexAttribPointer( prg.$attPosition, 2, gl.FLOAT, false, 0, 0 );
-        gl.bufferData( gl.ARRAY_BUFFER, datRectangle, gl.STATIC_DRAW );
-
-        prg.$uniTime = time;
-        prg.$texSource = 0;
-        prg.$texPalette = 1;
-
-        gl.activeTexture(gl.TEXTURE0);
-        gl.bindTexture( gl.TEXTURE_2D, that._fbTexture );
-
-        gl.activeTexture(gl.TEXTURE1);
-        gl.bindTexture(gl.TEXTURE_2D, texPalette);
-        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 64, 2, 0, gl.RGBA, gl.UNSIGNED_BYTE, that._palette);
-
-        gl.drawArrays( gl.TRIANGLE_STRIP, 0, 4 );
-*/
     });
 
     this._render = function( ker, time ) {};
@@ -152,10 +132,10 @@ Kernel.prototype.clearPoints = function() {
 Kernel.prototype.point = function(x, y, color) {
     color = this.expandColor( color );
     this._arrVertices.push( x, y,
-                            color[0] / 256,
-                            color[1] / 256,
-                            color[2] / 256,
-                            color[3] / 256 );
+                            color[0],
+                            color[1],
+                            color[2],
+                            color[3] );
 };
 
 /**
@@ -178,7 +158,7 @@ Kernel.prototype.expandColor = function( color ) {
     color >>= 4;
     var a = 255 - 17 * color;
 
-    return [r, g, b, a];
+    return [r / 256, g / 256, b / 256, a / 256];
 };
 
 /**
@@ -257,15 +237,49 @@ Kernel.prototype.sprite = function(layer, xs, ys, xd, yd, w, h, scaleX, scaleY, 
     //gl.disable(gl.BLEND);
 };
 
+var DISK = new Float32Array([ -1, -1, +1, -1, -1, +1, +1, +1 ]);
+/**
+ *
+ */
+Kernel.prototype.disk = function(x, y, rx, ry, ang, r, g, b, a) {
+    var gl = this._gl;
+    var prg = this._prgDisk;
+    prg.use();
+
+    gl.enable(gl.BLEND);
+    gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA); // gl.ONE);
+
+    prg.$uniX = x;
+    prg.$uniY = y;
+    prg.$uniW = rx;
+    prg.$uniH = ry;
+    prg.$uniR = r;
+    prg.$uniG = g;
+    prg.$uniB = b;
+    prg.$uniA = a;
+
+    gl.bindBuffer( gl.ARRAY_BUFFER, this._bufVertexAttribs );
+    var datAttributes = DISK;
+    gl.bufferData( gl.ARRAY_BUFFER, datAttributes, gl.STATIC_DRAW );
+    var bpe = datAttributes.BYTES_PER_ELEMENT;
+    var blockSize = 2 * bpe;
+    // attPosition
+    var attPosition = gl.getAttribLocation(prg.program, "attPosition");
+    gl.enableVertexAttribArray(attPosition);
+    gl.vertexAttribPointer(attPosition, 2, gl.FLOAT, false, blockSize, 0);
+
+    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+};
 
 /**
  * @return void
  */
 Kernel.prototype.pen = function( pencil, color ) {
+    // Colors are stored in BYTE format : [0, 255].
     var arr = this._pencils;
     color = this.expandColor( color );
     color.forEach(function (channel, idx) {
-        arr[4 * pencil + idx] = channel;
+        arr[4 * pencil + idx] = channel * 255;
     });
 };
 
@@ -294,8 +308,6 @@ function draw( type ) {
     var prg = this._prgTri;
     prg.use();
 
-    //gl.disable(gl.BLEND);
-    
     gl.bindBuffer( gl.ARRAY_BUFFER, this._bufVertexAttribs );
     var datAttributes = this._arrVertices.array;
     gl.bufferData( gl.ARRAY_BUFFER, datAttributes, gl.STATIC_DRAW );
@@ -313,7 +325,6 @@ function draw( type ) {
     gl.drawArrays(type, 0, this._arrVertices.length / 6);
     this.clearPoints();
 }
-
 
 /**
  * Pencils are the 8 pencils used for sprites.
