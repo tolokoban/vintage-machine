@@ -1,4 +1,4 @@
-/** @module basic */require( 'basic', function(exports, module) { var _intl_={"fr":{"expected-eol":"L'instruction devrait s'arrêter là.","fixed-args":"$1 attend exactement $2 argument(s) et pas $3.","missing-comma":"Il faut séparer les arguments par des virgules.","missing-equal":"Après un nom de variable, il faut mettre un '='.","missing-expression":"J'ai besoin d'une expression : c'est-à-dire un nombre, une chaîne de caractères, une variable, un calcul...","missing-expression-after":"Il me faut une expression après \"$1\".","missing-for-equal-or-to":"Après le nom de variable, il me faut un égal ou IN.","missing-par-close":"Il manque une paranthèse fermante !","missing-to":"Il faut le mot clef TO dans un FOR pour que ça fonctionne.","missing-var-after-for":"Il faut un nom de variable juste après FOR.","print-missing-arg":"L'instruction PRINT attend le texte à afficher comme argument.","too-few-args":"L'instruction \"$1\" a besoin d'au moins $2 argument(s).","too-many-args":"Cette instruction attend au minimum $1 argument(s), et au maximum $2.","unexpected-token":"Il y a là un caractère que je ne comprends pas.","unexpected-next":"Ce NEXT ne correspond à aucun FOR.","unknown-function":"Je ne connais aucune fonction appelée $1.","unknown-instr":"Cette instruction m'est inconnue : $1."},"en":{}},_$=require("$").intl;function _(){return _$(_intl_, arguments);}
+/** @module basic */require( 'basic', function(exports, module) { var _intl_={"fr":{"expected-eol":"L'instruction devrait s'arrêter là.","fixed-args":"$1 attend exactement $2 argument(s) et pas $3.","missing-comma":"Il faut séparer les arguments par des virgules.","missing-equal":"Après un nom de variable, il faut mettre un '='.","missing-expression":"J'ai besoin d'une expression : c'est-à-dire un nombre, une chaîne de caractères, une variable, un calcul...","missing-expression-after":"Il me faut une expression après \"$1\".","missing-for-equal-or-to":"Après le nom de variable, il me faut un égal ou IN.","missing-par-close":"Il manque une paranthèse fermante !","missing-to":"Il faut le mot clef TO dans un FOR pour que ça fonctionne.","missing-var-after-for":"Il faut un nom de variable juste après FOR.","missing-var-index-foreach":"Après la virgule, il me faut la variable qui contiendra l'index du caractère $1.","print-missing-arg":"L'instruction PRINT attend le texte à afficher comme argument.","too-few-args":"L'instruction \"$1\" a besoin d'au moins $2 argument(s).","too-many-args":"Cette instruction attend au minimum $1 argument(s), et au maximum $2.","unexpected-token":"Il y a là un caractère que je ne comprends pas.","unexpected-next":"Ce NEXT ne correspond à aucun FOR.","unknown-function":"Je ne connais aucune fonction appelée $1.","unknown-instr":"Cette instruction m'est inconnue : $1."},"en":{}},_$=require("$").intl;function _(){return _$(_intl_, arguments);}
     "use strict";
 
 /**
@@ -51,6 +51,7 @@ var FIXED_ARGS = {
 
 
 function Basic( code ) {
+    this._id = 0;
     this.clear();
     if( typeof code === 'undefined' ) code = '';
     this._code = code;
@@ -69,6 +70,13 @@ function Basic( code ) {
         }
     }, this);
 }
+
+/**
+ * @return void
+ */
+Basic.prototype.nextID = function() {
+    return this._id++;
+};
 
 
 /**
@@ -242,8 +250,18 @@ function parseFOR( lex ) {
     var tkn = lex.next('VAR');
     if (!tkn) lex.fatal(_('missing-var-after-for'));
     var name = tkn.val;
-    tkn = lex.next('EQUAL', 'IN');
+    tkn = lex.next('EQUAL', 'IN', 'COMMA');
     if (!tkn) lex.fatal(_('missing-for-equal-or-to'));
+    if (tkn.val == ',') {
+        tkn = lex.next('VAR');
+        if (!tkn) lex.fatal(_('missing-var-index-foreach', name));
+        // Nom de la variable d'index pour le ForEach.
+        var name2 = tkn.val;
+        if (!lex.next('IN')) lex.fatal(_('missing-foreach-in'));
+        return parseFORE.call( this, lex, name, name2 );
+    }
+    if (tkn.val == 'IN') return parseFORE.call( this, lex, name );
+
     // Label of the FOR
     var labelA = this.newLabel();
     // Label of the NEXT
@@ -270,6 +288,24 @@ function parseFOR( lex ) {
     return true;
 }
 
+function parseFORE( lex, varChr, varIdx ) {
+    if( typeof varIdx === 'undefined' ) varIdx = 'tmp' + this.nextID();
+
+    var tkn = lex.next('VAR');
+    if (!tkn) lex.fatal(_("missing-list-foreach"));
+    var varLst = tkn.val;
+
+    // Label of the FOR
+    var labelA = this.newLabel();
+    // Label of the NEXT
+    var labelB = this.newLabel();
+
+    this._asm.push( varIdx, Asm.ERASE );
+    this.setLabel( labelA );
+    this._context.push({ type: "FOR", labelA: labelA, labelB: labelB });
+    this._asm.push( varChr, varIdx, varLst, [labelB], Asm.FORE );
+    return true;
+}
 
 function parseNEXT( lex ) {
     var ctx = this._context.pop();

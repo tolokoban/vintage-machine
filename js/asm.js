@@ -1201,6 +1201,32 @@ Asm.IIF = function() {
 };
 
 /**
+ * FORE( varItem, varIndex, varList, jmp )
+ */
+Asm.FORE = function() {
+    var jmp = this.popAsNumber();
+    var varLst = "" + this.pop();
+    var varIdx = "" + this.pop();
+    var varChr = "" + this.pop();
+    var lst = this.get(varLst);
+    var idx = parseInt(this.get(varIdx));
+    if (isNaN(idx)) idx = 0;
+    var chr = this.get(varChr);
+    var len = lst ? lst.length || 0 : 0;
+    if (idx >= len) {
+        this._cursor = jmp;
+        return 1;
+    }
+    if (typeof lst === 'string') {
+        this.set(varChr, lst.charAt(idx));
+    } else {
+        this.set(varChr, lst[idx]);
+    }
+    this.set(varIdx, idx + 1);
+    return 3;
+};
+
+/**
  * FOR( var, a, b, step, jmp )
  */
 Asm.FOR = function() {
