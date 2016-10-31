@@ -1,7 +1,7 @@
 body {
     width: 100%;
     height: 100%;
-    background: #00f;
+    background: #007;
     font-size: 1vmax;
     overflow: hidden;
 }
@@ -31,6 +31,49 @@ canvas {
         transform: rotate(90deg);
         margin: -48vw -64vw;
     }
+}
+
+#HEADER {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    width: 100%;
+    height: 2rem;
+    line-height: 2rem;
+    border-bottom: 1px solid rgba(0,0,0,.3);
+}
+
+#HEADER > div {
+    cursor: pointer;
+    padding: 0 1rem;
+}
+
+#HEADER > div:hover {
+    background: rgba(255,128,0,.3);
+}
+
+
+#HELP {
+    position: absolute;
+    left: 0;
+    top: 2rem;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    overflow: auto;
+    padding: 0 .5rem;
+}
+
+#HELP pre {
+    font-family: monospace;
+    padding: .5rem;
+    background: #eee;
+    box-shadow: 0 6px 12px rgba(0,0,0,.25);
+}
+
+#HELP code {
+    font-family: monospace;
 }
 
 #MANUAL, #EDITOR {

@@ -50,6 +50,7 @@ var FIXED_ARGS = {
 
 
 function Basic( code ) {
+    this._id = 0;
     this.clear();
     if( typeof code === 'undefined' ) code = '';
     this._code = code;
@@ -68,6 +69,13 @@ function Basic( code ) {
         }
     }, this);
 }
+
+/**
+ * @return void
+ */
+Basic.prototype.nextID = function() {
+    return this._id++;
+};
 
 
 /**
@@ -122,6 +130,7 @@ var PARSERS = {
         case "POINT": return parseArgs.call( this, lex, "POINT", 2, ["color", Asm.GET]);
         case "TRIS": return parseArgs.call( this, lex, "TRIS", 0);
         case "TRIANGLE": return parseArgs.call( this, lex, "TRIANGLE", 0, 0,0,320,480,640,0);
+        case "DISK": return parseVarArgs.call( this, lex, "DISK");
         case "BOX": return parseVarArgs.call( this, lex, "BOX");
         case "CLS": return parseVarArgs.call( this, lex, "CLS");
         case "PEN": return parseVarArgs.call( this, lex, "PEN");
@@ -130,6 +139,8 @@ var PARSERS = {
         case "NEXT": return parseNEXT.call( this, lex );
         case "INK": return parseArgs.call( this, lex, "INK", 3, -1 );
         case "PRINT": return parsePRINT.call( this, lex, "PRINT" );
+        case "SPEAK": return parseArgs.call( this, lex, "SPEAK", 0, "Je suis TLK-74." );
+        case "BACK": return parseArgs.call( this, lex, "BACK", 0, 0x007, 0 );
         case "DEBUGGER": return parseArgs.call( this, lex, "DEBUGGER", 0);
         }
 
@@ -238,8 +249,18 @@ function parseFOR( lex ) {
     var tkn = lex.next('VAR');
     if (!tkn) lex.fatal(_('missing-var-after-for'));
     var name = tkn.val;
-    tkn = lex.next('EQUAL', 'IN');
+    tkn = lex.next('EQUAL', 'IN', 'COMMA');
     if (!tkn) lex.fatal(_('missing-for-equal-or-to'));
+    if (tkn.val == ',') {
+        tkn = lex.next('VAR');
+        if (!tkn) lex.fatal(_('missing-var-index-foreach', name));
+        // Nom de la variable d'index pour le ForEach.
+        var name2 = tkn.val;
+        if (!lex.next('IN')) lex.fatal(_('missing-foreach-in'));
+        return parseFORE.call( this, lex, name, name2 );
+    }
+    if (tkn.val == 'IN') return parseFORE.call( this, lex, name );
+
     // Label of the FOR
     var labelA = this.newLabel();
     // Label of the NEXT
@@ -266,6 +287,24 @@ function parseFOR( lex ) {
     return true;
 }
 
+function parseFORE( lex, varChr, varIdx ) {
+    if( typeof varIdx === 'undefined' ) varIdx = 'tmp' + this.nextID();
+
+    var tkn = lex.next('VAR');
+    if (!tkn) lex.fatal(_("missing-list-foreach"));
+    var varLst = tkn.val;
+
+    // Label of the FOR
+    var labelA = this.newLabel();
+    // Label of the NEXT
+    var labelB = this.newLabel();
+
+    this._asm.push( varIdx, Asm.ERASE );
+    this.setLabel( labelA );
+    this._context.push({ type: "FOR", labelA: labelA, labelB: labelB });
+    this._asm.push( varChr, varIdx, varLst, [labelB], Asm.FORE );
+    return true;
+}
 
 function parseNEXT( lex ) {
     var ctx = this._context.pop();

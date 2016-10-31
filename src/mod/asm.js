@@ -1,6 +1,7 @@
 "use strict";
 
 var Keyboard = require("keyboard");
+var Speak = require("speak");
 
 /**
  * @module asm
@@ -60,10 +61,11 @@ var PRECISION = 0.0000000001;
 
 
 var Asm = function( bytecode, kernel, runtime ) {
+    var that = this;
+
     this._bytecode = bytecode;
     this._cursor = 0;
     this._cost = 0;
-    this.kernel = kernel;
     this.runtime = runtime || {
         stack: [],
         // Vars are stored lowercase.
@@ -77,6 +79,18 @@ var Asm = function( bytecode, kernel, runtime ) {
             cursor: 1
         }
     };
+    Object.defineProperty( Asm.prototype, 'kernel', {
+        get: function() { return this._kernel; },
+        set: function(v) { 
+            this._kernel = v; 
+            that.runtime.vars.pen.forEach(function (color, pencil) {
+                v.pen( pencil, color );
+            });
+        },
+        configurable: true,
+        enumerable: true
+    });
+    if (typeof kernel !== 'undefined') this.kernel = kernel;
 };
 
 module.exports = Asm;
@@ -277,6 +291,11 @@ Asm.prototype.skipFrame = function( nbFrames ) {
     return 0;
 };
 
+Asm.SPEAK = function() {
+    var txt = "" + this.pop();
+    Speak.speak( txt );
+    return 10;
+};
 
 /**
  * LEN( str )
@@ -326,6 +345,36 @@ Asm.COLOR = function() {
     
     this.push( color );
     return 1;
+};
+
+/**
+ * DISK( radius )
+ * DISK( rx, ry )
+ */
+Asm.DISK = function() {
+    var x = this.get("x");
+    var y = this.get("y");
+    var pen = this.get("pen")[1];
+    var color = this.kernel.expandColor(pen);
+    var args = this.popArgs(3);
+    var rx = 100;
+    var ry = 100;
+    var ang = 0;
+    if (args.length == 1) {
+        rx = parseFloat(args[0]);
+        ry = rx;
+    }
+    else if (args.length == 2) {
+        rx = parseFloat(args[0]);
+        ry = parseFloat(args[1]);
+    }
+    else if (args.length == 3) {
+        rx = parseFloat(args[0]);
+        ry = parseFloat(args[1]);
+        ang = parseFloat(args[2]);
+    }
+    this.kernel.disk( x, y, rx, ry, ang, color[0], color[1], color[2], color[3] );
+    return rx * ry / 256;
 };
 
 /**
@@ -490,7 +539,24 @@ Asm.BOX = function() {
  * CLS( x, y, w, h )
  */
 Asm.CLS = function() {
-    return box.call( this, this.get("pen")[0]);
+    this.kernel.blend( false );
+    var cost = box.call( this, this.get("pen")[0]);
+    this.kernel.blend( true );
+    return cost;
+};
+
+/**
+ * BACK( color )
+ * Chnge la couleur de l'arrière plan.
+ */
+Asm.BACK = function() {
+    var duration = this.popAsNumber();
+    var color = this.kernel.expandColor( this.popAsNumber() );
+    document.body.style.transition = "background " + duration + "ms";
+    document.body.style.background = "rgb(" 
+        + color[0]*16 + "," 
+        + color[1]*16 + "," 
+        + color[2]*16 + ")";
 };
 
 function box(color) {
@@ -582,12 +648,40 @@ Asm.WAIT = function() {
 
 
 Asm.ASK = function() {
+    ask.call(this);
+};
+
+
+Asm.ASKNUM = function() {
+    ask.call(this, function(key) {
+        return "0123456789.-".indexOf( key ) != -1;
+    }, function(val) {
+        return parseFloat(val);
+    });
+};
+
+/**
+ * Displays a cursor at a text position.
+ */
+function showCursor(x, y, color) {
+    this.kernel.blend( false );
+    this.kernel.point( x-8, y-8, color );
+    this.kernel.point( x+8, y-8, color );
+    this.kernel.point( x-8, y+8, color );
+    this.kernel.point( x+8, y+8, color );
+    this.kernel.triStrip();
+    this.kernel.blend( true );
+}
+
+function ask(filter, converter) {
+    if( typeof filter === 'undefined' ) filter = function() { return true; };
+    if( typeof converter === 'undefined' ) converter = function(v) { return v; };
+
     if (this.get("ask.txt") === 0) {
         this.set("ask.txt", '');
-        this.set("ask.cursor", 0);
+        this.set("ask.cursor", Date.now());
         var args = this.popArgs();
         var msg = args.join("\n");
-        console.info("[asm] msg=...", msg);
         for (var k = 0; k < msg.length; k++) {
             this.printChar(msg.charCodeAt(k));
         }
@@ -595,6 +689,16 @@ Asm.ASK = function() {
         this._cursor--;
         return this.skipFrame();
     }
+
+    // Display cursor.
+    var x = this.get('x');
+    var y = this.get('y');
+    var sx = this.get('sx');
+    var sy = this.get('sy');
+    var time = (Date.now() - this.get('ask.cursor')) % 1000;
+    var pen = this.get('pen');
+    var color = pen[time < 500 ? 1 : 0];
+    showCursor.call(this, x, y, color);
 
     var last = Keyboard.last();
     if (!last) {
@@ -604,22 +708,41 @@ Asm.ASK = function() {
     }
 
     var key = last.key;
-    if (key.length == 1) {
+    if (key.length == 1 && filter(key)) {
         // C'est un caractère à écrire.
         if (!Keyboard.test("SHIFT")) key = key.toLowerCase();
         this.set("ask.txt", this.get("ask.txt") + key);
         var asc = key.charCodeAt(0);
+        color = pen[0];
+        showCursor.call( this, x, y, color );
         this.kernel.sprite(0, 16 * (asc % 16), 16 * Math.floor( asc / 16 ),
                            this.get("X"), this.get("Y"),
                            16, 16, 1, 1, 0);
-        var x = this.get("X") +16;
+        x = this.get("X") + 16;
         if (x > 639) {
             x -= 640;
             this.set("Y", this.get("Y") - 16);
         }
         this.set("X", x);
+    } else if (key == 'BACKSPACE' && this.get('ask.txt').length > 0) {
+        color = pen[0];
+        showCursor.call( this, x, y, color );
+        var txt = this.get('ask.txt');
+        this.set('ask.txt', txt.substr(0, txt.length - 1));
+        x = this.get("X") - 16;
+        if (x < 0) {
+            x += 640;
+            y = this.get('Y') + 16;
+            if (y > 479) {
+                y -= 480;
+                this.set('Y', y);
+            }
+        }
+        this.set("X", x);
     } else if (key == 'ENTER') {
-        this.push(this.get("ask.txt"));
+        color = pen[0];
+        showCursor.call( this, x, y, color );
+        this.push(converter(this.get("ask.txt")));
         this.set("X", 8);
         this.set("Y", this.get("Y") - 16);
         this.set("ask.txt", 0);
@@ -851,7 +974,8 @@ Asm.ADD = function() {
     var b = this.pop();
     var a = this.pop();
     // Addnig to a string.
-    if (typeof a === 'string') {
+    if (typeof a === 'string' || typeof b === 'string') {
+        a = '' + a;
         b = '' + b;
         this.push( a + b );
         return a.length + b.length + 2;
@@ -1073,6 +1197,32 @@ Asm.IIF = function() {
     if (cond == 0) this.push( falseVal );
     else this.push( trueVal );
     return 0;
+};
+
+/**
+ * FORE( varItem, varIndex, varList, jmp )
+ */
+Asm.FORE = function() {
+    var jmp = this.popAsNumber();
+    var varLst = "" + this.pop();
+    var varIdx = "" + this.pop();
+    var varChr = "" + this.pop();
+    var lst = this.get(varLst);
+    var idx = parseInt(this.get(varIdx));
+    if (isNaN(idx)) idx = 0;
+    var chr = this.get(varChr);
+    var len = lst ? lst.length || 0 : 0;
+    if (idx >= len) {
+        this._cursor = jmp;
+        return 1;
+    }
+    if (typeof lst === 'string') {
+        this.set(varChr, lst.charAt(idx));
+    } else {
+        this.set(varChr, lst[idx]);
+    }
+    this.set(varIdx, idx + 1);
+    return 3;
 };
 
 /**
