@@ -815,7 +815,7 @@ Asm.PEN = function() {
         color = Math.abs(Math.floor(this.popAsNumber()));
         idx = count & 7;
         this.kernel.pen(idx + 1, color);
-        pen[idx] = color;
+        pen[idx + 1] = color;
     }
     return 7;
 };

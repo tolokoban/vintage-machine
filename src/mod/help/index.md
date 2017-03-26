@@ -26,7 +26,7 @@
 * [MOVER](.) : Positionner le curseur graphique relativement à se position actuelle.
 * [NEG()](.) : Retourner l'opposé d'un nombre.
 * [NEXT](.) : boucler sur une suite de nombres.
-* [PAPER](.) : Changer la couleur du crayon 0.
+* [PAPER](ins.paper) : Changer la couleur du crayon 0.
 * [PEN](ins.pen) : Changer les couleurs des crayons 1, 2, 3, 4, 5, 6 et 7.
 * [POINT](.) : Définir un point pour un futur triangle.
 * [PRINT](ins.print) : Afficher un texte à l'écran.

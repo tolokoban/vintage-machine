@@ -1,4 +1,4 @@
-exports.config={"name":"\"vintage-machine\"","description":"\"Virtual old-fashion machine to learn basic concepts of computer programming.\"","author":"\"tolokoban\"","version":"\"0.0.5\"","major":"0","minor":"0","revision":"5","date":"2017-03-26T14:20:36.000Z","consts":{}};
+exports.config={"name":"\"vintage-machine\"","description":"\"Virtual old-fashion machine to learn basic concepts of computer programming.\"","author":"\"tolokoban\"","version":"\"0.0.6\"","major":"0","minor":"0","revision":"6","date":"2017-03-26T16:29:29.000Z","consts":{}};
 var currentLang = null;
 exports.lang = function(lang) {
     if (lang === undefined) {

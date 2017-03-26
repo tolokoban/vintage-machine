@@ -6,7 +6,7 @@
 > BOX x, y, taille
 > BOX x, y, largeur, hauteur
 
-Dessiner un rectangla avec la couleur du stylo 1.
+Dessiner un rectangle avec la couleur du stylo 1.
 
 Exemple :
 
@@ -14,10 +14,8 @@ Exemple :
 
 ```
 
-Voir aussi [`CLS`](ins.cls), [`MOVE`](ins.move).
+Voir aussi [`CLS`](ins.cls), [`MOVE`](ins.move), [`PEN`](ins.pen).
 
 ----
 
 [Index](index)
-
-
