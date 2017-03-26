@@ -1,0 +1,9 @@
+div.help blockquote {
+    border-left: 4px solid rgba(0,100,255,.5);
+    background: rgba(0,100,255,.2);
+    padding: 4px 12px;
+    margin: 8px;
+    font-family: serif;
+    font-size: 110%;
+    color: #024;
+}

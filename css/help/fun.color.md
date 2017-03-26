@@ -1,6 +1,8 @@
 # COLOR
 
 > COLOR(rouge, vert, bleu)
+> COLOR(rouge, vert, bleu, transparence)
+
 
 Retourner la valeur d'une couleur à partir de ses composantes rouge, vert et bleu.
 Chaque composante est un nombre entier allant de 0 à 15.
@@ -16,6 +18,11 @@ qu'on peut créer les 4096 couleurs que possède __TLK-74__.
 
 C'est pourquoi, `COLOR` ne fait rien d'autre que de retourner un nombre entier
 allant de 0 à 1023.
+
+Il est également possible d'ajouter un quatrième argument qui permet de définir
+la _transparence_. La valeur 15 signifie une totale invisibilité, 0 signifie
+pas de transparence du tout. Quand on dessine avec une couleur transparente,
+on peut voir ce qu'il y a derrière.
 
 Exemple :
 
