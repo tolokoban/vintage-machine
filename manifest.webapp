@@ -9,6 +9,6 @@
     "512": "/icon-512.png"
   },
   "name": "vintage-machine",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "Virtual old-fashion machine to learn basic concepts of computer programming."
 }
