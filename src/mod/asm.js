@@ -551,18 +551,19 @@ Asm.CLS = function() {
  * Chnge la couleur de l'arrière plan.
  */
 Asm.BACK = function() {
-    var duration = this.popAsNumber();
-    var color = this.kernel.expandColor( this.popAsNumber() );
-    document.body.style.transition = "background " + duration + "ms";
-    document.body.style.background = "rgb("
-        + color[0]*16 + ","
-        + color[1]*16 + ","
-        + color[2]*16 + ")";
+  var duration = this.popAsNumber();
+  var colorIdx = this.popAsNumber();
+  var color = this.kernel.expandColor( colorIdx );
+  document.body.style.transition = "background " + duration + "ms";
+  document.body.style.background = "rgb(" +
+      color[0]*255 + "," +
+      color[1]*255 + "," +
+      color[2]*255 + ")";
 };
 
 function box(color) {
     var x, y, w, h, count = this.popAsNumber();
-    if (count == 0) {
+    if (count === 0) {
         x = 0;
         y = 0;
         w = 640;

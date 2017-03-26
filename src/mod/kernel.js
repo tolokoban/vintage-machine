@@ -270,7 +270,6 @@ Kernel.prototype.pen = function( pencil, color ) {
     // Colors are stored in BYTE format : [0, 255].
     var arr = this._pencils;
     color = this.expandColor( color );
-    console.info("expanded pencil=", pencil, ", color=", color);
     color.forEach(function (channel, idx) {
         arr[4 * pencil + idx] = channel * 255;
     });
