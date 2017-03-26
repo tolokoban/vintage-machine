@@ -268,8 +268,12 @@ Kernel.prototype.disk = function(x, y, rx, ry, ang, r, g, b, a) {
  */
 Kernel.prototype.pen = function( pencil, color ) {
     // Colors are stored in BYTE format : [0, 255].
+    console.info("pencil=", pencil);
+    console.info("color=", color);
+
     var arr = this._pencils;
     color = this.expandColor( color );
+    console.info("expanded color=", color);
     color.forEach(function (channel, idx) {
         arr[4 * pencil + idx] = channel * 255;
     });

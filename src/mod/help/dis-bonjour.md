@@ -33,3 +33,9 @@ PRINT "Je suis ton ordinateur personnel : TLK-74.", 1
 Comme tu le vois, avec cet argument en plus, les lettres s'affichent les unes après les autres. Essaie de remplacer le 1 par un 2 ou un 3 pour voir ce que ça fait.
 
 
+
+
+----
+
+* Chapitre suivant : [Un peu de couleur](couleurs)
+* Chapitre précédent : [Dis bonjour!](dis-bonjour)

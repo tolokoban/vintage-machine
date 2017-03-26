@@ -812,9 +812,9 @@ Asm.PEN = function() {
     var count = this.popAsNumber();
     var color, idx;
     while (count --> 0) {
-        color = Math.floor(this.popAsNumber());
-        idx = (count + 8000001) % 8;
-        this.kernel.pen(idx, color);
+        color = Math.abs(Math.floor(this.popAsNumber()));
+        idx = count & 7;
+        this.kernel.pen(idx + 1, color);
         pen[idx] = color;
     }
     return 7;
