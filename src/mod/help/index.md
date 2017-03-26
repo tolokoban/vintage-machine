@@ -6,7 +6,7 @@
 # Index des instructions, fonctions et constantes du BASIK
 
 * [ABS()](fun.abs) : retourner la valeur absolue d'un nombre.
-* [ASC()](fun.asc.) : retourner le code numérique d'un caractère.
+* [ASC()](fun.asc) : retourner le code numérique d'un caractère.
 * [ASK()](fun.ask) : demander à l'utilisateur de taper un texte et retourner ce texte.
 * [BACK](ins.back) : changer la couleur de l'arrière plan.
 * [BOX](ins.box) : dessiner un rectangle plein avec le crayon 1 (PEN).

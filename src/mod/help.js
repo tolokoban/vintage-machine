@@ -3,6 +3,7 @@
 var $ = require("dom");
 var DB = require("tfw.data-binding");
 var Marked = require("marked");
+var Button = require("wdg.button");
 var HashWatcher = require("tfw.hash-watcher");
 
 
@@ -67,4 +68,21 @@ function toMarkDown( elem, text ) {
         link = links[i];
         link.setAttribute("href", "#" + link.getAttribute("href"));
     }
+
+    var codes = elem.querySelectorAll("pre > code");
+    var code, btn;
+    for (i=0; i<codes.length; i++) {
+        code = codes[i];
+        addButtonToCode( code );
+    }
+}
+
+function addButtonToCode( code ) {
+    var text = code.textContent;
+    var btn = new Button({ text: "Copier/Coller", type: "simple" });
+    var div = $.div({ style: "text-align: right" }, [btn]);
+    btn.on(function() {
+        APP.pasteCode( text );
+    });
+    code.insertAdjacentElement( 'afterend', div );
 }

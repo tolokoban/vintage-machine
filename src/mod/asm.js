@@ -56,7 +56,7 @@ var Speak = require("speak");
 
 // Every atomic instruction has a time cost.
 // The cost allower between two requestAnimationFrames is `MAX_COST`.
-var MAX_COST = 40000;
+var MAX_COST = 80000;
 var PRECISION = 0.0000000001;
 
 
@@ -81,8 +81,8 @@ var Asm = function( bytecode, kernel, runtime ) {
     };
     Object.defineProperty( Asm.prototype, 'kernel', {
         get: function() { return this._kernel; },
-        set: function(v) { 
-            this._kernel = v; 
+        set: function(v) {
+            this._kernel = v;
             that.runtime.vars.pen.forEach(function (color, pencil) {
                 v.pen( pencil, color );
             });
@@ -107,7 +107,7 @@ Asm.prototype.printChar = function(code) {
         this.set("Y", y);
         return;
     }
-    
+
     if ("^~°`´¨".indexOf(String.fromCharCode(code)) != -1) {
         // This is an accent, we should go back.
         x -= this.get("SX") * 16;
@@ -119,7 +119,7 @@ Asm.prototype.printChar = function(code) {
         }
         this.set("x", x);
     }
-    
+
     var i = (code & 15) << 4;
     code >>= 4;
     var j = (code & 15) << 4;
@@ -186,6 +186,7 @@ Asm.prototype.push = function(value) {
 };
 
 Asm.prototype.pop = function(value) {
+    if( this.runtime.stack.length == 0 ) return undefined;
     this._cost++;
     return this.runtime.stack.pop();
 };
@@ -314,7 +315,7 @@ Asm.LEN = function() {
  * COLOR( val, alpha )
  * COLOR( red, green, blue )
  * COLOR( red, green, blue, alpha )
- * 
+ *
  * Values between 0 and 15.
  */
 Asm.COLOR = function() {
@@ -342,7 +343,7 @@ Asm.COLOR = function() {
         color = args[0] * 0x100 + args[1] * 0x10 + args[2] + (15 - args[3]) * 0x1000;;
         break;
     }
-    
+
     this.push( color );
     return 1;
 };
@@ -553,9 +554,9 @@ Asm.BACK = function() {
     var duration = this.popAsNumber();
     var color = this.kernel.expandColor( this.popAsNumber() );
     document.body.style.transition = "background " + duration + "ms";
-    document.body.style.background = "rgb(" 
-        + color[0]*16 + "," 
-        + color[1]*16 + "," 
+    document.body.style.background = "rgb("
+        + color[0]*16 + ","
+        + color[1]*16 + ","
         + color[2]*16 + ")";
 };
 
@@ -972,13 +973,14 @@ Asm.NEG = function() {
  */
 Asm.ADD = function() {
     var b = this.pop();
+    if( typeof b === 'undefined' ) {
+      this.push( 0 );
+      return;
+    }
     var a = this.pop();
-    // Addnig to a string.
-    if (typeof a === 'string' || typeof b === 'string') {
-        a = '' + a;
-        b = '' + b;
-        this.push( a + b );
-        return a.length + b.length + 2;
+    if( typeof a === 'undefined' ) {
+      this.push( b );
+      return;
     }
     // Adding to an array: concat/push.
     if (Array.isArray( a )) {
@@ -991,6 +993,13 @@ Asm.ADD = function() {
             this.push( a );
         }
         return 1;
+    }
+    // Adding to a string means concatenate into a string.
+    if ( isNaN(a) || isNaN(b) ) {
+        a = '' + a;
+        b = '' + b;
+        this.push( a + b );
+        return a.length + b.length + 2;
     }
     // Adding to a number.
     this.push( this.asNumber( a ) + this.asNumber( b ) );
