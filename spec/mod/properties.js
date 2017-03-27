@@ -1,0 +1,2 @@
+require("properties",function(e,r){function n(){return t(o,arguments)}var o={en:{},fr:{}},t=require("$").intl;e.readonly=function(e,r,n){"function"==typeof n?Object.defineProperty(e,r,{get:n,set:function(){console.error("[properties] Property `"+r+"` is readonly!")},configurable:!0,enumerable:!0}):Object.defineProperty(e,r,{value:n,writable:!1,configurable:!0,enumerable:!0})},r.exports._=n});
+//# sourceMappingURL=properties.js.map

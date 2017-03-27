@@ -1,0 +1,2 @@
+require("tfw.hash-watcher",function(r,t){function n(){return o(e,arguments)}var e={en:{}},o=require("$").intl,i=require("tfw.listeners"),s="?random-hash."+Date.now(),a=0,u="",h=[],c=new i;t.exports=function(r){c.add(r),a||(a=window.setInterval(function(){var r=window.location.hash;if(s!=r){for(s=r,"#"==r.charAt(0)&&(r=r.substr(1)),u=r;"/"==r.charAt(0);)r=r.substr(1);h=r.split("/"),c.fire(h,window.location.hash)}},50))},t.exports.args=function(){return h},t.exports.hash=function(){return u},t.exports._=n});
+//# sourceMappingURL=tfw.hash-watcher.js.map

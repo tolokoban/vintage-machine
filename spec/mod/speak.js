@@ -1,0 +1,2 @@
+require("speak",function(e,n){function i(){return o(t,arguments)}var r,t={en:{},fr:{}},o=require("$").intl,s=window.speechSynthesis,c=s?s.getVoices():[];console.info("[speak] voices=...",c),e.isAvailable=function(){return!!s},e.getVoices=function(){return c},e.setVoice=function(e){return!!s&&(r=e,!0)},e.speak=function(e){if(!s)return!1;var n=new SpeechSynthesisUtterance(e);return r&&(n.voice=r),s.speak(n),!0},n.exports._=i});
+//# sourceMappingURL=speak.js.map
