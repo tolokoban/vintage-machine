@@ -67,6 +67,9 @@ exports.start = function() {
     xhr.send( null );
 };
 
+exports.pasteCode = function( code ) {
+    g_codeEditor.value = code;
+};
 
 function compileAndRun() {
     try {

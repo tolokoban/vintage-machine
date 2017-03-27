@@ -150,7 +150,7 @@ Kernel.prototype.expandColor = function( color ) {
     color >>= 4;
     var a = 255 - 17 * color;
 
-    return [r / 256, g / 256, b / 256, a / 256];
+    return [r / 255, g / 255, b / 255, a / 255];
 };
 
 /**

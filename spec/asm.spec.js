@@ -12,21 +12,21 @@ describe('Module `asm`', function() {
 
     describe('Infinit loop', function() {
         it('should exit of an infinite loop after a predefined cost',
-           check([0, 1, Asm.ADD, 1, Asm.JMP], [6666, 1]));
+           check([0, 1, Asm.ADD, 1, Asm.JMP], [7273]));
     });
-    
+
     describe('GET / SET', function() {
         it('should compute triangular numbers', check(
             [
-                "idx", 10, Asm.SET,         // 0
-                0,                          // 3
-                "idx", Asm.GET,             // 4
-                Asm.ADD,                    // 6
-                "idx",                      // 7
-                "idx", Asm.GET, 1, Asm.SUB, // 8
-                Asm.SET,                    // 12
-                "idx", Asm.GET,             // 13
-                4, Asm.JNZ               // 15
+              10, "idx", Asm.SET,          // 0
+              0,                          // 3
+              "idx", Asm.GET,             // 4
+              Asm.ADD,                    // 6
+              "idx", Asm.GET, 1, Asm.SUB, // 7
+              "idx",                      // 11
+              Asm.SET,                    // 12
+              "idx", Asm.GET,             // 13
+              4, Asm.JNZ                  // 15
             ],
             [55]
         ));
@@ -34,12 +34,12 @@ describe('Module `asm`', function() {
 
     describe('DEC', function() {
         it('should decrement 7 to 6', check(
-            ["$x", 7, Asm.SET, "$x", Asm.DEC], [6]));
+            [7, "$x", Asm.SET, "$x", Asm.DEC], [6]));
     });
 
     describe('INC', function() {
         it('should increment 7 to 8', check(
-            ["$x", 7, Asm.SET, "$x", Asm.INC], [8]));
+            [7, "$x", Asm.SET, "$x", Asm.INC], [8]));
     });
 
     describe('JMP', function() {
@@ -62,57 +62,57 @@ describe('Module `asm`', function() {
                   1,  Asm.ADD  // 9
                  ], [29]));
     });
-    
+
     describe('JZE', function() {
         it('should jump if zero',
            check([27, 0, 6, Asm.JZE, 1, Asm.ADD, 1, Asm.ADD], [28]));
         it('should not jump if not zero',
            check([27, 1, 6, Asm.JZE, 1, Asm.ADD, 1, Asm.ADD], [29]));
     });
-    
+
     describe('JNZ', function() {
         it('should jump if zero',
            check([27, 0, 6, Asm.JNZ, 1, Asm.ADD, 1, Asm.ADD], [29]));
         it('should not jump if not zero',
            check([27, 1, 6, Asm.JNZ, 1, Asm.ADD, 1, Asm.ADD], [28]));
     });
-    
+
     describe('JGT', function() {
         it('should not jump because -1 is NOT > zero',
-           check([27, -1, 6, Asm.JGT, 1, Asm.ADD, 1, Asm.ADD], [29]));
+           check([27, 0, -1, 7, Asm.JGT, 1, Asm.ADD, 1, Asm.ADD], [28]));
         it('should not jump because 0 is NOT > zero',
-           check([27, 0, 6, Asm.JGT, 1, Asm.ADD, 1, Asm.ADD], [29]));
+           check([27, 0, 0, 7, Asm.JGT, 1, Asm.ADD, 1, Asm.ADD], [29]));
         it('should jump because 1 is > zero',
-           check([27, 1, 6, Asm.JGT, 1, Asm.ADD, 1, Asm.ADD], [28]));
+           check([27, 0, 1, 7, Asm.JGT, 1, Asm.ADD, 1, Asm.ADD], [29]));
     });
-    
+
     describe('JGE', function() {
         it('should not jump because -1 is NOT >= zero',
-           check([27, -1, 6, Asm.JGE, 1, Asm.ADD, 1, Asm.ADD], [29]));
+           check([27, 0, -1, 7, Asm.JGE, 1, Asm.ADD, 1, Asm.ADD], [28]));
         it('should jump because 0 is >= zero',
-           check([27, 0, 6, Asm.JGE, 1, Asm.ADD, 1, Asm.ADD], [28]));
+           check([27, 0, 0, 7, Asm.JGE, 1, Asm.ADD, 1, Asm.ADD], [28]));
         it('should jump because 1 is >= zero',
-           check([27, 1, 6, Asm.JGE, 1, Asm.ADD, 1, Asm.ADD], [28]));
+           check([27, 0, 1, 7, Asm.JGE, 1, Asm.ADD, 1, Asm.ADD], [29]));
     });
-    
+
     describe('JLT', function() {
         it('should not jump because 1 is NOT < zero',
-           check([27, 1, 6, Asm.JLT, 1, Asm.ADD, 1, Asm.ADD], [29]));
+           check([27, 0, 1, 7, Asm.JLT, 1, Asm.ADD, 1, Asm.ADD], [28]));
         it('should not jump because 0 is NOT < zero',
-           check([27, 0, 6, Asm.JLT, 1, Asm.ADD, 1, Asm.ADD], [29]));
+           check([27, 0, 0, 7, Asm.JLT, 1, Asm.ADD, 1, Asm.ADD], [29]));
         it('should jump because -1 is < zero',
-           check([27, -1, 6, Asm.JLT, 1, Asm.ADD, 1, Asm.ADD], [28]));
+           check([27, 0, -1, 7, Asm.JLT, 1, Asm.ADD, 1, Asm.ADD], [29]));
     });
-    
+
     describe('JLE', function() {
         it('should not jump because 1 is NOT <= zero',
-           check([27, 1, 6, Asm.JLE, 1, Asm.ADD, 1, Asm.ADD], [29]));
+           check([27, 0, 1, 7, Asm.JLE, 1, Asm.ADD, 1, Asm.ADD], [28]));
         it('should jump because 0 is <= zero',
-           check([27, 0, 6, Asm.JLE, 1, Asm.ADD, 1, Asm.ADD], [28]));
+           check([27, 0, 0, 7, Asm.JLE, 1, Asm.ADD, 1, Asm.ADD], [28]));
         it('should jump because -1 is <= zero',
-           check([27, -1, 6, Asm.JLE, 1, Asm.ADD, 1, Asm.ADD], [28]));
+           check([27, 0, -1, 7, Asm.JLE, 1, Asm.ADD, 1, Asm.ADD], [29]));
     });
-    
+
     describe('ADD', function() {
         it('should add 3 and 7', check([3, 7, Asm.ADD], [10]));
         it('should add -3.14 and +3.14', check([-3.14, 3.14, Asm.ADD], [0]));
@@ -122,7 +122,7 @@ describe('Module `asm`', function() {
         it('should work if the stack has a length of 1', check( [27, Asm.ADD], [27] ));
         it('should concat strings', check( ["fab", "ien", Asm.ADD], ["fabien"] ));
         it('should concat string with number', check( ["fab", 74, Asm.ADD], ["fab" + 74] ));
-        it('should concat number with string', check( [74, "fab", Asm.ADD], [74] ));
+        it('should concat number with string', check( [74, "fab", Asm.ADD], ["74fab"] ));
         it('should concat number with string (representing a number)',
            check( [74, "27", Asm.ADD], [101] ));
         it('should concat array with string', check( [[1, 2], "fab", Asm.ADD], [[1, 2, 'fab']] ));

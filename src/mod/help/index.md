@@ -1,18 +1,20 @@
-# INdex des chapitres
+# Index des chapitres
 
 * [Introduction](main)
 * [Editeur et Moniteur](editor-monitor)
+* [Dis bonjour!](dis-bonjour)
+* [Couleurs](couleurs)
 
 # Index des instructions, fonctions et constantes du BASIK
 
 * [ABS()](fun.abs) : retourner la valeur absolue d'un nombre.
-* [ASC()](fun.asc.) : retourner le code numérique d'un caractère.
+* [ASC()](fun.asc) : retourner le code numérique d'un caractère.
 * [ASK()](fun.ask) : demander à l'utilisateur de taper un texte et retourner ce texte.
 * [BACK](ins.back) : changer la couleur de l'arrière plan.
 * [BOX](ins.box) : dessiner un rectangle plein avec le crayon 1 (PEN).
 * [CHR()](.) : retourner le caractère dont on passe le code.
 * [CLS](.) : effacer une zone rectangulaire de l'écran avec la couleur 0 (PAPER).
-* [COLOR()](.) : créer une couleur à partir de ses composantes.
+* [COLOR()](fun.color) : créer une couleur à partir de ses composantes.
 * [COS()](.) : retourner le cosinus d'un angle en degrés.
 * [FOR](.) : . boucler sur une suite de nombres.
 * [FRAME](.) : attendre le prochain rafraichissement.
@@ -24,8 +26,8 @@
 * [MOVER](.) : Positionner le curseur graphique relativement à se position actuelle.
 * [NEG()](.) : Retourner l'opposé d'un nombre.
 * [NEXT](.) : boucler sur une suite de nombres.
-* [PAPER](.) : Changer la couleur du crayon 0.
-* [PEN](.) : Changer les couleurs des crayons 1, 2, 3, 4, 5, 6 et 7.
+* [PAPER](ins.paper) : Changer la couleur du crayon 0.
+* [PEN](ins.pen) : Changer les couleurs des crayons 1, 2, 3, 4, 5, 6 et 7.
 * [POINT](.) : Définir un point pour un futur triangle.
 * [PRINT](ins.print) : Afficher un texte à l'écran.
 * [RND()](.) : Retourner une valeur aléatoire.
