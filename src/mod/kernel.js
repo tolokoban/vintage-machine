@@ -29,7 +29,8 @@ function Kernel( canvas, symbols ) {
     var renderer = new WebGL(canvas, {
         alpha: true,
         antialias: false,
-        preserveDrawingBuffer: true
+        preserveDrawingBuffer: true,
+        premultipliedAlpha: true
     });
     var gl = renderer.gl;
     this._gl = gl;
@@ -94,7 +95,7 @@ function Kernel( canvas, symbols ) {
         }
     });
 
-    this._render = function( ker, time ) {};
+    this._render = function( time, ker ) {};
 
     // Getter/setter for the rendering function.
     Object.defineProperty( Kernel.prototype, 'render', {

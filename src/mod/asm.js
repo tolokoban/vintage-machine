@@ -1038,7 +1038,7 @@ Asm.MUL = function() {
     return 2;
   }
 
-  this.push( this.popAsNumber() * this.popAsNumber() );
+  this.push( a * b );
   return 2;
 };
 
