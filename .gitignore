@@ -1,8 +1,5 @@
-spec/mod/
-node_modules/
-*~
-*#
-.#*
 tmp/
 www/
+node_modules/
+*~
 
