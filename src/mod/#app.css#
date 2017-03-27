@@ -1,0 +1,53 @@
+body {
+    background: #00f;
+    font-size: 3vw;
+    font-family: sans-serif;
+}
+
+#CANVAS {
+    background: transparent;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 128vh;
+    height: 96vh;
+    margin: -48vh -64vh;
+}
+
+@media (orientation: portrait) {
+    #CANVAS {
+        width: 128vw;
+        height: 96vw;
+        transform-origin: center;
+        transform: rotate(90deg);
+        margin: -48vw -64vw;
+    }
+}
+
+#MANUAL, #EDITOR {
+    margin: 0;
+    padding: 1rem;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 50vw;
+    height: 100%;
+    background-color: rgba(255,255,255,.9);
+    transition: transform .3s;
+}
+
+#MANUAL {
+    left: 0;
+    transform: translateX(-100%);
+}
+
+#EDITOR {
+    right: 0;
+    transform: translateX(100%);
+}
+
+body.show #MANUAL,
+body.show #EDITOR {
+    transition: transform .3s;
+    transform: translateX(0);
+}

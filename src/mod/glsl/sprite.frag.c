@@ -21,11 +21,6 @@ void main() {
   float y = ( (1.0 - varUV.y) * uniSrcH + uniSrcY ) / 256.0;
   float color = texture2D( texSymbols, vec2( x, y ) ).r;
   // color is between 0 and 7 * UNIT.
-  if (color < UNIT) {
-    gl_FragColor = vec4(0.0, 0.0, 0.0, 0.0);
-  } else {
   // The palette index is coded on the RED composant of texPencils.
-    gl_FragColor = texture2D( texPencils, vec2(color * 32.0, .5) );
-  }
+  gl_FragColor = texture2D( texPencils, vec2(color * 32.0, .5) );
 }
-

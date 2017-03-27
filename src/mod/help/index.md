@@ -4,6 +4,8 @@
 * [Editeur et Moniteur](editor-monitor)
 * [Dis bonjour!](dis-bonjour)
 * [Couleurs](couleurs)
+* [Les coordonnées](coords)
+* [Les coordonnées fines](coords2)
 
 # Index des instructions, fonctions et constantes du BASIK
 
@@ -16,6 +18,7 @@
 * [CLS](.) : effacer une zone rectangulaire de l'écran avec la couleur 0 (PAPER).
 * [COLOR()](fun.color) : créer une couleur à partir de ses composantes.
 * [COS()](.) : retourner le cosinus d'un angle en degrés.
+* [DISK](ins.disk) : dessiner un disque plein avec le crayon 1 (PEN).
 * [FOR](.) : . boucler sur une suite de nombres.
 * [FRAME](.) : attendre le prochain rafraichissement.
 * [IIF()](.) : retourner une valeur ou une autre en fonction d'une condition.

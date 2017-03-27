@@ -56,7 +56,7 @@ var Speak = require("speak");
 
 // Every atomic instruction has a time cost.
 // The cost allower between two requestAnimationFrames is `MAX_COST`.
-var MAX_COST = 80000;
+var MAX_COST = 20000;
 var PRECISION = 0.0000000001;
 
 
@@ -589,7 +589,7 @@ function box(color) {
     }
     else {
         while (count --> 4) {
-            this.pop();
+          this.pop();
         }
         h = this.popAsNumber();
         w = this.popAsNumber();
@@ -597,6 +597,7 @@ function box(color) {
         x = this.popAsNumber();
     }
     if (this.kernel) {
+        console.info("box() color=", color);
         this.kernel.point( x, y, color );
         this.kernel.point( x + w, y, color );
         this.kernel.point( x, y + h, color );
@@ -827,7 +828,7 @@ Asm.PEN = function() {
  */
 Asm.PAPER = function() {
     var pen = this.get('pen');
-    var color = Math.floor(this.popAsNumber());
+    var color = Math.abs(Math.floor(this.popAsNumber()));
     this.kernel.pen(0, color);
     pen[0] = color;
     return 1;
@@ -1009,10 +1010,36 @@ Asm.ADD = function() {
 
 /**
  * Pop two numbers on the stack and push the multiplication of them.
+ * If the first one is a string and the second a number, the string is duplicated.
+ * For instance: `"Ab" * 3 == "AbAbAb"`.
  */
 Asm.MUL = function() {
-    this.push( this.popAsNumber() * this.popAsNumber() );
+  var b = this.pop();
+  if( isNum( b ) ) b = parseFloat( b );
+  else b = '' + b;
+  var a = this.pop();
+  if( isNum( a ) ) a = parseFloat( a );
+  else a = '' + a;
+
+  if ( typeof a !== typeof b ) {
+    var txt = '';
+    // Ensure a is a string and b a number.
+    if( typeof a === 'number' ) {
+      var c = a;
+      a = b;
+      b = c;
+    }
+    b = Math.min( b, 4800 );
+    while( b-- >= 1 ) {
+      txt += a;
+      this._cost++;
+    }
+    this.push( txt );
     return 2;
+  }
+
+  this.push( this.popAsNumber() * this.popAsNumber() );
+  return 2;
 };
 
 /**
@@ -1328,3 +1355,8 @@ Asm.PRINTCHAR = function() {
     this.printChar( code );
     return 1;
 };
+
+
+function isNum(n) {
+  return !isNaN(parseFloat(n)) && isFinite(n);
+}

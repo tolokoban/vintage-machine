@@ -30,7 +30,7 @@
         },
         "output": "www"
     },
-    "version": "0.0.7",
+    "version": "0.0.8",
     "reservedModules": [],
     "dependencies": {
         "jasmine": "^2.5",
