@@ -1,2 +1,2 @@
-require("font.josefin",function(n,r){function e(){return t(i,arguments)}var i={en:{},fr:{}},t=require("$").intl;r.exports._=e});
+require("font.josefin",function(n,r,t){var e=function(){function r(){return e(t,arguments)}var t={en:{},fr:{}},e=n("$").intl;return r.all=t,r}();r.exports._=e});
 //# sourceMappingURL=font.josefin.js.map
