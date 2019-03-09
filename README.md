@@ -1,6 +1,6 @@
 # vintage-machine
 Virtual old-fashion machine to learn basic concepts of computer programming.
-
+[See it in action](https://tolokoban.github.io/vintage-machine/)
 
 ## Graphic model
 
