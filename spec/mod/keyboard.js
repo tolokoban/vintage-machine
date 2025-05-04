@@ -1,2 +1,51 @@
-require("keyboard",function(e,n,t){var r=function(){function n(){return r(t,arguments)}var t={en:{},fr:{}},r=e("$").intl;return n.all=t,n}(),o={},u=null,l=null;document.addEventListener("keydown",function(e){"áàâäéèêëíìîïóòôöúùûüç".indexOf(e.key)==-1&&(console.info(e.key,e.code,e.keyCode),u=e.key.toUpperCase(),o[u]=!0,l=e.code.toUpperCase(),o[l]=!0,t.preventDefault&&e.preventDefault())}),document.addEventListener("keyup",function(e){delete o[e.key.toUpperCase()],delete o[e.code.toUpperCase()],t.preventDefault&&e.preventDefault()}),t.preventDefault=!1,t.test=function(e){return void 0!==o[e.toUpperCase()]},t.last=function(){if(!u)return null;var e={key:u,code:l};return u=l=null,e},t.resetLast=function(){u=l=null},n.exports._=r});
-//# sourceMappingURL=keyboard.js.map
+"use strict";
+
+/** @module keyboard */require('keyboard', function (require, module, exports) {
+  var _ = function () {
+    var D = {
+        "en": {},
+        "fr": {}
+      },
+      X = require("$").intl;
+    function _() {
+      return X(D, arguments);
+    }
+    _.all = D;
+    return _;
+  }();
+  "use strict";
+  var KEYS = {};
+  var LAST_KEY = null;
+  var LAST_CODE = null;
+  document.addEventListener("keydown", function (evt) {
+    if ("áàâäéèêëíìîïóòôöúùûüç".indexOf(evt.key) != -1) return;
+    console.info(evt.key, evt.code, evt.keyCode);
+    LAST_KEY = evt.key.toUpperCase();
+    KEYS[LAST_KEY] = true;
+    LAST_CODE = evt.code.toUpperCase();
+    KEYS[LAST_CODE] = true;
+    if (exports.preventDefault) evt.preventDefault();
+  });
+  document.addEventListener("keyup", function (evt) {
+    delete KEYS[evt.key.toUpperCase()];
+    delete KEYS[evt.code.toUpperCase()];
+    if (exports.preventDefault) evt.preventDefault();
+  });
+  exports.preventDefault = false;
+  exports.test = function (code) {
+    return typeof KEYS[code.toUpperCase()] !== 'undefined';
+  };
+  exports.last = function () {
+    if (!LAST_KEY) return null;
+    var ret = {
+      key: LAST_KEY,
+      code: LAST_CODE
+    };
+    LAST_KEY = LAST_CODE = null;
+    return ret;
+  };
+  exports.resetLast = function () {
+    LAST_KEY = LAST_CODE = null;
+  };
+  module.exports._ = _;
+});

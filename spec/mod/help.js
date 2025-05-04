@@ -1,2 +1,95 @@
-require("help",function(e,t,n){function r(e,t){e.innerHTML=u(t);var n,r,l=e.querySelectorAll("a");for(n=0;n<l.length;n++)r=l[n],r.setAttribute("href","#"+r.getAttribute("href"));var o,a=e.querySelectorAll("pre > code");for(n=0;n<a.length;n++)o=a[n],i(o)}function i(e){var t=e.textContent,n=new s({text:"Copier/Coller",type:"simple"}),r=o.div({style:"text-align: right"},[n]);n.on(function(){APP.pasteCode(t)}),e.insertAdjacentElement("afterend",r)}var l=function(){function t(){return r(n,arguments)}var n={en:{},fr:{}},r=e("$").intl;return t.all=n,t}(),o=e("dom"),a=e("tfw.data-binding"),u=e("marked"),s=e("wdg.button"),f=e("tfw.hash-watcher");u.setOptions({gfm:!0,tables:!0});var c=function(e){var t=this,n=o.elem(this,"div","help");a.propString(this,"value")(function(e){var i=new XMLHttpRequest;i.open("GET","css/help/"+e+".md",!0),i.onload=function(){var e=i.responseText;r.call(t,n,e)},i.send(null)}),e=a.extend({value:"main"},e,this),f(function(e){t.value=e[0]})};t.exports=c,t.exports._=l});
-//# sourceMappingURL=help.js.map
+"use strict";
+
+/** @module help */require('help', function (require, module, exports) {
+  var _ = function () {
+    var D = {
+        "en": {},
+        "fr": {}
+      },
+      X = require("$").intl;
+    function _() {
+      return X(D, arguments);
+    }
+    _.all = D;
+    return _;
+  }();
+  "use strict";
+  var $ = require("dom");
+  var DB = require("tfw.data-binding");
+  var Marked = require("marked");
+  var Button = require("wdg.button");
+  var HashWatcher = require("tfw.hash-watcher");
+  Marked.setOptions({
+    // Git Flavoured Markdown.
+    gfm: true,
+    // Use tables.
+    tables: true
+    /*
+     highlight: function (code, lang) {
+     return Highlight.parseCode(code, lang, libs);
+     }
+     */
+  });
+
+  /**
+   * @class Help
+   *
+   * Arguments:
+   * * __visible__ {boolean}: Visibility of the component.
+   *
+   * @example
+   * var Help = require("help");
+   * var instance = new Help({visible: false});
+   */
+  var Help = function Help(opts) {
+    var that = this;
+    var elem = $.elem(this, 'div', 'help');
+    DB.propString(this, 'value')(function (v) {
+      var xhr = new XMLHttpRequest();
+      xhr.open("GET", "css/help/" + v + ".md", true);
+      xhr.onload = function () {
+        var text = xhr.responseText;
+        toMarkDown.call(that, elem, text);
+      };
+      xhr.send(null);
+    });
+    opts = DB.extend({
+      value: 'main'
+    }, opts, this);
+    HashWatcher(function (hash) {
+      that.value = hash[0];
+    });
+  };
+  module.exports = Help;
+  function toMarkDown(elem, text) {
+    var that = this;
+    elem.innerHTML = Marked(text);
+    var links = elem.querySelectorAll("a");
+    var i, link;
+    for (i = 0; i < links.length; i++) {
+      link = links[i];
+      link.setAttribute("href", "#" + link.getAttribute("href"));
+    }
+    var codes = elem.querySelectorAll("pre > code");
+    var code, btn;
+    for (i = 0; i < codes.length; i++) {
+      code = codes[i];
+      addButtonToCode(code);
+    }
+  }
+  function addButtonToCode(code) {
+    var text = code.textContent;
+    var btn = new Button({
+      text: "Copier/Coller",
+      type: "simple"
+    });
+    var div = $.div({
+      style: "text-align: right"
+    }, [btn]);
+    btn.on(function () {
+      APP.pasteCode(text);
+    });
+    code.insertAdjacentElement('afterend', div);
+  }
+  module.exports._ = _;
+});

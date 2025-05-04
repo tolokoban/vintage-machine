@@ -1,2 +1,112 @@
-require("app",function(e,o,n){function t(){try{p.removeClass(document.body,"show"),l.preventDefault=!0;var e=w.value;d.set("default-code",e);var o=new v("CLS\n"+e);console.log(w.value);var n=o.asm();console.log(n),y=new i(n,g)}catch(e){l.preventDefault=!1,p.addClass(document.body,"show"),console.error(e),u.error(e.msg),console.log("Unexpected char: "+w.value.charCodeAt(e.pos)),w.focus(e.pos)}}function a(){p.hasClass(document.body,"show")?(p.removeClass(document.body,"show"),l.preventDefault=!0):(p.addClass(document.body,"show"),l.preventDefault=!1)}var r=function(){function o(){return t(n,arguments)}var n={en:{},fr:{}},t=e("$").intl;return o.all=n,o}();e("font.josefin");var s=e("repository"),l=e("keyboard"),d=e("tfw.storage").local,u=e("tfw.message"),c=e("kernel"),f=e("editor"),v=e("basic"),m=e("x-widget").getById,i=e("asm"),p=e("dom");e("$").lang("fr");var y,g,w;n.start=function(){w=new f(document.getElementById("CODE")),w.value=d.get("default-code",s.load("sys.hello-world"));var e=(new Image,new XMLHttpRequest);e.open("GET","css/app/symbols.arr",!0),e.responseType="arraybuffer",e.onload=function(o){var n=e.response;if(!n)return void console.error("Unable to load `symbols.arr`!");var r=document.getElementById("CANVAS");g=new c(r,new Uint8Array(n));var d=s.load("sys.startup");console.log(d);var u=new v(d),f=u.asm();y=new i(f,g),g.render=function(e){y.next(),l.resetLast()},document.addEventListener("keydown",function(e){"F1"==e.key&&(a(),e.preventDefault(),e.stopPropagation()),"F4"==e.key&&(t(),e.preventDefault(),e.stopPropagation())},!0),p.on(document.getElementById("F1"),a),p.on(document.getElementById("F4"),t),p.on(document.getElementById("index"),function(){m("HELP").value="index"})},e.send(null)},n.pasteCode=function(e){w.value=e},o.exports._=r});
-//# sourceMappingURL=app.js.map
+"use strict";
+
+/** @module app */require('app', function (require, module, exports) {
+  var _ = function () {
+    var D = {
+        "en": {},
+        "fr": {}
+      },
+      X = require("$").intl;
+    function _() {
+      return X(D, arguments);
+    }
+    _.all = D;
+    return _;
+  }();
+  "use strict";
+  require("font.josefin");
+  var Repository = require("repository");
+  var Keyboard = require("keyboard");
+  var Storage = require("tfw.storage").local;
+  var Message = require("tfw.message");
+  var Kernel = require("kernel");
+  var Editor = require("editor");
+  var Basic = require("basic");
+  var Wdg = require("x-widget").getById;
+  var Asm = require("asm");
+  var $ = require("dom");
+
+  // Mettre en langue française.
+  require('$').lang('fr');
+  var g_asm;
+  var g_kernel;
+  var g_codeEditor;
+  exports.start = function () {
+    g_codeEditor = new Editor(document.getElementById('CODE'));
+    g_codeEditor.value = Storage.get('default-code', Repository.load("sys.hello-world"));
+    var img = new Image();
+    var xhr = new XMLHttpRequest();
+    xhr.open("GET", "css/app/symbols.arr", true);
+    xhr.responseType = "arraybuffer";
+    xhr.onload = function (oEvent) {
+      var arrayBuffer = xhr.response;
+      if (!arrayBuffer) {
+        console.error("Unable to load `symbols.arr`!");
+        return;
+      }
+      var canvas = document.getElementById('CANVAS');
+      g_kernel = new Kernel(canvas, new Uint8Array(arrayBuffer));
+      var code = Repository.load('sys.startup');
+      console.log(code);
+      var basic = new Basic(code);
+      var bytecode = basic.asm();
+      g_asm = new Asm(bytecode, g_kernel);
+      g_kernel.render = function (time) {
+        // Never stop the render loop. Otherwise, colors will stop blinking.
+        g_asm.next();
+        Keyboard.resetLast();
+      };
+      document.addEventListener('keydown', function (evt) {
+        if (evt.key == 'F1') {
+          toggleMonitorEditor();
+          evt.preventDefault();
+          evt.stopPropagation();
+        }
+        if (evt.key == 'F4') {
+          compileAndRun();
+          evt.preventDefault();
+          evt.stopPropagation();
+        }
+      }, true);
+      $.on(document.getElementById('F1'), toggleMonitorEditor);
+      $.on(document.getElementById('F4'), compileAndRun);
+      $.on(document.getElementById('index'), function () {
+        Wdg('HELP').value = 'index';
+      });
+    };
+    xhr.send(null);
+  };
+  exports.pasteCode = function (code) {
+    g_codeEditor.value = code;
+  };
+  function compileAndRun() {
+    try {
+      $.removeClass(document.body, 'show');
+      Keyboard.preventDefault = true;
+      var code = g_codeEditor.value;
+      Storage.set('default-code', code);
+      var basic = new Basic("CLS\n" + code);
+      console.log(g_codeEditor.value);
+      var bytecode = basic.asm();
+      console.log(bytecode);
+      g_asm = new Asm(bytecode, g_kernel);
+    } catch (ex) {
+      Keyboard.preventDefault = false;
+      $.addClass(document.body, 'show');
+      console.error(ex);
+      Message.error(ex.msg);
+      console.log("Unexpected char: " + g_codeEditor.value.charCodeAt(ex.pos));
+      g_codeEditor.focus(ex.pos);
+    }
+  }
+  function toggleMonitorEditor() {
+    if ($.hasClass(document.body, 'show')) {
+      $.removeClass(document.body, 'show');
+      Keyboard.preventDefault = true;
+    } else {
+      $.addClass(document.body, 'show');
+      Keyboard.preventDefault = false;
+    }
+  }
+  module.exports._ = _;
+});

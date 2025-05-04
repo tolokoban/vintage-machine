@@ -1,0 +1,1 @@
+{"version":3,"file":"kernel.d.ts","sourceRoot":"","sources":["../../src/kernel/kernel.ts"],"names":[],"mappings":"AAAA,qBAAa,MAAM;IACf,MAAM,CAAC,QAAQ,CAAC,KAAK,OAAM;IAC3B,MAAM,CAAC,QAAQ,CAAC,MAAM,OAAM;gBAEhB,MAAM,EAAE,iBAAiB,EAAE,OAAO,EAAE,WAAW;CAK9D"}

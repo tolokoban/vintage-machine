@@ -1,2 +1,512 @@
-require("basic",function(t,e,s){function a(t){this._id=0,this.clear(),void 0===t&&(t=""),this._code=t;for(var e=new E(t);e.hasMoreCode();)n.call(this,e,"instruction","affectation")||e.hasMoreCode()&&!e.next("EOL")&&e.fatal("Caractère inattendu ! Je suis perdu...");this._asm.forEach(function(t,e,s){Array.isArray(t)&&(s[e]=this._labels[t[0]])},this)}function n(t){var e,s;for(e=1;e<arguments.length;e++){if(!(s=g[arguments[e].toLowerCase()]))throw Error('Unknonw parser: "'+arguments[e]+'"!');if(s.call(this,t))return!0}return!1}function r(t){t=t.substr(1).toUpperCase();for(var e="0123456789ABCDEF",s=0,a=0;a<t.length;a++)s=(s<<4)+e.indexOf(t.charAt(a));return this._asm.push(s),!0}function i(t){var e=t.next("VAR");e||t.fatal(m("missing-var-after-for"));var s=e.val;if(e=t.next("EQUAL","IN","COMMA"),e||t.fatal(m("missing-for-equal-or-to")),","==e.val){e=t.next("VAR"),e||t.fatal(m("missing-var-index-foreach",s));var a=e.val;return t.next("IN")||t.fatal(m("missing-foreach-in")),l.call(this,t,s,a)}if("IN"==e.val)return l.call(this,t,s);var r=this.newLabel(),i=this.newLabel();return this._asm.push(s,x.ERASE),this.setLabel(r),this._context.push({type:"FOR",labelA:r,labelB:i}),this._asm.push(s),n.call(this,t,"expression")||t.fatal(m("missing-expression")),t.next("TO")||t.fatal(m("missing-to")),n.call(this,t,"expression")||t.fatal(m("missing-expression")),t.next("STEP")?n.call(this,t,"expression")||t.fatal(m("missing-expression")):this._asm.push(1),t.next("EOL")||t.fatal(m("expected-eol")),this._asm.push([i],x.FOR),!0}function l(t,e,s){void 0===s&&(s="tmp"+this.nextID());var a=t.next("VAR");a||t.fatal(m("missing-list-foreach"));var n=a.val,r=this.newLabel(),i=this.newLabel();return this._asm.push(s,x.ERASE),this.setLabel(r),this._context.push({type:"FOR",labelA:r,labelB:i}),this._asm.push(e,s,n,[i],x.FORE),!0}function u(t){var e=this._context.pop();return e||t.fatal(m("unexpected-next")),"FOR"==e.type?(this._asm.push([e.labelA],x.JMP),this.setLabel(e.labelB)):t.fatal(m("unexpected-next")),!0}function o(t){n.call(this,t,"expression")||t.fatal(m("print-missing-arg")),this._asm.push("print.txt",x.SET),t.next("COMMA")?(n.call(this,t,"expression")||t.fatal(m("print-missing-arg")),this._asm.push("print.frm",x.SET)):this._asm.push(0,"print.frm",x.SET),t.next("EOL")||t.fatal(m("expected-eol"));var e=this.newLabel(),s=this.newLabel();return this.setLabel(e),this._asm.push("print.txt",x.GET,x.LEN,[s],x.JZE),this._asm.push("print.txt",x.SHIFT,x.ASC,x.PRINTCHAR),this._asm.push("print.frm",x.GET,x.FRAME),this._asm.push([e],x.JMP),this.setLabel(s),!0}function c(t,e,s){"function"!=typeof x[e]&&t.fatal(m("unknown-function",e));for(var a,r=0;n.call(this,t,"expression")&&(r++,a=t.next("COMMA","PAR_CLOSE","EOL"),a||t.fatal(m("missing-par-close")),"COMMA"==a.id););return 0==r&&(t.next("PAR_CLOSE")||t.fatal(m("missing-par-close"))),"number"==typeof s?s!=r&&t.fatal(m("fixed-args",e,s,r)):this._asm.push(r),this._asm.push(x[e]),!0}function h(t,e){"function"!=typeof x[e]&&t.fatal(m("unknown-instr",e));for(var s,a=0;n.call(this,t,"expression")&&(a++,s=t.next("COMMA","EOL"),s||t.fatal(m("unexpected-token")),"COMMA"==s.id););return this._asm.push(a,x[e]),!0}function p(t,e,s){var a=arguments.length-3;if(s+a>0){var r,i;for(r=0;r<s+a&&(i=!1,r>0&&(i=!t.next("COMMA")),n.call(this,t,"expression"));r++)i&&t.fatal(m("mising-comma"));r<s&&t.fatal(m("too-few-args",e,s)+"\n"+m(e.toLowerCase()));var l,u=r-s;for(r=u;r<a;r++)l=arguments[3+r],Array.isArray(l)?this._asm.push.apply(this._asm,l):this._asm.push(l);t.next("EOL")||t.fatal(m("too-many-args",s,s+a)+"\n"+m("instr-"+e))}return this._asm.push(x[e]),!0}function f(t){t=t.substr(1,t.length-2);for(var e,s="",a=0,n=0,r=0;r<t.length;r++)e=t.charAt(r),0==n?"\\"==e&&(s+=t.substr(a),n=1):(s+="n"==e?"\n":"t"==e?"\t":e,a=r+1,n=1);return s+=t.substr(a)}var m=function(){function e(){return a(s,arguments)}var s={fr:{"expected-eol":"L'instruction devrait s'arrêter là.","fixed-args":"$1 attend exactement $2 argument(s) et pas $3.","missing-comma":"Il faut séparer les arguments par des virgules.","missing-equal":"Après un nom de variable, il faut mettre un '='.","missing-expression":"J'ai besoin d'une expression : c'est-à-dire un nombre, une chaîne de caractères, une variable, un calcul...","missing-expression-after":'Il me faut une expression après "$1".',"missing-for-equal-or-to":"Après le nom de variable, il me faut un égal ou IN.","missing-par-close":"Il manque une paranthèse fermante !","missing-to":"Il faut le mot clef TO dans un FOR pour que ça fonctionne.","missing-var-after-for":"Il faut un nom de variable juste après FOR.","missing-var-index-foreach":"Après la virgule, il me faut la variable qui contiendra l'index du caractère $1.","print-missing-arg":"L'instruction PRINT attend le texte à afficher comme argument.","too-few-args":"L'instruction \"$1\" a besoin d'au moins $2 argument(s).","too-many-args":"Cette instruction attend au minimum $1 argument(s), et au maximum $2.","unexpected-token":"Il y a là un caractère que je ne comprends pas.","unexpected-next":"Ce NEXT ne correspond à aucun FOR.","unknown-function":"Je ne connais aucune fonction appelée $1.","unknown-instr":"Cette instruction m'est inconnue : $1."},en:{}},a=t("$").intl;return e.all=s,e}(),x=t("asm"),E=t("lexer"),v={and:x.AND,or:x.OR,xor:x.XOR,">=":x.GEQ,"<=":x.LEQ,"<>":x.NEQ,"^":x.EXP,"=":x.EQ,"%":x.MOD,"+":x.ADD,"*":x.MUL,"/":x.DIV,"-":x.SUB,"<":x.LT,">":x.GT},A={NL:"\n",PI:Math.PI},_={ABS:1,ASC:1,COS:1,IIF:3,LEN:1,NEG:1,SHIFT:1,SIN:1,WAIT:0};a.prototype.nextID=function(){return this._id++},a.prototype.asm=function(){return this._asm.slice()},a.prototype.clear=function(){this._code="",this._asm=[],this._labels={},this._labelId=0,this._context=[]},a.prototype.newLabel=function(){return this._labelId++},a.prototype.setLabel=function(t){this._labels[t]=this._asm.length};var g={instruction:function(t){var e=t.next("INST");if(!e)return!1;switch(e.val.toUpperCase()){case"LOCATE":return p.call(this,t,"LOCATE",2);case"SPRITE":return p.call(this,t,"SPRITE",1,1,1);case"MOVE":return p.call(this,t,"MOVE",0,320,240);case"MOVER":return p.call(this,t,"MOVER",0,16,0);case"FRAME":return p.call(this,t,"FRAME",0,1);case"POINT":return p.call(this,t,"POINT",2,["color",x.GET]);case"TRIS":return p.call(this,t,"TRIS",0);case"TRIANGLE":return p.call(this,t,"TRIANGLE",0,0,0,320,480,640,0);case"DISK":return h.call(this,t,"DISK");case"BOX":return h.call(this,t,"BOX");case"CLS":return h.call(this,t,"CLS");case"PEN":return h.call(this,t,"PEN");case"PAPER":return p.call(this,t,"PAPER",0,61440);case"FOR":return i.call(this,t);case"NEXT":return u.call(this,t);case"INK":return p.call(this,t,"INK",3,-1);case"PRINT":return o.call(this,t,"PRINT");case"SPEAK":return p.call(this,t,"SPEAK",0,"Je suis TLK-74.");case"BACK":return p.call(this,t,"BACK",0,7,0);case"DEBUGGER":return p.call(this,t,"DEBUGGER",0)}return t.fatal(m("unknown-instr",e.val.toUpperCase())),!1},affectation:function(t){var e=t.next("VAR");if(!e)return!1;var s=e.val;return t.next("EQUAL")||t.fatal(m("missing-equal")),n.call(this,t,"expression")||t.fatal(m("missing-expression")),this._asm.push(s,x.SET),!0},expression:function(t){if(!n.call(this,t,"atom"))return!1;var e=t.next("BINOP");return e&&(n.call(this,t,"expression")||t.fatal(m("missing-expression-after",e.val)),this._asm.push(v[e.val])),!0},atom:function(t){var e=t.next("FUNC","NUM","HEX","STR","VAR","PAR_OPEN","CONST");if(e)switch(e.id){case"NUM":return this._asm.push(parseFloat(e.val)),!0;case"HEX":return r.call(this,e.val);case"STR":return this._asm.push(f(e.val)),!0;case"VAR":return this._asm.push(e.val,x.GET),!0;case"CONST":var s=A[e.val.toUpperCase()];return s||t.fatal(m("unknown-const",e.val)),Array.isArray(s)?this._asm.push.apply(this._asm,s):this._asm.push(s),!0;case"FUNC":var a=e.val.substr(0,e.val.length-1).toUpperCase();return!!c.call(this,t,a,_[a]);case"PAR_OPEN":return n.call(this,t,"expression"),e=t.next("PAR_CLOSE"),e||t.fatal(m("missing-par-close")),!0}return!1}};e.exports=a,e.exports._=m});
-//# sourceMappingURL=basic.js.map
+"use strict";
+
+/** @module basic */require('basic', function (require, module, exports) {
+  var _ = function () {
+    var D = {
+        "fr": {
+          "expected-eol": "L'instruction devrait s'arrêter là.",
+          "fixed-args": "$1 attend exactement $2 argument(s) et pas $3.",
+          "missing-comma": "Il faut séparer les arguments par des virgules.",
+          "missing-equal": "Après un nom de variable, il faut mettre un '='.",
+          "missing-expression": "J'ai besoin d'une expression : c'est-à-dire un nombre, une chaîne de caractères, une variable, un calcul...",
+          "missing-expression-after": "Il me faut une expression après \"$1\".",
+          "missing-for-equal-or-to": "Après le nom de variable, il me faut un égal ou IN.",
+          "missing-par-close": "Il manque une paranthèse fermante !",
+          "missing-to": "Il faut le mot clef TO dans un FOR pour que ça fonctionne.",
+          "missing-var-after-for": "Il faut un nom de variable juste après FOR.",
+          "missing-var-index-foreach": "Après la virgule, il me faut la variable qui contiendra l'index du caractère $1.",
+          "print-missing-arg": "L'instruction PRINT attend le texte à afficher comme argument.",
+          "too-few-args": "L'instruction \"$1\" a besoin d'au moins $2 argument(s).",
+          "too-many-args": "Cette instruction attend au minimum $1 argument(s), et au maximum $2.",
+          "unexpected-token": "Il y a là un caractère que je ne comprends pas.",
+          "unexpected-next": "Ce NEXT ne correspond à aucun FOR.",
+          "unknown-function": "Je ne connais aucune fonction appelée $1.",
+          "unknown-instr": "Cette instruction m'est inconnue : $1."
+        },
+        "en": {}
+      },
+      X = require("$").intl;
+    function _() {
+      return X(D, arguments);
+    }
+    _.all = D;
+    return _;
+  }();
+  "use strict";
+
+  /**
+   * @module basic
+   *
+   * @description
+   * Compiler for the Basic language.
+   *
+   * @example
+   * var mod = require('basic');
+   */
+  var Asm = require("asm");
+  var Lexer = require("lexer");
+  var BINOP = {
+    and: Asm.AND,
+    or: Asm.OR,
+    xor: Asm.XOR,
+    '>=': Asm.GEQ,
+    '<=': Asm.LEQ,
+    '<>': Asm.NEQ,
+    '^': Asm.EXP,
+    '=': Asm.EQ,
+    '%': Asm.MOD,
+    '+': Asm.ADD,
+    '*': Asm.MUL,
+    '/': Asm.DIV,
+    '-': Asm.SUB,
+    '<': Asm.LT,
+    '>': Asm.GT
+  };
+  var CONSTS = {
+    NL: "\n",
+    PI: Math.PI
+  };
+  var FIXED_ARGS = {
+    ABS: 1,
+    ASC: 1,
+    COS: 1,
+    IIF: 3,
+    LEN: 1,
+    NEG: 1,
+    SHIFT: 1,
+    SIN: 1,
+    WAIT: 0
+  };
+  function Basic(code) {
+    this._id = 0;
+    this.clear();
+    if (typeof code === 'undefined') code = '';
+    this._code = code;
+    var lex = new Lexer(code);
+    while (lex.hasMoreCode()) {
+      if (parse.call(this, lex, 'instruction', 'affectation')) continue;
+      if (lex.hasMoreCode() && !lex.next('EOL')) {
+        // ERROR.
+        lex.fatal("Caractère inattendu ! Je suis perdu...");
+      }
+    }
+    // Linkage: replace all the labels by their address.
+    this._asm.forEach(function (itm, idx, asm) {
+      if (Array.isArray(itm)) {
+        asm[idx] = this._labels[itm[0]];
+      }
+    }, this);
+  }
+
+  /**
+   * @return void
+   */
+  Basic.prototype.nextID = function () {
+    return this._id++;
+  };
+
+  /**
+   * @return void
+   */
+  Basic.prototype.asm = function () {
+    return this._asm.slice();
+  };
+
+  /**
+   * Reset the basic compiler.
+   */
+  Basic.prototype.clear = function () {
+    this._code = '';
+    // ASM code before linkage.
+    this._asm = [];
+    // Labels are used for branching. This is a map between a label name and the positionin the ASM code.
+    this._labels = {};
+    this._labelId = 0;
+    // Blocs nesting needs context to know (for instance) at which `FOR` belongs a `NEXT`.
+    this._context = [];
+  };
+
+  /**
+   * Create a new label name.
+   */
+  Basic.prototype.newLabel = function () {
+    return this._labelId++;
+  };
+
+  /**
+   * Set a `label` at the current position.
+   */
+  Basic.prototype.setLabel = function (label) {
+    this._labels[label] = this._asm.length;
+  };
+  var PARSERS = {
+    instruction: function instruction(lex) {
+      var tkn = lex.next('INST');
+      if (!tkn) return false;
+      var ins = tkn.val.toUpperCase();
+      switch (ins) {
+        case "LOCATE":
+          return parseArgs.call(this, lex, "LOCATE", 2);
+        case "SPRITE":
+          return parseArgs.call(this, lex, "SPRITE", 1, 1, 1);
+        case "MOVE":
+          return parseArgs.call(this, lex, "MOVE", 0, 320, 240);
+        case "MOVER":
+          return parseArgs.call(this, lex, "MOVER", 0, 16, 0);
+        case "FRAME":
+          return parseArgs.call(this, lex, "FRAME", 0, 1);
+        case "POINT":
+          return parseArgs.call(this, lex, "POINT", 2, ["color", Asm.GET]);
+        case "TRIS":
+          return parseArgs.call(this, lex, "TRIS", 0);
+        case "TRIANGLE":
+          return parseArgs.call(this, lex, "TRIANGLE", 0, 0, 0, 320, 480, 640, 0);
+        case "DISK":
+          return parseVarArgs.call(this, lex, "DISK");
+        case "BOX":
+          return parseVarArgs.call(this, lex, "BOX");
+        case "CLS":
+          return parseVarArgs.call(this, lex, "CLS");
+        case "PEN":
+          return parseVarArgs.call(this, lex, "PEN");
+        case "PAPER":
+          return parseArgs.call(this, lex, "PAPER", 0, 0xf000);
+        case "FOR":
+          return parseFOR.call(this, lex);
+        case "NEXT":
+          return parseNEXT.call(this, lex);
+        case "INK":
+          return parseArgs.call(this, lex, "INK", 3, -1);
+        case "PRINT":
+          return parsePRINT.call(this, lex, "PRINT");
+        case "SPEAK":
+          return parseArgs.call(this, lex, "SPEAK", 0, "Je suis TLK-74.");
+        case "BACK":
+          return parseArgs.call(this, lex, "BACK", 0, 0x007, 0);
+        case "DEBUGGER":
+          return parseArgs.call(this, lex, "DEBUGGER", 0);
+      }
+      lex.fatal(_('unknown-instr', tkn.val.toUpperCase()));
+      return false;
+    },
+    affectation: function affectation(lex) {
+      var tkn = lex.next('VAR');
+      if (!tkn) return false;
+      var name = tkn.val;
+      if (!lex.next('EQUAL')) {
+        lex.fatal(_('missing-equal'));
+      }
+      if (!parse.call(this, lex, 'expression')) lex.fatal(_('missing-expression'));
+      this._asm.push(name, Asm.SET);
+      return true;
+    },
+    expression: function expression(lex) {
+      if (!parse.call(this, lex, 'atom')) return false;
+      var tkn = lex.next('BINOP');
+      if (tkn) {
+        if (!parse.call(this, lex, 'expression')) {
+          lex.fatal(_('missing-expression-after', tkn.val));
+        }
+        this._asm.push(BINOP[tkn.val]);
+      }
+      return true;
+    },
+    atom: function atom(lex) {
+      var tkn = lex.next('FUNC', 'NUM', 'HEX', 'STR', 'VAR', 'PAR_OPEN', 'CONST');
+      if (tkn) {
+        switch (tkn.id) {
+          case 'NUM':
+            this._asm.push(parseFloat(tkn.val));
+            return true;
+          case 'HEX':
+            return parseHexa.call(this, tkn.val);
+          case 'STR':
+            this._asm.push(parseString(tkn.val));
+            return true;
+          case 'VAR':
+            this._asm.push(tkn.val, Asm.GET);
+            return true;
+          case 'CONST':
+            var cst = CONSTS[tkn.val.toUpperCase()];
+            if (!cst) lex.fatal(_('unknown-const', tkn.val));
+            if (!Array.isArray(cst)) this._asm.push(cst);else this._asm.push.apply(this._asm, cst);
+            return true;
+          case 'FUNC':
+            var name = tkn.val.substr(0, tkn.val.length - 1).toUpperCase();
+            var ret = parseFunc.call(this, lex, name, FIXED_ARGS[name]);
+            if (!ret) return false;
+            //if (name == 'WAIT') return parseFuncWAIT.call( this, lex );
+            return true;
+          case 'PAR_OPEN':
+            parse.call(this, lex, 'expression');
+            tkn = lex.next('PAR_CLOSE');
+            if (!tkn) lex.fatal(_('missing-par-close'));
+            return true;
+        }
+      }
+      return false;
+    }
+  };
+  function parse(lex) {
+    var i, parser;
+    for (i = 1; i < arguments.length; i++) {
+      parser = PARSERS[arguments[i].toLowerCase()];
+      if (!parser) throw Error("Unknonw parser: \"" + arguments[i] + "\"!");
+      if (parser.call(this, lex)) return true;
+    }
+    return false;
+  }
+  function parseHexa(str) {
+    str = str.substr(1).toUpperCase();
+    var hex = "0123456789ABCDEF";
+    var val = 0;
+    for (var i = 0; i < str.length; i++) {
+      val = (val << 4) + hex.indexOf(str.charAt(i));
+    }
+    this._asm.push(val);
+    return true;
+  }
+
+  /**
+   * FOR $idx = 1 To 5
+   *   $total = $total + $idx
+   * NEXT
+   * PRINT $total
+   *----------------------------
+   * :A  "$idx", 1, 5, 1, [:B], FOR
+   *     "$total", "$total", GET, "$idx", GET, ADD, SET
+   *     [:A], JPM
+   * :B  "$total", GET, PRINT
+   *
+   * Il existe aussi la forme suivante :
+   * FOR $c IN "Bonjour"
+   *   PRINT $c + NL
+   * NEXT
+   *
+   * FOR $c, $i IN "Bonjour"
+   *   PEN COLOR($i % 16)
+   *   PRINT $c + NL
+   * NEXT
+   */
+  function parseFOR(lex) {
+    var tkn = lex.next('VAR');
+    if (!tkn) lex.fatal(_('missing-var-after-for'));
+    var name = tkn.val;
+    tkn = lex.next('EQUAL', 'IN', 'COMMA');
+    if (!tkn) lex.fatal(_('missing-for-equal-or-to'));
+    if (tkn.val == ',') {
+      tkn = lex.next('VAR');
+      if (!tkn) lex.fatal(_('missing-var-index-foreach', name));
+      // Nom de la variable d'index pour le ForEach.
+      var name2 = tkn.val;
+      if (!lex.next('IN')) lex.fatal(_('missing-foreach-in'));
+      return parseFORE.call(this, lex, name, name2);
+    }
+    if (tkn.val == 'IN') return parseFORE.call(this, lex, name);
+
+    // Label of the FOR
+    var labelA = this.newLabel();
+    // Label of the NEXT
+    var labelB = this.newLabel();
+    this._asm.push(name, Asm.ERASE);
+    this.setLabel(labelA);
+    this._context.push({
+      type: "FOR",
+      labelA: labelA,
+      labelB: labelB
+    });
+    this._asm.push(name);
+    // Lower bound
+    if (!parse.call(this, lex, 'expression')) lex.fatal(_('missing-expression'));
+    // To.
+    if (!lex.next('TO')) lex.fatal(_('missing-to'));
+    // Upper bound
+    if (!parse.call(this, lex, 'expression')) lex.fatal(_('missing-expression'));
+    // Optional STEP
+    if (lex.next('STEP')) {
+      if (!parse.call(this, lex, 'expression')) lex.fatal(_('missing-expression'));
+    } else {
+      // Default step is 1.
+      this._asm.push(1);
+    }
+    if (!lex.next('EOL')) lex.fatal(_('expected-eol'));
+    this._asm.push([labelB], Asm.FOR);
+    return true;
+  }
+  function parseFORE(lex, varChr, varIdx) {
+    if (typeof varIdx === 'undefined') varIdx = 'tmp' + this.nextID();
+    var tkn = lex.next('VAR');
+    if (!tkn) lex.fatal(_("missing-list-foreach"));
+    var varLst = tkn.val;
+
+    // Label of the FOR
+    var labelA = this.newLabel();
+    // Label of the NEXT
+    var labelB = this.newLabel();
+    this._asm.push(varIdx, Asm.ERASE);
+    this.setLabel(labelA);
+    this._context.push({
+      type: "FOR",
+      labelA: labelA,
+      labelB: labelB
+    });
+    this._asm.push(varChr, varIdx, varLst, [labelB], Asm.FORE);
+    return true;
+  }
+  function parseNEXT(lex) {
+    var ctx = this._context.pop();
+    if (!ctx) lex.fatal(_('unexpected-next'));
+    if (ctx.type == 'FOR') {
+      this._asm.push([ctx.labelA], Asm.JMP);
+      this.setLabel(ctx.labelB);
+    } else {
+      lex.fatal(_('unexpected-next'));
+    }
+    return true;
+  }
+
+  /**
+   * PRINT text[, pause]
+   * If pause is  null, write at once. Otherwise, letters  will be drawn
+   * one  after  the  over,  waiting  for  `pause`  frames  between  two
+   * consecutive symbols.
+   */
+  function parsePRINT(lex) {
+    if (!parse.call(this, lex, 'expression')) {
+      lex.fatal(_('print-missing-arg'));
+    }
+    this._asm.push("print.txt", Asm.SET);
+    if (lex.next('COMMA')) {
+      if (!parse.call(this, lex, 'expression')) {
+        lex.fatal(_('print-missing-arg'));
+      }
+      this._asm.push("print.frm", Asm.SET);
+    } else {
+      this._asm.push(0, "print.frm", Asm.SET);
+    }
+    if (!lex.next('EOL')) {
+      lex.fatal(_('expected-eol'));
+    }
+    var lblBegin = this.newLabel();
+    var lblEnd = this.newLabel();
+    this.setLabel(lblBegin);
+    this._asm.push("print.txt", Asm.GET, Asm.LEN, [lblEnd], Asm.JZE);
+    this._asm.push("print.txt", Asm.SHIFT, Asm.ASC, Asm.PRINTCHAR);
+    this._asm.push("print.frm", Asm.GET, Asm.FRAME);
+    this._asm.push([lblBegin], Asm.JMP);
+    this.setLabel(lblEnd);
+    return true;
+  }
+  function parseFunc(lex, func, fixedArgsCount) {
+    if (typeof Asm[func] !== 'function') {
+      lex.fatal(_("unknown-function", func));
+    }
+    var argsCount = 0;
+    var tkn;
+    while (parse.call(this, lex, 'expression')) {
+      argsCount++;
+      tkn = lex.next('COMMA', 'PAR_CLOSE', 'EOL');
+      if (!tkn) lex.fatal(_('missing-par-close'));
+      if (tkn.id != 'COMMA') break;
+    }
+    if (argsCount == 0) {
+      if (!lex.next('PAR_CLOSE')) {
+        lex.fatal(_('missing-par-close'));
+      }
+    }
+    if (typeof fixedArgsCount === 'number') {
+      if (fixedArgsCount != argsCount) {
+        lex.fatal(_('fixed-args', func, fixedArgsCount, argsCount));
+      }
+    } else {
+      // Les fonctions qui attendent un nombre variable d'arguments,
+      // on besoin de connaitre ce nombre.
+      this._asm.push(argsCount);
+    }
+    this._asm.push(Asm[func]);
+    return true;
+  }
+  function parseVarArgs(lex, func) {
+    if (typeof Asm[func] !== 'function') {
+      lex.fatal(_("unknown-instr", func));
+    }
+    var argsCount = 0;
+    var tkn;
+    while (parse.call(this, lex, 'expression')) {
+      argsCount++;
+      tkn = lex.next('COMMA', 'EOL');
+      if (!tkn) lex.fatal(_('unexpected-token'));
+      if (tkn.id != 'COMMA') break;
+    }
+    this._asm.push(argsCount, Asm[func]);
+    return true;
+  }
+  function parseArgs(lex, instruction, mandatoryCount) {
+    var optionalCount = arguments.length - 3;
+    if (mandatoryCount + optionalCount > 0) {
+      var i, comma, commaIsMissing;
+      for (i = 0; i < mandatoryCount + optionalCount; i++) {
+        commaIsMissing = false;
+        if (i > 0) {
+          commaIsMissing = !lex.next('COMMA');
+        }
+        if (parse.call(this, lex, 'expression')) {
+          if (commaIsMissing) {
+            // Two consecutive expressions without a separating comma.
+            lex.fatal(_('mising-comma'));
+          }
+        } else {
+          break;
+        }
+      }
+      // Check if all the mandatory args have been passed.
+      if (i < mandatoryCount) {
+        lex.fatal(_('too-few-args', instruction, mandatoryCount) + "\n" + _(instruction.toLowerCase()));
+      }
+      // Add optional arguments.
+      var base = i - mandatoryCount;
+      var arg;
+      for (i = base; i < optionalCount; i++) {
+        arg = arguments[3 + i];
+        if (Array.isArray(arg)) this._asm.push.apply(this._asm, arg);else this._asm.push(arg);
+      }
+      if (!lex.next('EOL')) {
+        lex.fatal(_('too-many-args', mandatoryCount, mandatoryCount + optionalCount) + "\n" + _('instr-' + instruction));
+      }
+    }
+    this._asm.push(Asm[instruction]);
+    return true;
+  }
+  function parseString(str) {
+    // Remove surrounding double quotes.
+    str = str.substr(1, str.length - 2);
+    var out = '';
+    var lastIndex = 0;
+    var mode = 0;
+    var c;
+    for (var index = 0; index < str.length; index++) {
+      c = str.charAt(index);
+      if (mode == 0) {
+        if (c == '\\') {
+          out += str.substr(lastIndex);
+          mode = 1;
+        }
+      } else {
+        // Escape mode.
+        if (c == 'n') {
+          out += "\n";
+        } else if (c == 't') {
+          out += "\t";
+        } else {
+          out += c;
+        }
+        lastIndex = index + 1;
+        mode = 1;
+      }
+    }
+    out += str.substr(lastIndex);
+    return out;
+  }
+  module.exports = Basic;
+  module.exports._ = _;
+});

@@ -1,2 +1,82 @@
-require("tfw.listeners",function(t,i,r){var n=function(){function i(){return n(r,arguments)}var r={en:{}},n=t("$").intl;return i.all=r,i}(),e=function(){this._list=[]};e.prototype.add=function(t,i){if("function"!=typeof t)return!1;this.remove(t);for(var r=0;r<this._list.length;r++)if(t===this._list[r])return!1;return this._list.push([t,i]),!0},e.prototype.remove=function(t,i){if("function"!=typeof t)return!1;for(var r=0;r<this._list.length;r++){var n=this._list[r];if(t===n[0]&&i===n[1])return this._list.splice(r,1),!0}return!1},e.prototype.clear=function(){this._list=[]},e.prototype.fire=function(){var t,i,r,n,e=[].slice.call(arguments);for(t=0;t<this._list.length;t++)if(n=this._list[t],i=n[0],r=n[1],!1===i.apply(r,e))return!1;return!0},i.exports=e,i.exports._=n});
-//# sourceMappingURL=tfw.listeners.js.map
+"use strict";
+
+/** @module tfw.listeners */require('tfw.listeners', function (require, module, exports) {
+  var _ = function () {
+    var D = {
+        "en": {}
+      },
+      X = require("$").intl;
+    function _() {
+      return X(D, arguments);
+    }
+    _.all = D;
+    return _;
+  }();
+  /**
+  * Gestion d'une liste de fonctions devant réagir à des événements.
+  * @class
+  */
+  var Listeners = function Listeners() {
+    this._list = [];
+  };
+
+  /**
+   * Ajouter un __listener__ à la liste.
+   * @param listener{function} Fonction à appeler quand l'énément est déclenché.
+   * @return false  si le __listener__  n'a pas été ajouté  (parce qu'il
+   * existe déjà ou parce qu'il n'est pas une fonction).
+   */
+  Listeners.prototype.add = function (listener, obj) {
+    if (typeof listener !== 'function') return false;
+    this.remove(listener);
+    for (var i = 0; i < this._list.length; i++) {
+      if (listener === this._list[i]) return false;
+    }
+    this._list.push([listener, obj]);
+    return true;
+  };
+
+  /**
+   * Supprimer le __listener__ de la liste.
+   * @param listener{function} Fonction à appeler quand l'énément est déclenché.
+   * @return false si le __listener__  n'existe pas.
+   */
+  Listeners.prototype.remove = function (listener, obj) {
+    if (typeof listener !== 'function') return false;
+    for (var i = 0; i < this._list.length; i++) {
+      var x = this._list[i];
+      if (listener === x[0] && obj === x[1]) {
+        this._list.splice(i, 1);
+        return true;
+      }
+    }
+    return false;
+  };
+
+  /**
+   * Supprimer tous les __listeners__ de la liste.
+   */
+  Listeners.prototype.clear = function () {
+    this._list = [];
+  };
+
+  /**
+   * Emettre l'événement. Si un listener retourne ```false```, on n'appelle pas les listeners suivants.
+   */
+  Listeners.prototype.fire = function () {
+    var i,
+      listener,
+      obj,
+      x,
+      args = Array.prototype.slice.call(arguments);
+    for (i = 0; i < this._list.length; i++) {
+      x = this._list[i];
+      listener = x[0];
+      obj = x[1];
+      if (false === listener.apply(obj, args)) return false;
+    }
+    return true;
+  };
+  module.exports = Listeners;
+  module.exports._ = _;
+});

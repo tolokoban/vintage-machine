@@ -1,2 +1,50 @@
-require("tfw.hash-watcher",function(n,t,r){var o=function(){function t(){return o(r,arguments)}var r={en:{}},o=n("$").intl;return t.all=r,t}(),a=n("tfw.listeners"),e="?random-hash."+Date.now(),i=0,s="",u=[],h=new a;t.exports=function(n){h.add(n),i||(i=window.setInterval(function(){var n=window.location.hash;if(e!=n){for(e=n,"#"==n.charAt(0)&&(n=n.substr(1)),s=n;"/"==n.charAt(0);)n=n.substr(1);u=n.split("/"),h.fire(u,window.location.hash)}},50))},t.exports.args=function(){return u},t.exports.hash=function(){return s},t.exports._=o});
-//# sourceMappingURL=tfw.hash-watcher.js.map
+"use strict";
+
+/** @module tfw.hash-watcher */require('tfw.hash-watcher', function (require, module, exports) {
+  var _ = function () {
+    var D = {
+        "en": {}
+      },
+      X = require("$").intl;
+    function _() {
+      return X(D, arguments);
+    }
+    _.all = D;
+    return _;
+  }();
+  /**
+  * The HASH is a very convenient way to deal with the browser history.
+  * You can use the `:target` CSS selector, but there are few annoying caveats.
+  * This module is a watcher for hash changes. Just pass it a callback as argument.
+  * It will be called as soon as the hash changed.
+  */
+  var Listeners = require("tfw.listeners");
+  var lastHash = "?random-hash." + Date.now();
+  var timer = 0;
+  var hash = '';
+  var args = [];
+  var listeners = new Listeners();
+  module.exports = function (onChange) {
+    listeners.add(onChange);
+    if (!timer) {
+      timer = window.setInterval(function () {
+        var currentHash = window.location.hash;
+        if (lastHash == currentHash) return;
+        lastHash = currentHash;
+        if (currentHash.charAt(0) == '#') {
+          currentHash = currentHash.substr(1);
+        }
+        hash = currentHash;
+        args = currentHash.split("/").map(decodeURI);
+        listeners.fire(args, window.location.hash);
+      }, 50);
+    }
+  };
+  module.exports.args = function () {
+    return args;
+  };
+  module.exports.hash = function () {
+    return hash;
+  };
+  module.exports._ = _;
+});

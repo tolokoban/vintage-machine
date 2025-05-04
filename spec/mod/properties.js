@@ -1,2 +1,41 @@
-require("properties",function(e,r,n){var t=function(){function r(){return t(n,arguments)}var n={en:{},fr:{}},t=e("$").intl;return r.all=n,r}();n.readonly=function(e,r,n){"function"==typeof n?Object.defineProperty(e,r,{get:n,set:function(){console.error("[properties] Property `"+r+"` is readonly!")},configurable:!0,enumerable:!0}):Object.defineProperty(e,r,{value:n,writable:!1,configurable:!0,enumerable:!0})},r.exports._=t});
-//# sourceMappingURL=properties.js.map
+"use strict";
+
+/** @module properties */require('properties', function (require, module, exports) {
+  var _ = function () {
+    var D = {
+        "en": {},
+        "fr": {}
+      },
+      X = require("$").intl;
+    function _() {
+      return X(D, arguments);
+    }
+    _.all = D;
+    return _;
+  }();
+  "use strict";
+
+  /**
+   * Helper to create a read only property.
+   */
+  exports.readonly = function (owner, name, value) {
+    if (typeof value === 'function') {
+      Object.defineProperty(owner, name, {
+        get: value,
+        set: function set() {
+          console.error("[properties] Property `" + name + "` is readonly!");
+        },
+        configurable: true,
+        enumerable: true
+      });
+    } else {
+      Object.defineProperty(owner, name, {
+        value: value,
+        writable: false,
+        configurable: true,
+        enumerable: true
+      });
+    }
+  };
+  module.exports._ = _;
+});

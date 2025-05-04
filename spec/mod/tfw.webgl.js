@@ -1,2 +1,186 @@
-require("tfw.webgl",function(e,t,r){function n(e,t){Object.defineProperty(this,"gl",{value:e.getContext("webgl",t)||e.getContext("experimental-webgl",t),writable:!1,configurable:!1,enumerable:!0}),Object.defineProperty(this,"BPE",{value:E,writable:!1,configurable:!1,enumerable:!0}),this.render=function(){}}function a(e,t){var r=e.createProgram();e.attachShader(r,s(e,t.vert||"//No Vertex Shader\n")),e.attachShader(r,c(e,t.frag||"//No Fragment Shader\n")),e.linkProgram(r),this.program=r,Object.freeze(this.program),this.use=function(){e.useProgram(r)},this.use();var n,a,u={},m=e.getProgramParameter(r,e.ACTIVE_ATTRIBUTES);for(n=0;n<m;n++)a=e.getActiveAttrib(r,n),u[a.name]=e.getAttribLocation(r,a.name),this["$"+a.name]=e.getAttribLocation(r,a.name);Object.freeze(u),this.attribs=u;var E={},f=e.getProgramParameter(r,e.ACTIVE_UNIFORMS);for(n=0;n<f;n++)a=e.getActiveUniform(r,n),E[a.name]=e.getUniformLocation(r,a.name),Object.defineProperty(this,"$"+a.name,{set:i(e,a,E[a.name]),get:o(a),enumerable:!0,configurable:!0});Object.freeze(E),this.uniforms=E}function i(e,t,r){var n="_$"+t.name;switch(t.type){case e.BYTE:case e.UNSIGNED_BYTE:case e.SHORT:case e.UNSIGNED_SHORT:case e.INT:case e.UNSIGNED_INT:case e.SAMPLER_2D:return 1==t.size?function(t){e.uniform1i(r,t),this[n]=t}:function(t){e.uniform1iv(r,t),this[n]=t};case e.FLOAT:return 1==t.size?function(t){e.uniform1f(r,t),this[n]=t}:function(t){e.uniform1fv(r,t),this[n]=t}}}function o(e){var t="_$"+e.name;return function(){return this[t]}}function u(e,t,r){var n=t.createShader(e);return t.shaderSource(n,r),t.compileShader(n),t.getShaderParameter(n,t.COMPILE_STATUS)?n:(console.log(r),console.error("An error occurred compiling the shader: "+t.getShaderInfoLog(n)),null)}function c(e,t){return u(e.FRAGMENT_SHADER,e,t)}function s(e,t){return u(e.VERTEX_SHADER,e,t)}var m=function(){function t(){return n(r,arguments)}var r={en:{},fr:{}},n=e("$").intl;return t.all=r,t}(),E=(new Float32Array).BYTES_PER_ELEMENT;n.prototype.createProgram=function(e){return new a(this.gl,e)},n.prototype.start=function(e){if("function"==typeof e&&(this.render=e),!this._animationIsOn){var t=this,r=function(e){t._animationIsOn&&window.requestAnimationFrame(r),t.render(e)};window.requestAnimationFrame(r),this._animationIsOn=!0}},n.prototype.stop=function(){this._animationIsOn=!1},n.prototype.createTextureForFB=function(e,t){var r=this.gl,n=r.createTexture();return r.bindTexture(r.TEXTURE_2D,n),r.texParameteri(r.TEXTURE_2D,r.TEXTURE_WRAP_S,r.CLAMP_TO_EDGE),r.texParameteri(r.TEXTURE_2D,r.TEXTURE_WRAP_T,r.CLAMP_TO_EDGE),r.texParameteri(r.TEXTURE_2D,r.TEXTURE_MIN_FILTER,r.NEAREST),r.texParameteri(r.TEXTURE_2D,r.TEXTURE_MAG_FILTER,r.NEAREST),r.texImage2D(r.TEXTURE_2D,0,r.RGBA,e,t,0,r.RGBA,r.UNSIGNED_BYTE,null),n},n.prototype.getDataFromImage=function(e){var t=e.width,r=e.height,n=document.createElement("canvas");n.setAttribute("width",t),n.setAttribute("height",r);var a=n.getContext("2d");return a.drawImage(e,0,0),a.getImageData(0,0,t,r).data},n.Program=a,t.exports=n,t.exports._=m});
-//# sourceMappingURL=tfw.webgl.js.map
+"use strict";
+
+/** @module tfw.webgl */require('tfw.webgl', function (require, module, exports) {
+  var _ = function () {
+    var D = {
+        "en": {},
+        "fr": {}
+      },
+      X = require("$").intl;
+    function _() {
+      return X(D, arguments);
+    }
+    _.all = D;
+    return _;
+  }();
+  var BPE = new Float32Array().BYTES_PER_ELEMENT;
+  function Webgl(canvas, config) {
+    Object.defineProperty(this, 'gl', {
+      value: canvas.getContext('webgl', config) || canvas.getContext('experimental-webgl', config),
+      writable: false,
+      configurable: false,
+      enumerable: true
+    });
+    Object.defineProperty(this, 'BPE', {
+      value: BPE,
+      writable: false,
+      configurable: false,
+      enumerable: true
+    });
+    this.render = function () {};
+  }
+  Webgl.prototype.createProgram = function (codes) {
+    return new Program(this.gl, codes);
+  };
+  Webgl.prototype.start = function (renderingFunction) {
+    if (typeof renderingFunction === 'function') {
+      this.render = renderingFunction;
+    }
+    if (!this._animationIsOn) {
+      var that = this;
+      var _rendering = function rendering(time) {
+        if (that._animationIsOn) {
+          window.requestAnimationFrame(_rendering);
+        }
+        that.render(time);
+      };
+      window.requestAnimationFrame(_rendering);
+      this._animationIsOn = true;
+    }
+  };
+  Webgl.prototype.stop = function () {
+    this._animationIsOn = false;
+  };
+
+  /**
+   * @return void
+   */
+  Webgl.prototype.createTextureForFB = function (width, height) {
+    var gl = this.gl;
+    var texture = gl.createTexture();
+    gl.bindTexture(gl.TEXTURE_2D, texture);
+
+    // Set up texture so we can render any size image and so we are
+    // working with pixels.
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE); // gl.REPEAT);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE); // gl.REPEAT);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, width, height, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
+    return texture;
+  };
+
+  /**
+   * @return void
+   */
+  Webgl.prototype.getDataFromImage = function (img) {
+    var w = img.width;
+    var h = img.height;
+    var canvas = document.createElement('canvas');
+    canvas.setAttribute("width", w);
+    canvas.setAttribute("height", h);
+    var ctx = canvas.getContext("2d");
+    ctx.drawImage(img, 0, 0);
+    return ctx.getImageData(0, 0, w, h).data;
+  };
+  function Program(gl, codes) {
+    var shaderProgram = gl.createProgram();
+    gl.attachShader(shaderProgram, getVertexShader(gl, codes.vert || '//No Vertex Shader\n'));
+    gl.attachShader(shaderProgram, getFragmentShader(gl, codes.frag || '//No Fragment Shader\n'));
+    gl.linkProgram(shaderProgram);
+    this.program = shaderProgram;
+    Object.freeze(this.program);
+    this.use = function () {
+      gl.useProgram(shaderProgram);
+    };
+    this.use();
+    var index, item;
+    var attribs = {};
+    var attribsCount = gl.getProgramParameter(shaderProgram, gl.ACTIVE_ATTRIBUTES);
+    for (index = 0; index < attribsCount; index++) {
+      item = gl.getActiveAttrib(shaderProgram, index);
+      attribs[item.name] = gl.getAttribLocation(shaderProgram, item.name);
+      this['$' + item.name] = gl.getAttribLocation(shaderProgram, item.name);
+    }
+    Object.freeze(attribs);
+    this.attribs = attribs;
+    var uniforms = {};
+    var uniformsCount = gl.getProgramParameter(shaderProgram, gl.ACTIVE_UNIFORMS);
+    for (index = 0; index < uniformsCount; index++) {
+      item = gl.getActiveUniform(shaderProgram, index);
+      uniforms[item.name] = gl.getUniformLocation(shaderProgram, item.name);
+      Object.defineProperty(this, '$' + item.name, {
+        set: createUniformSetter(gl, item, uniforms[item.name]),
+        get: createUniformGetter(item),
+        enumerable: true,
+        configurable: true
+      });
+    }
+    Object.freeze(uniforms);
+    this.uniforms = uniforms;
+  }
+  function createUniformSetter(gl, item, nameGL) {
+    var nameJS = '_$' + item.name;
+    switch (item.type) {
+      case gl.BYTE:
+      case gl.UNSIGNED_BYTE:
+      case gl.SHORT:
+      case gl.UNSIGNED_SHORT:
+      case gl.INT:
+      case gl.UNSIGNED_INT:
+      case gl.SAMPLER_2D:
+        // Used to set an index to a texture.
+        if (item.size == 1) {
+          return function (v) {
+            gl.uniform1i(nameGL, v);
+            this[nameJS] = v;
+          };
+        } else {
+          return function (v) {
+            gl.uniform1iv(nameGL, v);
+            this[nameJS] = v;
+          };
+        }
+        break;
+      case gl.FLOAT:
+        if (item.size == 1) {
+          return function (v) {
+            gl.uniform1f(nameGL, v);
+            this[nameJS] = v;
+          };
+        } else {
+          return function (v) {
+            gl.uniform1fv(nameGL, v);
+            this[nameJS] = v;
+          };
+        }
+        break;
+    }
+  }
+  function createUniformGetter(item) {
+    var name = '_$' + item.name;
+    return function () {
+      return this[name];
+    };
+  }
+  function getShader(type, gl, code) {
+    var shader = gl.createShader(type);
+    gl.shaderSource(shader, code);
+    gl.compileShader(shader);
+    if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+      console.log(code);
+      console.error("An error occurred compiling the shader: " + gl.getShaderInfoLog(shader));
+      return null;
+    }
+    return shader;
+  }
+  function getFragmentShader(gl, code) {
+    return getShader(gl.FRAGMENT_SHADER, gl, code);
+  }
+  function getVertexShader(gl, code) {
+    return getShader(gl.VERTEX_SHADER, gl, code);
+  }
+  Webgl.Program = Program;
+  module.exports = Webgl;
+  module.exports._ = _;
+});

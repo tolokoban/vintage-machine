@@ -1,2 +1,268 @@
-require("x-widget",function(e,t,r){function n(t,r,n){try{var i=e(r),a=new i(n),d="function"==typeof a.element?a.element():a.element;d.setAttribute("id",t);var c=document.getElementById(t);return c&&c.parentNode.replaceChild(d,c),o(t,a),a}catch(e){throw console.error("[x-widget] Unable to create widget `"+r+"`!"),console.error("[x-widget] id = ",t,", args = ",n),Error(e)}}function i(e){var t,r=d.tag(e.elem);e.attr&&(d.att(r,e.attr),t=e.attr.id),Array.isArray(e.children)&&e.children.forEach(function(e){d.add(r,e)});var n,i,a={};if(e.prop)for(n in e.prop)i=e.prop[n],Object.defineProperty(a,n,{value:i,writable:!1,configurable:!1,enumerable:!0});return Object.defineProperty(a,"element",{value:r,writable:!1,configurable:!1,enumerable:!0}),void 0!==t&&o(t,a),a}function o(e,t){f[e]=t;var r=u[e];return void 0!==r&&window.setTimeout(function(){r.forEach(function(e){e(t)}),delete u[e]}),"function"==typeof t.element?t.element:t.element||t}var a=function(){function t(){return n(r,arguments)}var r={en:{}},n=e("$").intl;return t.all=r,t}(),d=e("dom"),c=e("tfw.data-binding"),f={},u={},l=function(e,t,r){return"string"==typeof e?n.call(this,e,t,r):i.call(this,e)};l.template=function(t){var r,n,i,a="",d={};for(r in t)n=t[r],"name"==r?a=n:"id"==r?i=n:"$"==r.charAt(0)&&(d[r.substr(1)]=n);var c=e(a),f=new c(d);return i&&o(i,f),"function"==typeof f.element?f.element():f.element||f},l.getById=function(e){if(!f[e])throw Error("[x-widget.getById()] ID not found: "+e+"!");return f[e]},l.onWidgetCreation=function(e,t){void 0===f[e]?void 0===u[e]?u[e]=[t]:u[e].push(t):window.setTimeout(function(){t(f[e])})},l.bind=function(t,r){var n,i,o,a,d,u=f[t];for(n in r)a=r[n].B,Array.isArray(a)&&a.forEach(function(e){if(void 0===(i=f[e[0]]))return void console.error("[x-widget:bind("+t+')] Trying to bind attribute "'+n+'" of widget "'+t+'" to the unexisting widget "'+e[0]+'"!');o=e[1];try{if(2==e.length)c.bind(i,o,u,n);else{var r=e[2];c.bind(i,o,function(){u[n]=r})}}catch(r){console.error("Binding error for widget `"+t+"`!",{ex:r,binding:e})}}),d=r[n].S,Array.isArray(d)&&d.forEach(function(r){var i=APP,o=r;if(Array.isArray(r)){try{i=e(r[0])}catch(e){throw console.error("[x-widget:bind] Widget `"+t+"` can't require `"+r[0]+"`: ",e),e}o=r[1]}if("function"!=typeof(o=i[o]))throw Error("[x-widget:bind]  Widget `"+t+"` use unexisting slot `"+r[1]+"` of module `"+r[0]+"`!");try{c.bind(u,n,o)}catch(e){console.error("Binding error for widget `"+t+"`!",{ex:e,dstObj:u,dstAtt:n,fct:o,slot:r})}})},t.exports=l,t.exports._=a});
-//# sourceMappingURL=x-widget.js.map
+"use strict";
+
+/** @module x-widget */require('x-widget', function (require, module, exports) {
+  var _ = function () {
+    var D = {
+        "en": {}
+      },
+      X = require("$").intl;
+    function _() {
+      return X(D, arguments);
+    }
+    _.all = D;
+    return _;
+  }();
+  /**
+  * @example
+  * 
+  * var W = require("x-widget");
+  * W({
+  *   elem: "div",
+  *   attr: {"class": "black"},
+  *   prop: {"$key": "menu"},
+  *   children: [
+  *     "This is the ",
+  *     W({
+  *       elem: "b",
+  *       children: ["menu"]
+  *     }),
+  *     "..."
+  *   ]
+  * });
+  */
+  "use strict";
+  var $ = require("dom");
+  var DB = require("tfw.data-binding");
+  var widgets = {};
+  // Used for `onWidgetCreation()`.
+  var slots = {};
+  var Widget = function Widget(id, modName, args, attribs) {
+    try {
+      if (typeof id === 'string') return Widget1.call(this, id, modName, args, attribs);else return Widget2.call(this, id);
+    } catch (ex) {
+      console.error(ex);
+      throw Error("Exception in " + modName + "(" + JSON.stringify(args) + "):\n" + ex);
+    }
+  };
+  function Widget1(id, modName, args, attribs) {
+    if (typeof attribs === 'undefined') attribs = {};
+    try {
+      var module = require(modName);
+      var wdg = new module(args);
+      var elem;
+      if (typeof wdg.element === 'function') elem = wdg.element();else if (wdg.element instanceof Node) elem = wdg.element;else if (wdg.$ instanceof Node) elem = wdg.$;else {
+        throw Error("Sorry, but \"" + modName + "\" is not a widget nor a view!", wdg);
+      }
+      var dst = document.getElementById(id);
+      if (dst) {
+        // This widget does exist in the current DOM.
+        // We have to replace it.
+        dst.parentNode.replaceChild(elem, dst);
+      }
+      elem.setAttribute('id', id);
+      // Add classes defined in the containing element (`dst`).
+      $.addClass(elem, attribs["class"] || "");
+      register(id, wdg);
+      return wdg;
+    } catch (ex) {
+      console.error("[x-widget] Unable to create widget `" + modName + "`!");
+      console.error("[x-widget] id = ", id, ", args = ", args);
+      throw Error(ex);
+    }
+  }
+  ;
+  function Widget2(args) {
+    var id;
+    var elem = $.tag(args.elem);
+    if (args.attr) {
+      // Adding DOM element attributes.
+      $.att(elem, args.attr);
+      id = args.attr.id;
+    }
+    if (Array.isArray(args.children)) {
+      // Adding DOM element children.
+      args.children.forEach(function (child) {
+        $.add(elem, child);
+      });
+    }
+    // Converting into a widget.
+    var key, val;
+    var wdg = {};
+    if (args.prop) {
+      // Adding READ-ONLY properties to the widget.
+      for (key in args.prop) {
+        val = args.prop[key];
+        Object.defineProperty(wdg, key, {
+          value: val,
+          writable: false,
+          configurable: false,
+          enumerable: true
+        });
+      }
+    }
+    // Assigning the element to the widget.
+    Object.defineProperty(wdg, 'element', {
+      value: elem,
+      writable: false,
+      configurable: false,
+      enumerable: true
+    });
+    if (typeof id !== 'undefined') {
+      // Registering the widget only if it as got an id.
+      register(id, wdg);
+    }
+    return wdg;
+  }
+  Widget.template = function (attribs) {
+    var key,
+      val,
+      id,
+      name = '',
+      args = {};
+    for (key in attribs) {
+      val = attribs[key];
+      if (key == 'name') {
+        name = val;
+      } else if (key == 'id') {
+        id = val;
+      } else if (key.charAt(0) == '$') {
+        args[key.substr(1)] = val;
+      }
+    }
+    var module = require(name);
+    var wdg = new module(args);
+    if (id) {
+      register(id, wdg);
+    }
+    return typeof wdg.element === 'function' ? wdg.element() : wdg.element || wdg;
+  };
+  function register(id, wdg) {
+    widgets[id] = wdg;
+    var mySlots = slots[id];
+    if (typeof mySlots !== 'undefined') {
+      window.setTimeout(function () {
+        mySlots.forEach(function (slot) {
+          slot(wdg);
+        });
+        delete slots[id];
+      });
+    }
+    return typeof wdg.element === 'function' ? wdg.element : wdg.element || wdg;
+  }
+  ;
+  Widget.getById = function (id) {
+    if (!widgets[id]) throw Error("[x-widget.getById()] ID not found: " + id + "!");
+    return widgets[id];
+  };
+  Widget.onWidgetCreation = function (id, slot) {
+    if (typeof widgets[id] === 'undefined') {
+      if (typeof slots[id] === 'undefined') slots[id] = [slot];else slots[id].push(slot);
+    } else {
+      // Asynchronous call to the slot
+      window.setTimeout(function () {
+        slot(widgets[id]);
+      });
+    }
+  };
+
+  /**
+   * @example
+   * var W = require("x-widget");
+   * W.bind('wdg.layout-stack0',{"value":{"B":[["btnNewTask","action"],["btnCancel","action"]]}});
+   */
+  Widget.bind = function (id, attribs) {
+    // Destination object: the one on the attributes of which we want to bind.
+    var dstObj = widgets[id];
+    // Destination attribute name.
+    var dstAtt;
+    // Temporary variables to hold source object and attributes.
+    var srcObj, srcAtt;
+    // @example
+    // ["btnNewTask","action","btnCancel","action"]
+    var bindings;
+    var slots;
+    // Index used to parse multiple bindings.
+    var idx;
+    for (dstAtt in attribs) {
+      bindings = attribs[dstAtt].B;
+      if (Array.isArray(bindings)) {
+        // `binding` is an array of arrays.
+        // Subarrays have 2 or 3 elements.
+        // * ID if the source object
+        // * attribute to bind on
+        // * [optional] value  to use as  a constant. This  is the
+        // * case where  we just want  to set a constant  value as
+        // * soon as the source's attribute has changed.
+        bindings.forEach(function (binding) {
+          srcObj = widgets[binding[0]];
+          if (typeof srcObj === 'undefined') {
+            console.error("[x-widget:bind(" + id + ")] Trying to bind attribute \"" + dstAtt + "\" of widget \"" + id + "\" to the unexisting widget \"" + binding[0] + "\"!");
+            return;
+          }
+          srcAtt = binding[1];
+          try {
+            if (binding.length == 2) {
+              DB.bind(srcObj, srcAtt, dstObj, dstAtt);
+            } else {
+              var value = binding[2];
+              DB.bind(srcObj, srcAtt, function () {
+                dstObj[dstAtt] = value;
+              });
+            }
+          } catch (ex) {
+            console.error("Binding error for widget `" + id + "`!", {
+              ex: ex,
+              binding: binding
+            });
+          }
+        });
+      }
+      slots = attribs[dstAtt].S;
+      if (Array.isArray(slots)) {
+        // Each item is the name of a function to call when the value of this attribute changes.
+        // If the item is a `string`, the function is from the global `APP` object.
+        // Otherwise, the item must be an array with two children:
+        // the first one  is the module's name and  the second one
+        // id the name of the function.
+        // The slots are called with two arguments:
+        //  * the value and
+        //  * the object the attribute belongs.
+        slots.forEach(function (slot) {
+          var mod = APP;
+          var fct = slot;
+          if (Array.isArray(slot)) {
+            try {
+              mod = require(slot[0]);
+            } catch (ex) {
+              console.error("[x-widget:bind] Widget `" + id + "` can't require unexistent `" + slot[0] + "`: ", ex);
+              throw ex;
+            }
+            fct = slot[1];
+          }
+          fct = mod[fct];
+          if (typeof fct !== 'function') {
+            if (Array.isArray(slot)) {
+              throw Error("[x-widget:bind]  Widget `" + id + "` use unexisting slot `" + slot[1] + "` of module `" + slot[0] + "`!");
+            } else {
+              throw Error("[x-widget:bind]  Widget `" + id + "` use unexisting slot `" + slot + "` of main module `APP`!");
+            }
+          } else {
+            try {
+              DB.bind(dstObj, dstAtt, fct);
+            } catch (ex) {
+              console.error("Binding error for widget `" + id + "`!", {
+                ex: ex,
+                dstObj: dstObj,
+                dstAtt: dstAtt,
+                fct: fct,
+                slot: slot
+              });
+            }
+          }
+        });
+      }
+    }
+  };
+  module.exports = Widget;
+  module.exports._ = _;
+});

@@ -1,2 +1,52 @@
-require("speak",function(e,n,t){var r,i=function(){function n(){return r(t,arguments)}var t={en:{},fr:{}},r=e("$").intl;return n.all=t,n}(),o=window.speechSynthesis,c=o?o.getVoices():[];console.info("[speak] voices=...",c),t.isAvailable=function(){return!!o},t.getVoices=function(){return c},t.setVoice=function(e){return!!o&&(r=e,!0)},t.speak=function(e){if(!o)return!1;var n=new SpeechSynthesisUtterance(e);return r&&(n.voice=r),o.speak(n),!0},n.exports._=i});
-//# sourceMappingURL=speak.js.map
+"use strict";
+
+/** @module speak */require('speak', function (require, module, exports) {
+  var _ = function () {
+    var D = {
+        "en": {},
+        "fr": {}
+      },
+      X = require("$").intl;
+    function _() {
+      return X(D, arguments);
+    }
+    _.all = D;
+    return _;
+  }();
+  /**
+  * @module tp4.speak
+  *
+  * @description
+  * If speech synthesis is available, this module make the computer speak.
+  *
+  * @example
+  * var mod = require('tp4.speak');
+  */
+
+  var synth = window.speechSynthesis;
+  var voices = synth ? synth.getVoices() : [];
+  var currentVoice;
+  console.info("[speak] voices=...", voices);
+  exports.isAvailable = function () {
+    if (synth) return true;
+    return false;
+  };
+  exports.getVoices = function () {
+    return voices;
+  };
+  exports.setVoice = function (voice) {
+    if (!synth) return false;
+    currentVoice = voice;
+    return true;
+  };
+  exports.speak = function (txt) {
+    if (!synth) return false;
+    var utter = new SpeechSynthesisUtterance(txt);
+    if (currentVoice) {
+      utter.voice = currentVoice;
+    }
+    synth.speak(utter);
+    return true;
+  };
+  module.exports._ = _;
+});

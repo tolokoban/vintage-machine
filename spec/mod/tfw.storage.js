@@ -1,2 +1,63 @@
-require("tfw.storage",function(t,n,o){function e(t){return function(n,o){var e=t.getItem(n);if(null===e)return o;try{e=JSON.parse(e)}catch(t){}return e}}function r(t){return function(n,o){t.setItem(n,JSON.stringify(o))}}function i(){this._data={}}var a=function(){function n(){return e(o,arguments)}var o={en:{}},e=t("$").intl;return n.all=o,n}();window.localStorage?window.sessionStorage||(window.sessionStorage=window.localStorage):(window.localStorage=new i,window.sessionStorage=new i),o.local={get:e(window.localStorage),set:r(window.localStorage)},o.session={get:e(window.sessionStorage),set:r(window.sessionStorage)},i.prototype.getItem=function(t,n){var o=this._data[t];return void 0===o?n:o},i.prototype.setItem=function(t,n){this._data[t]=n},n.exports._=a});
-//# sourceMappingURL=tfw.storage.js.map
+"use strict";
+
+/** @module tfw.storage */require('tfw.storage', function (require, module, exports) {
+  var _ = function () {
+    var D = {
+        "en": {}
+      },
+      X = require("$").intl;
+    function _() {
+      return X(D, arguments);
+    }
+    _.all = D;
+    return _;
+  }();
+  "use strict";
+  if (!window.localStorage) {
+    window.localStorage = new DBStorage();
+    window.sessionStorage = new DBStorage();
+  } else if (!window.sessionStorage) {
+    window.sessionStorage = window.localStorage;
+  }
+  exports.local = {
+    get: load(window.localStorage),
+    set: save(window.localStorage)
+  };
+  exports.session = {
+    get: load(window.sessionStorage),
+    set: save(window.sessionStorage)
+  };
+  function load(storage) {
+    return function (key, def) {
+      var v = storage.getItem(key);
+      if (v === null) {
+        return def;
+      }
+      try {
+        v = JSON.parse(v);
+      } catch (ex) {}
+      return v;
+    };
+  }
+  function save(storage) {
+    return function (key, val) {
+      storage.setItem(key, JSON.stringify(val));
+    };
+  }
+  function DBStorage() {
+    this._data = {};
+  }
+
+  /**
+   * @member DBStorage.getItem
+   * @param key
+   */
+  DBStorage.prototype.getItem = function (key, def) {
+    var val = this._data[key];
+    return typeof val === 'undefined' ? def : val;
+  };
+  DBStorage.prototype.setItem = function (key, val) {
+    this._data[key] = val;
+  };
+  module.exports._ = _;
+});

@@ -1,2 +1,89 @@
-require("$",function(n,r,o){o.config={name:'"vintage-machine"',description:'"Virtual old-fashion machine to learn basic concepts of computer programming."',author:'"tolokoban"',version:'"0.0.9"',major:"0",minor:"0",revision:"9",date:"2017-03-27T19:05:30.000Z",consts:{}};var a=null;o.lang=function(n){return void 0===n&&(window.localStorage&&(n=window.localStorage.getItem("Language")),n||(n=window.navigator.language)||(n=window.navigator.browserLanguage)||(n="fr"),n=n.substr(0,2).toLowerCase()),a=n,window.localStorage&&window.localStorage.setItem("Language",n),n},o.intl=function(n,r){var a,t,e,i,g,l,u,c=n[o.lang()],s=r[0];for(u in n)break;if(!u)return s;if(!c&&!(c=n[u]))return s;if(a=c[s],a||(c=n[u],a=c[s]),!a)return s;if(r.length>1){for(t="",g=0,e=0;e<a.length;e++)i=a.charAt(e),"$"===i?(t+=a.substring(g,e),e++,l=a.charCodeAt(e)-48,l<0||l>=r.length?t+="$"+a.charAt(e):t+=r[l],g=e+1):"\\"===i&&(t+=a.substring(g,e),e++,t+=a.charAt(e),g=e+1);t+=a.substr(g),a=t}return a}});
-//# sourceMappingURL=$.js.map
+"use strict";
+
+/** @module $ */require('$', function (require, module, exports) {
+  exports.config = {
+    "name": "\"vintage-machine\"",
+    "description": "\"Virtual old-fashion machine to learn basic concepts of computer programming.\"",
+    "author": "\"tolokoban\"",
+    "version": "\"0.0.11\"",
+    "major": "0",
+    "minor": "0",
+    "revision": "11",
+    "date": "2017-03-27T20:20:52.000Z",
+    "consts": {}
+  };
+  var currentLang = null;
+  exports.lang = function (lang) {
+    if (lang === undefined) {
+      if (window.localStorage) {
+        lang = window.localStorage.getItem("Language");
+      }
+      if (!lang) {
+        lang = window.navigator.language;
+        if (!lang) {
+          lang = window.navigator.browserLanguage;
+          if (!lang) {
+            lang = "fr";
+          }
+        }
+      }
+      lang = lang.substr(0, 2).toLowerCase();
+    }
+    currentLang = lang;
+    if (window.localStorage) {
+      window.localStorage.setItem("Language", lang);
+    }
+    return lang;
+  };
+  exports.intl = function (words, params) {
+    var dic = words[exports.lang()],
+      k = params[0],
+      txt,
+      newTxt,
+      i,
+      c,
+      lastIdx,
+      pos;
+    var defLang;
+    for (defLang in words) break;
+    if (!defLang) return k;
+    if (!dic) {
+      dic = words[defLang];
+      if (!dic) {
+        return k;
+      }
+    }
+    txt = dic[k];
+    if (!txt) {
+      dic = words[defLang];
+      txt = dic[k];
+    }
+    if (!txt) return k;
+    if (params.length > 1) {
+      newTxt = "";
+      lastIdx = 0;
+      for (i = 0; i < txt.length; i++) {
+        c = txt.charAt(i);
+        if (c === '$') {
+          newTxt += txt.substring(lastIdx, i);
+          i++;
+          pos = txt.charCodeAt(i) - 48;
+          if (pos < 0 || pos >= params.length) {
+            newTxt += "$" + txt.charAt(i);
+          } else {
+            newTxt += params[pos];
+          }
+          lastIdx = i + 1;
+        } else if (c === '\\') {
+          newTxt += txt.substring(lastIdx, i);
+          i++;
+          newTxt += txt.charAt(i);
+          lastIdx = i + 1;
+        }
+      }
+      newTxt += txt.substr(lastIdx);
+      txt = newTxt;
+    }
+    return txt;
+  };
+});

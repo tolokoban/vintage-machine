@@ -1,0 +1,10 @@
+digraph dependencies {
+    "page.sprite" -> "$"
+
+    "page.sprite" -> "keyboard"
+
+    "page.sprite" -> "file"
+    "file" -> "$"
+    "keyboard" -> "$"
+
+}
