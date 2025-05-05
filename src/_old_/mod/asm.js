@@ -55,7 +55,7 @@ var Speak = require("speak");
  */
 
 // Every atomic instruction has a time cost.
-// The cost allower between two requestAnimationFrames is `MAX_COST`.
+// The cost allowed between two requestAnimationFrames is `MAX_COST`.
 var MAX_COST = 20000;
 var PRECISION = 0.0000000001;
 

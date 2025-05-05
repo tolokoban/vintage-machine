@@ -14,7 +14,6 @@ export class Help {
     marked.use({
       renderer: {
         link: (token: Tokens.Link) => {
-          console.log("🚀 [help] token =", token); // @FIXME: Remove this line written on 2025-05-04 at 10:58
           return `<a href="#" data-href=${JSON.stringify(token.href)}>${token.text}</a>`;
         },
       },
