@@ -1,0 +1,12 @@
+{
+    name: "Kernel Instruction",
+    params: {
+        name: "Instruction's name",
+    },
+    vars: {
+        nameKebab: "kebab($name)",
+        nameCamel: "camel($name)",
+        namePascal: "pascal($name)",
+    },
+    open: "{{nameKebab}}.ts",
+}

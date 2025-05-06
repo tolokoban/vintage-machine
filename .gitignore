@@ -4,4 +4,6 @@ node_modules/
 *~
 spec/mod/
 *#
-
+dist/
+build/
+**/.DS_Store

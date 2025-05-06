@@ -35,6 +35,7 @@ export declare class BasikAssembly {
     private readonly $getVar;
     private readonly $makeArray;
     private readonly $function;
+    private readonly $instruction;
     private makeBinOp;
 }
 //# sourceMappingURL=asm.d.ts.map

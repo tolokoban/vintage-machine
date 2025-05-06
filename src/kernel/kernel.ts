@@ -1,95 +1,163 @@
-import { BasikValue } from "@/types";
+import { BasikValue } from "@/types"
 import {
-  tgdCalcModulo,
-  TgdContext,
-  TgdPainter,
-  TgdPainterFramebuffer,
-  TgdPainterLogic,
-  TgdTexture2D,
-} from "@tolokoban/tgd";
+    tgdCalcModulo,
+    TgdContext,
+    TgdPainter,
+    TgdTexture2D,
+} from "@tolokoban/tgd"
+import { Symbols } from "./symbols/symbols"
+import { PainterLayer } from "./painters/layer"
+import { PainterColorizer } from "./painters/colorizer"
+import { paletteMakeDefault } from "./palette/main"
+import { KernelInterface } from "./types"
+import { makeKernelInstructions } from "./instructions"
 
-export class Kernel extends TgdPainter {
-  static readonly LAYERS_COUNT = 1;
-  static readonly WIDTH = 640;
-  static readonly HEIGHT = 480;
+const EMPTY_FUNCTION = () => {}
+export class Kernel extends TgdPainter implements KernelInterface {
+    public readonly LAYERS_COUNT = 1
+    public readonly WIDTH = 640
+    public readonly HEIGHT = 480
+    public readonly CHAR_SIZE = 16
+    public readonly TEXT_COLS = Math.floor(this.WIDTH / this.CHAR_SIZE)
+    public readonly TEXT_ROWS = Math.floor(this.HEIGHT / this.CHAR_SIZE)
+    public readonly TEXT_ORIGIN_X = (this.CHAR_SIZE - this.WIDTH) / 2
+    public readonly TEXT_ORIGIN_Y = (this.CHAR_SIZE - this.HEIGHT) / 2
 
-  private readonly context: TgdContext;
-  private readonly variables = new Map<string, BasikValue>();
-  private readonly layersSwaps: [TgdTexture2D[], TgdTexture2D[]] = [[], []];
-  private readonly layersIndexes: number[] = [];
-  private readonly framebuffer: TgdPainterFramebuffer;
-  private _currentLayer = 0;
+    public readonly painterSymbols: Symbols
+    public x = (this.CHAR_SIZE - this.WIDTH) / 2
+    public y = (this.CHAR_SIZE - this.HEIGHT) / 2
+    public colorIndex = 24
 
-  constructor(canvas: HTMLCanvasElement, symbols: ArrayBuffer) {
-    super();
-    canvas.width = Kernel.WIDTH;
-    canvas.height = Kernel.HEIGHT;
-    const context = new TgdContext(canvas, {
-      alpha: true,
-      antialias: false,
-      preserveDrawingBuffer: true,
-    });
-    this.context = context;
-    this.framebuffer = new TgdPainterFramebuffer(context, {
-      children: [new TgdPainterLogic(this.paintLayer)],
-    });
-    for (let index = 0; index < Kernel.LAYERS_COUNT; index++) {
-      for (const layers of this.layersSwaps) {
-        layers.push(
-          new TgdTexture2D(context).setParams({
-            wrapS: "REPEAT",
-            wrapT: "REPEAT",
-            magFilter: "NEAREST",
-            minFilter: "NEAREST",
-          }),
-        );
-      }
-      this.layersIndexes.push(0);
+    private readonly instructions: Record<string, (args: BasikValue[]) => void>
+    private readonly context: TgdContext
+    private readonly variables = new Map<string, BasikValue>()
+    private readonly layers: PainterLayer[] = []
+    private readonly textureSymbols: TgdTexture2D
+    private readonly texturePalette: TgdTexture2D
+    private readonly colorizer: PainterColorizer
+    private canvasPalette: HTMLCanvasElement = paletteMakeDefault()
+    private _currentLayerindex = 0
+
+    constructor(canvas: HTMLCanvasElement, symbols: HTMLImageElement) {
+        super()
+        canvas.width = this.WIDTH
+        canvas.height = this.HEIGHT
+        const context = new TgdContext(canvas, {
+            alpha: true,
+            antialias: false,
+            preserveDrawingBuffer: true,
+        })
+        this.context = context
+        this.texturePalette = new TgdTexture2D(context).loadBitmap(
+            this.canvasPalette
+        )
+        this.colorizer = new PainterColorizer(context, this.texturePalette)
+        this.textureSymbols = new TgdTexture2D(context)
+            .setParams({
+                magFilter: "LINEAR",
+                minFilter: "LINEAR",
+                wrapS: "MIRRORED_REPEAT",
+                wrapT: "MIRRORED_REPEAT",
+            })
+            .loadBitmap(symbols)
+        for (let index = 0; index < this.LAYERS_COUNT; index++) {
+            this.layers.push(new PainterLayer(context))
+        }
+        context.add(this)
+        context.paint()
+        this.painterSymbols = new Symbols(context.gl, {
+            symbols: this.textureSymbols,
+            screenWidth: this.WIDTH,
+            screenHeight: this.HEIGHT,
+        })
+        this.instructions = makeKernelInstructions(this)
     }
-    context.add(this);
-    context.paint();
-  }
 
-  get currentLayer() {
-    return this._currentLayer;
-  }
-  set currentLayer(value: number) {
-    value =
-      Kernel.LAYERS_COUNT === 1
-        ? 0
-        : tgdCalcModulo(Math.round(value), 0, Kernel.LAYERS_COUNT - 1);
-    this._currentLayer = value;
-  }
+    executeInstruction(name: string, args: BasikValue[]) {
+        try {
+            const instruction = this.instructions[name]
+            if (!instruction) {
+                throw new Error(
+                    `L'instruction "${name.toUpperCase()}" n'existe pas.\nLes instructions disponibles sont: ${Object.keys(
+                        this.instructions
+                    )
+                        .sort()
+                        .join(", ")}.`
+                )
+            }
 
-  delete(): void {
-    this.framebuffer.delete();
-    for (const layers of this.layersSwaps) {
-      for (const layer of layers) {
-        layer.delete();
-      }
+            instruction(args)
+        } catch (ex) {
+            const msg = ex instanceof Error ? ex.message : JSON.stringify(ex)
+            throw new Error(
+                `Erreur de l'instruction ${name.toUpperCase()} :\n${msg}`
+            )
+        }
     }
-  }
 
-  paint(time: number, delay: number): void {
-    const { context } = this;
-    const { gl } = context;
-    gl.clearColor(1, 0.667, 0, 1);
-    gl.clear(gl.COLOR_BUFFER_BIT);
-  }
-
-  private readonly paintLayer = (time: number, delay: number): void => {};
-
-  getVar(name: string) {
-    return this.variables.get(name) ?? 0;
-  }
-
-  setVar(name: string, value: BasikValue) {
-    this.variables.set(name, value);
-  }
-
-  debugVariables() {
-    for (const key of this.variables.keys()) {
-      console.log(key, "=", this.getVar(key));
+    get currentLayerIndex() {
+        return this._currentLayerindex
     }
-  }
+    set currentLayerIndex(value: number) {
+        value =
+            this.LAYERS_COUNT === 1
+                ? 0
+                : tgdCalcModulo(Math.round(value), 0, this.LAYERS_COUNT - 1)
+        this._currentLayerindex = value
+    }
+
+    get layer() {
+        return this.layers[this.currentLayerIndex]
+    }
+
+    delete(): void {
+        for (const layer of this.layers) {
+            layer.delete()
+        }
+        this.painterSymbols.delete()
+        this.textureSymbols.delete()
+    }
+
+    paint(): void {
+        const { context, colorizer } = this
+        const { gl } = context
+        console.log("PAINT")
+        gl.clearColor(0, 0, 0, 0)
+        gl.clear(gl.COLOR_BUFFER_BIT)
+        for (const layer of this.layers) {
+            colorizer.paint(layer.texture)
+        }
+    }
+
+    paintFB(action: () => void = EMPTY_FUNCTION) {
+        this.layer.paint(action)
+    }
+
+    getVar(name: string) {
+        return this.variables.get(name) ?? 0
+    }
+
+    setVar(name: string, value: BasikValue) {
+        this.variables.set(name, value)
+    }
+
+    debugVariables() {
+        for (const key of this.variables.keys()) {
+            console.log(key, "=", this.getVar(key))
+        }
+    }
+
+    test() {
+        this.paintFB(() => {
+            this.painterSymbols.paint({
+                color: 4,
+                screenX: 0,
+                screenY: 0,
+                symbolX: 0,
+                symbolY: 0,
+                width: 512,
+                height: 512,
+            })
+        })
+    }
 }

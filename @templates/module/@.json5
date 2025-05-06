@@ -1,0 +1,11 @@
+{
+    name: "Simple module",
+    params: {
+        name: "Module's name",
+    },
+    vars: {
+        nameKebab: "kebab($name)",
+        nameCamel: "camel($name)",
+    },
+    open: "{{nameKebab}}/{{nameKebab}}.ts",
+}

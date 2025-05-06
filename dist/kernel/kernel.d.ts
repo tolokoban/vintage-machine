@@ -1,23 +1,41 @@
 import { BasikValue } from "@/types";
 import { TgdPainter } from "@tolokoban/tgd";
-export declare class Kernel extends TgdPainter {
-    static readonly LAYERS_COUNT = 1;
-    static readonly WIDTH = 640;
-    static readonly HEIGHT = 480;
+import { Symbols } from "./symbols/symbols";
+import { PainterLayer } from "./painters/layer";
+import { KernelInterface } from "./types";
+export declare class Kernel extends TgdPainter implements KernelInterface {
+    readonly LAYERS_COUNT = 1;
+    readonly WIDTH = 640;
+    readonly HEIGHT = 480;
+    readonly CHAR_SIZE = 16;
+    readonly TEXT_COLS: number;
+    readonly TEXT_ROWS: number;
+    readonly TEXT_ORIGIN_X: number;
+    readonly TEXT_ORIGIN_Y: number;
+    readonly painterSymbols: Symbols;
+    x: number;
+    y: number;
+    colorIndex: number;
+    private readonly instructions;
     private readonly context;
     private readonly variables;
-    private readonly layersSwaps;
-    private readonly layersIndexes;
-    private readonly framebuffer;
-    private _currentLayer;
-    constructor(canvas: HTMLCanvasElement, symbols: ArrayBuffer);
-    get currentLayer(): number;
-    set currentLayer(value: number);
+    private readonly layers;
+    private readonly textureSymbols;
+    private readonly texturePalette;
+    private readonly colorizer;
+    private canvasPalette;
+    private _currentLayerindex;
+    constructor(canvas: HTMLCanvasElement, symbols: HTMLImageElement);
+    executeInstruction(name: string, args: BasikValue[]): void;
+    get currentLayerIndex(): number;
+    set currentLayerIndex(value: number);
+    get layer(): PainterLayer;
     delete(): void;
-    paint(time: number, delay: number): void;
-    private readonly paintLayer;
+    paint(): void;
+    paintFB(action?: () => void): void;
     getVar(name: string): BasikValue;
     setVar(name: string, value: BasikValue): void;
     debugVariables(): void;
+    test(): void;
 }
 //# sourceMappingURL=kernel.d.ts.map
