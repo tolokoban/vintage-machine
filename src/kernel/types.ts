@@ -15,4 +15,5 @@ export interface KernelInterface {
     colorIndex: number
     paint(): void
     paintFB(action: () => void): void
+    print(text: string): void
 }

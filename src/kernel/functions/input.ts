@@ -16,18 +16,22 @@ export const makeInput = (kernel: KernelInterface) =>
 
                     try {
                         const { key } = evt
-                        console.log("🚀 [input] key =", key) // @FIXME: Remove this line written on 2025-05-06 at 23:34
                         if (key.length === 1) {
                             value += key
-                            console.log("🚀 [input] value =", value) // @FIXME: Remove this line written on 2025-05-06 at 23:36
+                            kernel.print(key)
                             return
                         }
                         if (key === "Enter") {
+                            globalThis.document.removeEventListener(
+                                "keydown",
+                                handleKey
+                            )
                             kernel.x = kernel.TEXT_ORIGIN_X
                             kernel.y += kernel.CHAR_SIZE
                             resolve(value)
                             return
                         }
+                        console.log("🚀 [input] key =", key) // @FIXME: Remove this line written on 2025-05-06 at 23:34
                     } finally {
                         kernel.paint()
                     }

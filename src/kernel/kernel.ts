@@ -15,6 +15,9 @@ import { makeKernelFunctions } from "./functions"
 
 const EMPTY_FUNCTION = () => {}
 export class Kernel extends TgdPainter implements KernelInterface {
+    private static ID = 0
+
+    public readonly id = `Kernel#${Kernel.ID++}`
     public readonly LAYERS_COUNT = 1
     public readonly WIDTH = 640
     public readonly HEIGHT = 480
@@ -165,6 +168,29 @@ export class Kernel extends TgdPainter implements KernelInterface {
 
     paintFB(action: () => void = EMPTY_FUNCTION) {
         this.layer.paint(action)
+    }
+
+    print(text: string) {
+        this.paintFB(() => {
+            for (const char of text.split("")) {
+                const sym = char.charCodeAt(0)
+                const val = sym & 0xff
+                const col = val & 0xf
+                const row = (val - col) >> 4
+                this.painterSymbols.paint({
+                    screenX: this.x,
+                    screenY: this.y,
+                    symbolX: col * this.CHAR_SIZE,
+                    symbolY: row * this.CHAR_SIZE,
+                    color: this.colorIndex,
+                })
+                this.x += this.CHAR_SIZE
+                if (this.x >= this.WIDTH / 2) {
+                    this.x = this.TEXT_ORIGIN_X
+                    this.y += this.CHAR_SIZE
+                }
+            }
+        })
     }
 
     getVar(name: string) {

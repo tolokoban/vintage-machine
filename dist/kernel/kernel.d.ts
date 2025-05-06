@@ -4,6 +4,8 @@ import { Symbols } from "./painters/symbols/symbols";
 import { PainterLayer } from "./painters/layer";
 import { KernelInterface } from "./types";
 export declare class Kernel extends TgdPainter implements KernelInterface {
+    private static ID;
+    readonly id: string;
     readonly LAYERS_COUNT = 1;
     readonly WIDTH = 640;
     readonly HEIGHT = 480;
@@ -35,6 +37,7 @@ export declare class Kernel extends TgdPainter implements KernelInterface {
     delete(): void;
     paint(): void;
     paintFB(action?: () => void): void;
+    print(text: string): void;
     getVar(name: string): BasikValue;
     setVar(name: string, value: BasikValue): void;
     debugVariables(): void;

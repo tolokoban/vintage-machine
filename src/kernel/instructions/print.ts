@@ -5,30 +5,10 @@ import { argsAreAnys } from "@/basik/guards"
 import { BasikValue } from "@/types"
 
 function print(kernel: KernelInterface, args: BasikValue[]) {
-    kernel.paintFB(() => {
-        const text = args
-            .map(arg => (isString(arg) ? arg : JSON.stringify(arg)))
-            .join("")
-        const chars = text.split("")
-        for (const char of chars) {
-            const sym = char.charCodeAt(0)
-            const val = sym & 0xff
-            const col = val & 0xf
-            const row = (val - col) >> 4
-            if (kernel.x >= kernel.WIDTH / 2) {
-                kernel.x = kernel.TEXT_ORIGIN_X
-                kernel.y += kernel.CHAR_SIZE
-            }
-            kernel.painterSymbols.paint({
-                screenX: kernel.x,
-                screenY: kernel.y,
-                symbolX: col * kernel.CHAR_SIZE,
-                symbolY: row * kernel.CHAR_SIZE,
-                color: kernel.colorIndex,
-            })
-            kernel.x += kernel.CHAR_SIZE
-        }
-    })
+    const text = args
+        .map(arg => (isString(arg) ? arg : JSON.stringify(arg)))
+        .join("")
+    kernel.print(text)
 }
 
 export const makePrint = (kernel: KernelInterface) =>

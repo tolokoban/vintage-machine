@@ -25,6 +25,31 @@ export function argsAreNumbers(min = 1, max = 999) {
     }
 }
 
+export function argsAreStrings(min = 1, max = 999) {
+    return (args: BasikValue[]): asserts args is number[] => {
+        if (args.length < min || args.length > max) {
+            if (min === max) {
+                if (min === 0)
+                    throw new Error("Cette function n'attend aucun argument.")
+                if (min === 1)
+                    throw new Error(
+                        "Cette function attend un et un seul argument."
+                    )
+                throw new Error(
+                    `Cette function attend entre ${min} et ${max} arguments.`
+                )
+            }
+        }
+        for (const arg of args) {
+            if (typeof arg !== "string") {
+                throw new Error(
+                    "Tous les arguments de cette fonction doivent être des nombres."
+                )
+            }
+        }
+    }
+}
+
 export function argsAreAnys(min = 0, max = 999) {
     return (args: BasikValue[]): asserts args is BasikValue[] => {
         if (args.length < min || args.length > max) {
