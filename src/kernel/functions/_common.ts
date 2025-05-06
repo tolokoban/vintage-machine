@@ -3,7 +3,7 @@ import { BasikValue } from "@/types"
 export function make<T extends BasikValue[]>(
     name: string,
     guard: (args: BasikValue[]) => asserts args is T,
-    func: (args: T) => void | Promise<void>
+    func: (args: T) => BasikValue | Promise<BasikValue>
 ) {
     return (args: BasikValue[]) => {
         try {
@@ -11,7 +11,7 @@ export function make<T extends BasikValue[]>(
             return func(args)
         } catch (ex) {
             throw new Error(
-                `Erreur de l'instruction "${name.toUpperCase()}": ${ex}`
+                `Erreur de la fonction "${name.toUpperCase()}": ${ex}`
             )
         }
     }

@@ -1,6 +1,6 @@
 import { BasikValue } from "@/types";
 import { TgdPainter } from "@tolokoban/tgd";
-import { Symbols } from "./symbols/symbols";
+import { Symbols } from "./painters/symbols/symbols";
 import { PainterLayer } from "./painters/layer";
 import { KernelInterface } from "./types";
 export declare class Kernel extends TgdPainter implements KernelInterface {
@@ -17,6 +17,7 @@ export declare class Kernel extends TgdPainter implements KernelInterface {
     y: number;
     colorIndex: number;
     private readonly instructions;
+    private readonly functions;
     private readonly context;
     private readonly variables;
     private readonly layers;
@@ -26,7 +27,8 @@ export declare class Kernel extends TgdPainter implements KernelInterface {
     private canvasPalette;
     private _currentLayerindex;
     constructor(canvas: HTMLCanvasElement, symbols: HTMLImageElement);
-    executeInstruction(name: string, args: BasikValue[]): void;
+    executeInstruction(name: string, args: BasikValue[]): void | Promise<void>;
+    executeFunction(name: string, args: BasikValue[]): BasikValue | Promise<BasikValue>;
     get currentLayerIndex(): number;
     set currentLayerIndex(value: number);
     get layer(): PainterLayer;

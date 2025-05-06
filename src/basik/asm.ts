@@ -4,7 +4,6 @@ import { isNumber, isString } from "@tolokoban/type-guards"
 import { isBasikError, BasikValue } from "@/types"
 import { consoleError } from "./error"
 import { BINOPS } from "./binops"
-import { FUNCTIONS } from "./functions"
 
 export type ByteCode = {
     pos: number
@@ -27,7 +26,9 @@ export class BasikAssembly {
     constructor(
         public readonly code: string,
         private readonly kernel: Kernel
-    ) {}
+    ) {
+        console.log(code)
+    }
 
     async execute() {
         try {
@@ -144,7 +145,7 @@ export class BasikAssembly {
         const tknFunction = lexer.get("FUNC")
         if (!tknFunction) return false
 
-        const name = tknFunction.val.slice(0, -1).trim()
+        const name = tknFunction.val.slice(0, -1).trim().toUpperCase()
         let argsCount = 0
         while (this.parseExpression()) {
             argsCount++
@@ -267,19 +268,18 @@ export class BasikAssembly {
         this.stack.push(array)
     })
 
-    private readonly $function = makeAsync("function()", () => {
+    private readonly $function = async () => {
         const name = this.popStr()
         const args = this.popArr()
-        const func = FUNCTIONS[name]
-        if (!func) this.fatal(`La fonction "${name}" n'existe pas.`)
-        this.stack.push(func(args))
-    })
+        const result = await this.kernel.executeFunction(name, args)
+        this.stack.push(result)
+    }
 
-    private readonly $instruction = makeAsync("instruction()", () => {
+    private readonly $instruction = async () => {
         const name = this.popStr()
         const args = this.popArr()
-        this.kernel.executeInstruction(name, args)
-    })
+        await this.kernel.executeInstruction(name, args)
+    }
 
     private makeBinOp(operator: string) {
         return makeAsync(operator, () => {

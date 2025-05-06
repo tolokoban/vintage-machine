@@ -5,12 +5,13 @@ import {
     TgdPainter,
     TgdTexture2D,
 } from "@tolokoban/tgd"
-import { Symbols } from "./symbols/symbols"
+import { Symbols } from "./painters/symbols/symbols"
 import { PainterLayer } from "./painters/layer"
 import { PainterColorizer } from "./painters/colorizer"
 import { paletteMakeDefault } from "./palette/main"
 import { KernelInterface } from "./types"
 import { makeKernelInstructions } from "./instructions"
+import { makeKernelFunctions } from "./functions"
 
 const EMPTY_FUNCTION = () => {}
 export class Kernel extends TgdPainter implements KernelInterface {
@@ -28,7 +29,14 @@ export class Kernel extends TgdPainter implements KernelInterface {
     public y = (this.CHAR_SIZE - this.HEIGHT) / 2
     public colorIndex = 24
 
-    private readonly instructions: Record<string, (args: BasikValue[]) => void>
+    private readonly instructions: Record<
+        string,
+        (args: BasikValue[]) => void | Promise<void>
+    >
+    private readonly functions: Record<
+        string,
+        (args: BasikValue[]) => BasikValue | Promise<BasikValue>
+    >
     private readonly context: TgdContext
     private readonly variables = new Map<string, BasikValue>()
     private readonly layers: PainterLayer[] = []
@@ -71,9 +79,10 @@ export class Kernel extends TgdPainter implements KernelInterface {
             screenHeight: this.HEIGHT,
         })
         this.instructions = makeKernelInstructions(this)
+        this.functions = makeKernelFunctions(this)
     }
 
-    executeInstruction(name: string, args: BasikValue[]) {
+    executeInstruction(name: string, args: BasikValue[]): void | Promise<void> {
         try {
             const instruction = this.instructions[name]
             if (!instruction) {
@@ -86,11 +95,36 @@ export class Kernel extends TgdPainter implements KernelInterface {
                 )
             }
 
-            instruction(args)
+            return instruction(args)
         } catch (ex) {
             const msg = ex instanceof Error ? ex.message : JSON.stringify(ex)
             throw new Error(
                 `Erreur de l'instruction ${name.toUpperCase()} :\n${msg}`
+            )
+        }
+    }
+
+    executeFunction(
+        name: string,
+        args: BasikValue[]
+    ): BasikValue | Promise<BasikValue> {
+        try {
+            const func = this.functions[name]
+            if (!func) {
+                throw new Error(
+                    `La fonction "${name.toUpperCase()}" n'existe pas.\nLes fonctions disponibles sont: ${Object.keys(
+                        this.functions
+                    )
+                        .sort()
+                        .join(", ")}.`
+                )
+            }
+
+            return func(args)
+        } catch (ex) {
+            const msg = ex instanceof Error ? ex.message : JSON.stringify(ex)
+            throw new Error(
+                `Erreur de la fonction ${name.toUpperCase()} :\n${msg}`
             )
         }
     }
@@ -134,11 +168,15 @@ export class Kernel extends TgdPainter implements KernelInterface {
     }
 
     getVar(name: string) {
+        name = name.toUpperCase()
+        if (!this.variables.has(name)) {
+            throw new Error(`La variable $${name} n'existe pas.`)
+        }
         return this.variables.get(name) ?? 0
     }
 
     setVar(name: string, value: BasikValue) {
-        this.variables.set(name, value)
+        this.variables.set(name.toUpperCase(), value)
     }
 
     debugVariables() {

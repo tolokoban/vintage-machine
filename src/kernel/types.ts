@@ -1,4 +1,4 @@
-import { Symbols } from "./symbols/symbols"
+import { Symbols } from "./painters/symbols/symbols"
 
 export interface KernelInterface {
     readonly LAYERS_COUNT: number
@@ -13,5 +13,6 @@ export interface KernelInterface {
     x: number
     y: number
     colorIndex: number
+    paint(): void
     paintFB(action: () => void): void
 }

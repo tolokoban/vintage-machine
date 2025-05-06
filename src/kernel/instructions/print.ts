@@ -13,8 +13,8 @@ function print(kernel: KernelInterface, args: BasikValue[]) {
         for (const char of chars) {
             const sym = char.charCodeAt(0)
             const val = sym & 0xff
-            const row = val & 0xf
-            const col = (val - row) >> 4
+            const col = val & 0xf
+            const row = (val - col) >> 4
             if (kernel.x >= kernel.WIDTH / 2) {
                 kernel.x = kernel.TEXT_ORIGIN_X
                 kernel.y += kernel.CHAR_SIZE
