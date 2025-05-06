@@ -41,7 +41,7 @@ export class PainterColorizer {
                 "float alpha = texel.a;",
                 "if (alpha < 0.5) discard;",
                 "float colorIndex = texel.r;",
-                "float u = colorIndex - 1.0 / 512.0;",
+                "float u = colorIndex + 1.0 / 512.0;",
                 "FragColor = texture(uniPalette, vec2(u, 0.5));",
             ],
         }).code
