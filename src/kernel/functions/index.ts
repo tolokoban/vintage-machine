@@ -8,6 +8,7 @@ import {
 import { makeRange } from "./range"
 import { makeRandom } from "./random"
 import { makeInput } from "./input"
+import { makeRgb } from "./rgb"
 
 export const makeKernelFunctions = (kernel: KernelInterface) => ({
     ABS: make("ABS", argsAreNumbers(1, 1), ([a]) => Math.abs(a)),
@@ -27,5 +28,6 @@ export const makeKernelFunctions = (kernel: KernelInterface) => ({
     NOT: make("NOT", argsAreNumbers(1, 1), ([a]) => (a === 0 ? 1 : 0)),
     RANDOM: makeRandom(),
     RANGE: makeRange(),
+    RGB: makeRgb(),
     TIME: make("TIME", argsAreNumbers(0, 0), () => Date.now()),
 })

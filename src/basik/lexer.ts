@@ -81,6 +81,15 @@ export class BasikLexer {
 
     next() {
         let code = this._code.slice(this._cursor)
+        if (code.trimEnd().length === 0) {
+            this._token = {
+                id: "EOF",
+                pos: this._cursor,
+                val: "",
+            }
+            this._cursor += code.length + 1
+            return
+        }
         while (true) {
             let tkn: Token | null = null
             for (const key of Object.keys(RX)) {
@@ -97,13 +106,13 @@ export class BasikLexer {
                 }
             }
             if (!tkn) {
-                this._token = { id: "EOF", val: "", pos: this._cursor }
-                return
+                this.fatal(
+                    `Je suis tombé sur un caractère qui n'a rien à faire là : "${code.charAt(0)}".`
+                )
             }
 
             this._cursor += tkn.val.length
             if (!TOKENS_TO_SKIP.includes(tkn.id)) {
-                // console.log(this._token, code.slice(0, 64).trimEnd());
                 this._token = tkn
                 return
             }

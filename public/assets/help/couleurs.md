@@ -1,5 +1,21 @@
 # Couleurs
 
+Pour dessiner sur l'écran, TLK-80 utilise 256 crayons de couleurs.
+
+L'instruction `COLOR()` est celle qui permet de dire quel crayon utiliser.
+
+Essaie cet exemple :
+
+```
+CLS()
+COLOR(24)
+PRINT("Bonjour ")
+COLOR(17)
+PRINT("le monde !")
+```
+
+----
+
 Une couleur est composée de 4 composantes : le __niveau de rouge__,
 le __niveau de vert__, le __niveau de bleu__ et le __niveau de transparence__.
 
@@ -23,31 +39,37 @@ La façon la plus simple d'afficher une couleur est d'utiliser l'instruction
 [`BACK`](ins.back).
 
 Par exemple, voici comment mettre le fond d'écran en noir :
+
 ```
 BACK COLOR(0,0,0)
 ```
 
 En rouge :
+
 ```
 BACK COLOR(15,0,0)
 ```
 
 En vert :
+
 ```
 BACK COLOR(0,15,0)
 ```
 
 En bleu :
+
 ```
 BACK COLOR(0,0,15)
 ```
 
 En jaune :
+
 ```
 BACK COLOR(15,15,0)
 ```
 
 En orange :
+
 ```
 BACK COLOR(15,8,0)
 ```
@@ -77,6 +99,7 @@ L'astuce est d'utiliset des lettres. Le tableau suivant te montre comment faire.
 | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | A | B | C | D | E | F |
 
 Le orange peut donc s'écrire ainsi :
+
 ```
 BACK COLOR(15,8,0)
 BACK &F80
@@ -97,6 +120,7 @@ affiche du texte en utilisant les stylos 0 et 1. Le 0 pour l'arrière-plan et le
 1 pour l'écriture.
 
 Essaie ceci :
+
 ```
 BACK &777
 
