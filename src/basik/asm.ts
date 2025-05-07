@@ -31,6 +31,7 @@ export class BasikAssembly {
     async execute(code: string) {
         try {
             this.code = code
+            console.log(code)
             this.compile()
             this.link()
         } catch (ex) {
