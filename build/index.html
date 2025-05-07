@@ -1,93 +1,100 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <link rel="shortcut icon" href="favicon.ico">
-    <meta name="viewport" content="width=device-width,initial-scale=1,shrink-to-fit=no">
-    <meta property="og:title" content="Tolokoban: Web developement & graphics">
-    <meta property="og:description" content='Tolokoban: Web developement & graphics".'>
-    <meta property="og:url" content="https://tolokoban.github.io/portfolio/">
-    <meta property="og:image" content="https://tolokoban.github.io/portfolio/image.jpg">
-    <link rel="manifest" href="manifest.json">
-    <title>
-      vintage-machine v0.1.0
-    </title>
-    <style>
-      html,
-      #splash,
-      #splash > svg {
-        position: absolute;
-        left: 0;
-        top: 0;
-        width: 100%;
-        height: 100%;
-        margin: 0;
-        transition: 1s opacity;
-      }
-      #splash > hr {
-        position: absolute;
-        left: 0;
-        top: 50%;
-        width: 100%;
-        height: 1px;
-        background: linear-gradient(to left, #fff0, #fffe, #fff0);
-        border: none;
-        animation: anim 3s;
-      }
-      #splash.vanish {
-        opacity: 0;
-        pointer-events: none;
-      }
-      @keyframes anim {
-        0% {
-          transform: scale(0, 1);
-        }
-        70% {
-          transform: scale(1, 1);
-        }
-        90% {
-          transform: scale(0.5, 1);
-        }
-        to {
-          transform: rotate(1, 1);
-        }
-      }
-    </style>
-  <script defer="defer" src="scr/defaultVendors-node_modules_tolokoban_type-guards_dist_index_js-node_modules_css-loader_dist_-d2d314.00131193fb8acd2b90c8.js"></script><script defer="defer" src="scr/app.038bb67693df644fa4ca.js"></script></head>
+    <head>
+        <meta charset="utf-8">
+        <link rel="shortcut icon" href="favicon.ico">
+        <meta name="viewport" content="width=device-width,initial-scale=1,shrink-to-fit=no">
+        <meta property="og:title" content="Tolokoban: Web developement & graphics">
+        <meta property="og:description" content='Tolokoban: Web developement & graphics".'>
+        <meta property="og:url" content="https://tolokoban.github.io/portfolio/">
+        <meta property="og:image" content="https://tolokoban.github.io/portfolio/image.jpg">
+        <link rel="manifest" href="manifest.json">
+        <title>
+            vintage-machine v0.1.0
+        </title>
+        <style>
+            html,
+            #splash,
+            #splash > svg {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                height: 100%;
+                margin: 0;
+                transition: 1s opacity;
+            }
+            #splash > hr {
+                position: absolute;
+                left: 0;
+                top: 50%;
+                width: 100%;
+                height: 1px;
+                background: linear-gradient(to left, #fff0, #fffe, #fff0);
+                border: none;
+                animation: anim 3s;
+            }
+            #splash.vanish {
+                opacity: 0;
+                pointer-events: none;
+            }
+            @keyframes anim {
+                0% {
+                    transform: scale(0, 1);
+                }
+                70% {
+                    transform: scale(1, 1);
+                }
+                90% {
+                    transform: scale(0.5, 1);
+                }
+                to {
+                    transform: rotate(1, 1);
+                }
+            }
+        </style>
+    <script defer="defer" src="scr/defaultVendors-node_modules_tolokoban_type-guards_dist_index_js-node_modules_css-loader_dist_-1dca1e.2478285b7e87bd561da5.js"></script><script defer="defer" src="scr/app.fc111a9544c2ccd1b78f.js"></script></head>
 
-  <body>
-    <div id="app">
-      <canvas id="CANVAS" width="1280" height="960"></canvas>
-      <section id="MANUAL">
-        <div id="HEADER">
-          <div id="F1">Switch (<strong>F1</strong>)</div>
-          <div id="index">Index</div>
-          <div id="F4">Run (<strong>F4</strong>)</div>
+    <body class="show">
+        <div id="app">
+            <canvas id="CANVAS" width="320" height="240"></canvas>
+            <section id="MANUAL">
+                <div id="HEADER">
+                    <div id="F1">Switch (<strong>F1</strong>)</div>
+                    <div id="index">Index</div>
+                    <div id="F4">Run (<strong>F4</strong>)</div>
+                </div>
+                <div id="HELP">
+            </section>
+            <section id="EDITOR">
+                <div id="CODE"></div>
+            </section>
+            <dialog id="ERROR">
+                <div>
+                    <h1>Erreur !</h1>
+                    <pre id="ERROR-MESSAGE">...</pre>
+                    <button id="ERROR-BUTTON">J'ai compris</button>
+                </div>
+            </dialog>
         </div>
-        <div id="HELP">
-      </section>
-      <section id="EDITOR">
-        <div id="CODE"></div>
-      </section>
-    </div>
-    <div id="splash">
-      <svg version="1.1" viewBox="-50 -25 100 50" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" preserveAspectRatio="xMidYMid meet" height="100%" style="background: #000; font: 16px sans-serif">
-        <defs>
-          <linearGradient id="grad" gradientTransform="rotate(90)">
-            <stop offset="0" stop-color="#0000"/>
-            <stop offset="66%" stop-color="#000"/>
-            <stop offset="100%" stop-color="#000"/>
-          </linearGradient>
-        </defs>
-        <g text-anchor="middle">
-          <text fill="#fff" y="-2">Tolokoban</text>
-          <g transform="scale(1,-.8)">
-            <text fill="#fff1" y="-5">Tolokoban</text>
-          </g>
-        </g>
-        <rect fill="url(#grad)" stroke="none" x="-50" y="0" width="100" height="25"/>
-      </svg>
-      <hr>
-    </div>
-  </body>
+        <div id="splash">
+            <svg version="1.1" viewBox="-50 -25 100 50" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" preserveAspectRatio="xMidYMid meet" height="100%" style="background: #000; font: 16px sans-serif">
+                <defs>
+                    <linearGradient id="grad" gradientTransform="rotate(90)">
+                        <stop offset="0" stop-color="#0000"/>
+                        <stop offset="66%" stop-color="#000"/>
+                        <stop offset="100%" stop-color="#000"/>
+                    </linearGradient>
+                </defs>
+                <g text-anchor="middle">
+                    <text fill="#fff" y="-2">Tolokoban</text>
+                    <g transform="scale(1,-.8)">
+                        <text fill="#fff1" y="-5">Tolokoban</text>
+                    </g>
+                </g>
+                <rect fill="url(#grad)" stroke="none" x="-50" y="0" width="100" height="25"/>
+            </svg>
+            <hr>
+        </div>
+    </body>
 </html>

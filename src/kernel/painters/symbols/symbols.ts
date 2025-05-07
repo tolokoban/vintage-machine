@@ -19,7 +19,7 @@ export interface SymbolsPaintOptions {
      *
      * Note: 0 means invisible.
      */
-    color: number
+    colorIndex: number
 }
 
 /**
@@ -75,7 +75,7 @@ export class Symbols {
         symbolY,
         width = 16,
         height = 16,
-        color,
+        colorIndex,
     }: SymbolsPaintOptions) {
         const {
             gl,
@@ -87,7 +87,7 @@ export class Symbols {
         } = this
         prg.use()
         texture.activate(0, prg, "texSymbols")
-        prg.uniform1f("uniColor", color / 255)
+        prg.uniform1f("uniColor", colorIndex / 255)
         prg.uniform2f(
             "uniScreenSizeInverse",
             screenWidthInverse,

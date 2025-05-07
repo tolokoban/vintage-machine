@@ -1,7 +1,7 @@
 export declare class Help {
-    readonly element: HTMLDivElement;
+    readonly element: HTMLElement;
     private currentPage;
-    constructor();
+    constructor(element: HTMLElement);
     load(id: string): Promise<void>;
     private makeId;
 }

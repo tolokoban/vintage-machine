@@ -3,6 +3,7 @@ import { TgdPainter } from "@tolokoban/tgd";
 import { Symbols } from "./painters/symbols/symbols";
 import { PainterLayer } from "./painters/layer";
 import { KernelInterface } from "./types";
+import { PainterDisk } from "./painters/disk";
 export declare class Kernel extends TgdPainter implements KernelInterface {
     private static ID;
     readonly id: string;
@@ -15,6 +16,7 @@ export declare class Kernel extends TgdPainter implements KernelInterface {
     readonly TEXT_ORIGIN_X: number;
     readonly TEXT_ORIGIN_Y: number;
     readonly painterSymbols: Symbols;
+    readonly painterDisk: PainterDisk;
     x: number;
     y: number;
     colorIndex: number;
@@ -29,6 +31,9 @@ export declare class Kernel extends TgdPainter implements KernelInterface {
     private canvasPalette;
     private _currentLayerindex;
     constructor(canvas: HTMLCanvasElement, symbols: HTMLImageElement);
+    get gl(): WebGL2RenderingContext;
+    screenSpaceX(xInPixels: number): number;
+    screenSpaceY(yInPixels: number): number;
     executeInstruction(name: string, args: BasikValue[]): void | Promise<void>;
     executeFunction(name: string, args: BasikValue[]): BasikValue | Promise<BasikValue>;
     get currentLayerIndex(): number;

@@ -1,1 +1,1 @@
-import * from "./{{nameKebab}}"
+export * from "./{{nameKebab}}"

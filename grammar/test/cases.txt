@@ -1,0 +1,26 @@
+# Number
+
+3.14
+
+==>
+
+Program(Num)
+
+
+# String
+
+"Bob"
+
+==>
+
+Program(String)
+
+
+# Affectation
+
+$name = "Joe"
+
+==>
+
+Program(Var, Equal, Str)
+

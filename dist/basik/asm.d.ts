@@ -5,17 +5,25 @@ export type ByteCode = {
     val: BasikValue | (() => Promise<void>);
 };
 export declare class BasikAssembly {
-    readonly code: string;
     private readonly kernel;
+    private readonly labels;
     private readonly bytecode;
     private readonly stack;
     private lexer;
     private cursor;
-    constructor(code: string, kernel: Kernel);
-    execute(): Promise<void>;
+    private code;
+    constructor(kernel: Kernel);
+    execute(code: string): Promise<void>;
     private compile;
+    private link;
     private fatal;
     private pushBytecode;
+    private pushJmp;
+    private labelLink;
+    private labelStick;
+    private labelCreate;
+    private readonly parseBloc;
+    private readonly parseForIn;
     private readonly parseAffectation;
     private readonly parseInstruction;
     private readonly parseExpression;
@@ -31,11 +39,14 @@ export declare class BasikAssembly {
     private popStr;
     private popNum;
     private popArr;
+    private readonly $jmp;
     private readonly $setVar;
     private readonly $getVar;
     private readonly $makeArray;
     private readonly $function;
     private readonly $instruction;
+    private readonly $forIn;
     private makeBinOp;
+    debugBytecode(): void;
 }
 //# sourceMappingURL=asm.d.ts.map

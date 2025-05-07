@@ -7,10 +7,8 @@ declare const RX: {
     HEX: RegExp;
     NUM: RegExp;
     STR: RegExp;
-    EQUAL: RegExp;
-    LABEL: RegExp;
-    COLON: RegExp;
     BINOP: RegExp;
+    EQUAL: RegExp;
     PAR_OPEN: RegExp;
     PAR_CLOSE: RegExp;
     BRA_OPEN: RegExp;
@@ -18,12 +16,10 @@ declare const RX: {
     SQR_OPEN: RegExp;
     SQR_CLOSE: RegExp;
     COMMA: RegExp;
-    TO: RegExp;
+    FOR: RegExp;
     IN: RegExp;
-    STEP: RegExp;
     FUNC: RegExp;
     INST: RegExp;
-    CONST: RegExp;
     EOF: RegExp;
 };
 type TokenID = keyof typeof RX;
@@ -38,7 +34,7 @@ export declare class BasikLexer {
     private _token;
     constructor(_code: string);
     get token(): Token;
-    get tokenID(): "SPC" | "DOTS" | "COM" | "EOL" | "VAR" | "HEX" | "NUM" | "STR" | "EQUAL" | "LABEL" | "COLON" | "BINOP" | "PAR_OPEN" | "PAR_CLOSE" | "BRA_OPEN" | "BRA_CLOSE" | "SQR_OPEN" | "SQR_CLOSE" | "COMMA" | "TO" | "IN" | "STEP" | "FUNC" | "INST" | "CONST" | "EOF";
+    get tokenID(): "SPC" | "DOTS" | "COM" | "EOL" | "VAR" | "HEX" | "NUM" | "STR" | "BINOP" | "EQUAL" | "PAR_OPEN" | "PAR_CLOSE" | "BRA_OPEN" | "BRA_CLOSE" | "SQR_OPEN" | "SQR_CLOSE" | "COMMA" | "FOR" | "IN" | "FUNC" | "INST" | "EOF";
     get tokenCode(): string;
     all(): Token[];
     hasMoreCode(): boolean;

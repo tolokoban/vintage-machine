@@ -12,6 +12,7 @@ import { paletteMakeDefault } from "./palette/main"
 import { KernelInterface } from "./types"
 import { makeKernelInstructions } from "./instructions"
 import { makeKernelFunctions } from "./functions"
+import { PainterDisk } from "./painters/disk"
 
 const EMPTY_FUNCTION = () => {}
 export class Kernel extends TgdPainter implements KernelInterface {
@@ -28,6 +29,7 @@ export class Kernel extends TgdPainter implements KernelInterface {
     public readonly TEXT_ORIGIN_Y = (this.CHAR_SIZE - this.HEIGHT) / 2
 
     public readonly painterSymbols: Symbols
+    public readonly painterDisk: PainterDisk
     public x = (this.CHAR_SIZE - this.WIDTH) / 2
     public y = (this.CHAR_SIZE - this.HEIGHT) / 2
     public colorIndex = 24
@@ -59,6 +61,7 @@ export class Kernel extends TgdPainter implements KernelInterface {
             preserveDrawingBuffer: true,
         })
         this.context = context
+        this.painterDisk = new PainterDisk(context)
         this.texturePalette = new TgdTexture2D(context).loadBitmap(
             this.canvasPalette
         )
@@ -83,6 +86,18 @@ export class Kernel extends TgdPainter implements KernelInterface {
         })
         this.instructions = makeKernelInstructions(this)
         this.functions = makeKernelFunctions(this)
+    }
+
+    get gl() {
+        return this.context.gl
+    }
+
+    screenSpaceX(xInPixels: number): number {
+        return (xInPixels * 2) / this.WIDTH
+    }
+
+    screenSpaceY(yInPixels: number): number {
+        return (yInPixels * 2) / this.HEIGHT
     }
 
     executeInstruction(name: string, args: BasikValue[]): void | Promise<void> {
@@ -151,6 +166,7 @@ export class Kernel extends TgdPainter implements KernelInterface {
         for (const layer of this.layers) {
             layer.delete()
         }
+        this.painterDisk.delete()
         this.painterSymbols.delete()
         this.textureSymbols.delete()
     }
@@ -182,7 +198,7 @@ export class Kernel extends TgdPainter implements KernelInterface {
                     screenY: this.y,
                     symbolX: col * this.CHAR_SIZE,
                     symbolY: row * this.CHAR_SIZE,
-                    color: this.colorIndex,
+                    colorIndex: this.colorIndex,
                 })
                 this.x += this.CHAR_SIZE
                 if (this.x >= this.WIDTH / 2) {
@@ -196,7 +212,24 @@ export class Kernel extends TgdPainter implements KernelInterface {
     getVar(name: string) {
         name = name.toUpperCase()
         if (!this.variables.has(name)) {
-            throw new Error(`La variable $${name} n'existe pas.`)
+            const output = [
+                `La variable $${name.toLocaleLowerCase()} n'existe pas.`,
+            ]
+            const names = Array.from(this.variables.keys()).map(
+                name => `$${name.toLocaleLowerCase()}`
+            )
+            if (names.length === 0) {
+                output.push("Aucune variable n'a encore été créée.")
+            } else if (names.length === 1) {
+                output.push(
+                    `La seule variable existante maintenant est ${names[0]}.`
+                )
+            } else {
+                output.push(
+                    `Les variables disponibles sont : ${names.join("\n")}`
+                )
+            }
+            throw new Error(output.join("\n"))
         }
         return this.variables.get(name) ?? 0
     }
@@ -214,7 +247,7 @@ export class Kernel extends TgdPainter implements KernelInterface {
     test() {
         this.paintFB(() => {
             this.painterSymbols.paint({
-                color: 4,
+                colorIndex: 4,
                 screenX: 0,
                 screenY: 0,
                 symbolX: 0,

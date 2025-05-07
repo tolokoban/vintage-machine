@@ -1,9 +1,10 @@
 import { Kernel } from "@/kernel"
 import { BasikLexer } from "./lexer"
-import { isNumber, isString } from "@tolokoban/type-guards"
-import { isBasikError, BasikValue } from "@/types"
+import { isFunction, isNumber, isString } from "@tolokoban/type-guards"
+import { isBasikError, BasikValue, BasikError } from "@/types"
 import { consoleError } from "./error"
 import { BINOPS } from "./binops"
+import { Labels } from "./labels"
 
 export type ByteCode = {
     pos: number
@@ -18,27 +19,38 @@ export type ByteCode = {
  * - Otherwise, the lexer should swallow everything the method needs.
  */
 export class BasikAssembly {
+    private readonly labels = new Labels()
     private readonly bytecode: ByteCode[] = []
     private readonly stack: BasikValue[] = []
     private lexer: BasikLexer = new BasikLexer("")
     private cursor = 0
+    private code: string = ""
 
-    constructor(
-        public readonly code: string,
-        private readonly kernel: Kernel
-    ) {
-        console.log(code)
-    }
+    constructor(private readonly kernel: Kernel) {}
 
-    async execute() {
+    async execute(code: string) {
         try {
+            this.code = code
             this.compile()
+            this.link()
+        } catch (ex) {
+            console.error(ex)
+            console.log("Byte code:", this.bytecode)
+            const err: BasikError = isBasikError(ex)
+                ? ex
+                : {
+                      code: this.code,
+                      pos: this.bytecode[this.cursor].pos,
+                      msg: `${ex}`,
+                  }
+            consoleError("Erreur de compilation !", err)
+        }
+        try {
             this.stack.splice(0, this.stack.length)
             const { bytecode, stack } = this
-            let cursor = 0
-            while (cursor < bytecode.length) {
-                this.cursor = cursor
-                const action = bytecode[cursor++].val
+            this.cursor = 0
+            while (this.cursor < bytecode.length) {
+                const action = bytecode[this.cursor++].val
                 if (typeof action === "function") {
                     await action()
                 } else {
@@ -47,29 +59,42 @@ export class BasikAssembly {
             }
             this.kernel.debugVariables()
         } catch (ex) {
-            if (isBasikError(ex)) {
-                consoleError(ex)
-            } else {
-                throw ex
-            }
+            console.error(ex)
+            console.log("Cursor:", this.cursor)
+            console.log("Byte code:", this.bytecode)
+            console.log("Stack:", this.stack)
+            const err: BasikError = isBasikError(ex)
+                ? ex
+                : {
+                      code: this.code,
+                      pos: this.bytecode[this.cursor].pos,
+                      msg: `${ex}`,
+                  }
+            consoleError("Erreur d'execution !", err)
         } finally {
             this.kernel.paint()
         }
     }
 
     private compile() {
+        this.labels.reset()
         this.bytecode.splice(0, this.bytecode.length)
         const lexer = new BasikLexer(this.code)
         console.log("Tokens:", lexer.all())
         lexer.next()
         this.lexer = lexer
         while (lexer.hasMoreCode()) {
-            if (this.parseInstruction()) continue
-            if (this.parseAffectation()) continue
+            if (this.parseBloc()) continue
 
             lexer.fatal("Caractère inattendu ! Je suis perdu...")
         }
+        this.pushBytecode("<<EOF>>")
         console.log("Compiled!", this.bytecode)
+    }
+
+    private link() {
+        this.labels.apply(this.bytecode)
+        this.debugBytecode()
     }
 
     private fatal(msg: string) {
@@ -87,6 +112,91 @@ export class BasikAssembly {
                 val: bytecode,
             })
         }
+    }
+
+    private pushJmp(label: string) {
+        this.labelLink(label)
+        this.pushBytecode(this.$jmp)
+    }
+
+    private labelLink(label: string) {
+        this.pushBytecode(0)
+        this.labels.link(this.bytecode.length - 1, label)
+    }
+
+    private labelStick(label: string) {
+        return this.labels.stick(label, this.bytecode.length)
+    }
+
+    private labelCreate(name: string = "") {
+        return this.labels.create(name)
+    }
+
+    private readonly parseBloc = () => {
+        if (
+            !this.parseAny(
+                this.parseForIn,
+                this.parseInstruction,
+                this.parseAffectation
+            )
+        ) {
+            return false
+        }
+        while (
+            this.parseAny(
+                this.parseForIn,
+                this.parseInstruction,
+                this.parseAffectation
+            )
+        ) {}
+        return true
+    }
+
+    private readonly parseForIn = () => {
+        const { lexer } = this
+        if (!lexer.get("FOR")) return false
+
+        const tknVar = lexer.expect(
+            "VAR",
+            `Il me faut un nom de variable après le mot clef FOR.`
+        )
+        this.pushBytecode(tknVar.val)
+        lexer.expect(
+            "IN",
+            "Après le nom de variable, il faut le mot clef IN.\nExemple: FOR $i IN $notes"
+        )
+        if (!this.parseExpression()) {
+            this.fatal("Je m'attendais à une expression après un FOR ... IN.")
+        }
+        // Index of the current element of the list.
+        this.pushBytecode(0)
+        const labelBegin = this.labelCreate()
+        const labelEnd = this.labelCreate()
+        this.labelLink(labelEnd)
+        this.labelStick(labelBegin)
+        lexer.expect(
+            "BRA_OPEN",
+            [
+                "Il faut une accolade ouvrante pour définir un bloc, comme dans cet exemple :",
+                "FOR $i IN RANGE(9) {",
+                "  PRINTLN($i)",
+                "}",
+            ].join("\n")
+        )
+        this.pushBytecode(this.$forIn)
+        this.parseBloc()
+        lexer.expect(
+            "BRA_CLOSE",
+            [
+                "Il faut une accolade fermante à la fin d'un bloc, comme dans cet exemple :",
+                "FOR $i IN RANGE(9) {",
+                "  PRINTLN($i)",
+                "}",
+            ].join("\n")
+        )
+        this.pushJmp(labelBegin)
+        this.labelStick(labelEnd)
+        return true
     }
 
     private readonly parseAffectation = () => {
@@ -251,6 +361,10 @@ export class BasikAssembly {
         return val
     }
 
+    private readonly $jmp = makeAsync("JMP", () => {
+        this.cursor = this.popNum()
+    })
+
     private readonly $setVar = makeAsync("setVar(name, value)", () => {
         const varValue = this.pop()
         const varName = this.popStr()
@@ -281,6 +395,33 @@ export class BasikAssembly {
         await this.kernel.executeInstruction(name, args)
     }
 
+    private readonly $forIn = makeAsync("FOR ... IN", () => {
+        const [varName, list, index, jumpOut] = this.stack.slice(-4)
+        const arr = isString(list) ? list.split("") : list
+        if (!Array.isArray(arr)) {
+            throw new Error(
+                [
+                    "Après le IN, il me faut une liste ou une chaine.",
+                    `Mais j'ai reçu ça : ${JSON.stringify(arr)}.`,
+                ].join("\n")
+            )
+        }
+        if (!isString(varName))
+            throw new Error("Internal error! VarName must be a number.")
+        if (!isNumber(index))
+            throw new Error("Internal error! Index must be a number.")
+        if (!isNumber(jumpOut))
+            throw new Error("Internal error! JumpOut must be a number.")
+        if (index >= arr.length) {
+            // End of the loop. We cleanup.
+            this.stack.splice(-4, 4)
+            this.cursor = jumpOut
+            return
+        }
+        this.kernel.setVar(varName, arr[index])
+        this.stack[this.stack.length - 2] = index + 1
+    })
+
     private makeBinOp(operator: string) {
         return makeAsync(operator, () => {
             const varB = this.pop()
@@ -294,6 +435,22 @@ export class BasikAssembly {
             const result: BasikValue = binop(varA, varB)
             this.stack.push(result)
         })
+    }
+
+    public debugBytecode() {
+        const size = this.labels.getLabelsMaxLength()
+        const lines = this.bytecode
+            .map(({ val }, cursor) => {
+                if (isFunction(val)) return `CALL ${val.name}`
+                const label = this.labels.getLinkAtCursor(cursor)
+                if (label) return `LINK ${label}  ->  ${JSON.stringify(val)}`
+                return `PUSH ${JSON.stringify(val)}`
+            })
+            .map(
+                (line, cursor) =>
+                    `${`${cursor}`.padStart(6, " ")}. ${this.labels.getLabelAtCursor(cursor).padEnd(size)} ${line}`
+            )
+        console.info(lines.join("\n"))
     }
 }
 

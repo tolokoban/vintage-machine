@@ -38,11 +38,10 @@ export class PainterColorizer {
             outputs: { FragColor: "vec4" },
             mainCode: [
                 "vec4 texel = texture(uniTexture, varUV);",
-                "float alpha = texel.a;",
-                "if (alpha < 0.5) discard;",
                 "float colorIndex = texel.r;",
                 "float u = colorIndex + 1.0 / 512.0;",
                 "FragColor = texture(uniPalette, vec2(u, 0.5));",
+                "if (colorIndex == 0.0) FragColor.a = 0.0;",
             ],
         }).code
         const prg = new TgdProgram(context.gl, { vert, frag })

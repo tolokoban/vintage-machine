@@ -1,3 +1,4 @@
+import { PainterDisk } from "./painters/disk"
 import { Symbols } from "./painters/symbols/symbols"
 
 export interface KernelInterface {
@@ -9,11 +10,15 @@ export interface KernelInterface {
     readonly TEXT_ORIGIN_X: number
     readonly TEXT_ORIGIN_Y: number
     readonly CHAR_SIZE: number
+    readonly painterDisk: PainterDisk
     readonly painterSymbols: Symbols
+    readonly gl: WebGL2RenderingContext
     x: number
     y: number
     colorIndex: number
     paint(): void
     paintFB(action: () => void): void
     print(text: string): void
+    screenSpaceX(xInPixels: number): number
+    screenSpaceY(yInPixels: number): number
 }

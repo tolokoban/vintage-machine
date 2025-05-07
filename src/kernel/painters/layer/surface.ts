@@ -41,7 +41,6 @@ export class PainterSurface extends TgdPainter {
             outputs: { FragColor: "vec4" },
             mainCode: [
                 "float colorIndex = texture(uniTexture, varUV).r;",
-                "if (colorIndex == 0.0) discard;",
                 "FragColor = vec4(colorIndex, 0.0, 0.0, 1.0);",
             ],
         }).code
