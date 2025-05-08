@@ -9,9 +9,11 @@ import { makeRange } from "./range"
 import { makeRandom } from "./random"
 import { makeInput } from "./input"
 import { makeRgb } from "./rgb"
+import { makeChr } from "./chr"
 
 export const makeKernelFunctions = (kernel: KernelInterface) => ({
     ABS: make("ABS", argsAreNumbers(1, 1), ([a]) => Math.abs(a)),
+    CHR: makeChr(),
     INPUT: makeInput(kernel),
     INT: make("INT", argsAreStrings(1, 1), ([value]) =>
         Math.round(Number(value))
