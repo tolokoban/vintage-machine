@@ -4,7 +4,7 @@ Essaie ceci :
 
 ```ts
 CLS()
-print("#")
+PRINT(CHR(#F9))
 LOCATE(1,1)
 PRINT("Hortense")
 LOCATE(2,2)
@@ -24,79 +24,109 @@ PRINT("E")
 ```
 
 Comme tu le vois, il est possible d'écrire du texte à un endroit précis grâce à
-l'instruction [`LOCATE`](manual/ins.locate).
+l'instruction [LOCATE](manual/ins.locate).
+
 Elle attend deux arguments qu'on appelle __coordonnées__.
 Le premier argument donne la colonne et la deuxième la ligne.
 Sur l'écran, il y a __40 colonnes__ et __30 lignes__.
 
-Ainsi, le numéro de colonne va de 0 à 39 et le numéro de ligne va de 0 à 29.
+Ainsi, le numéro de colonne va de __0 à 39__ et le numéro de ligne va de __0 à 29__.
 
-Voici comment placer une étoile dans chaque coin de l'écran :
+Voici comment placer de "coins" dans chaque coin de l'écran :
 
 ```ts
 CLS()
 LOCATE(0,0)
-PRINT("*")
+PRINT(CHR(#96))
 LOCATE(39,0)
-PRINT("*")
+PRINT(CHR(#9C))
 LOCATE(0,29)
-PRINT("*")
+PRINT(CHR(#93))
 LOCATE(39,29)
-PRINT("*")
+PRINT(CHR(#99))
 ```
 
-Et maintenant, voici une petite astuce pour écrire plusieurs fois le même texte
-sans devoir taper trop de code : il est possible de multiplier du texte par un
-nombre ! Regarde cet exemple et essaie de deviner ce qu'il fait avant de l'exécuter :
+Si je veux rajouter des lignes horizontales, je peux écrire quelque chose comme ça :
 
 ```ts
 CLS()
-PRINT("Horty" * 4)
+LOCATE(0,0)
+PRINT(CHR(#96,#9A,#9A,#9A,#9A,#9A,#9A,#9A,#9A,#9A,#9A,#9A,#9A,#9A,#9A,#9A,#9A,#9A,#9A,#9A,#9A,#9A,#9A,#9A,#9A,#9A,#9A,#9A,#9A,#9A,#9A,#9A,#9A,#9A,#9A,#9A,#9A,#9A,#9A,#9C))
+LOCATE(0,29)
+PRINT(CHR(#93,#9A,#9A,#9A,#9A,#9A,#9A,#9A,#9A,#9A,#9A,#9A,#9A,#9A,#9A,#9A,#9A,#9A,#9A,#9A,#9A,#9A,#9A,#9A,#9A,#9A,#9A,#9A,#9A,#9A,#9A,#9A,#9A,#9A,#9A,#9A,#9A,#9A,#9A,#99))
 ```
 
-Sympa, non ?
+Mais c'est un peu long à taper...
 
-Grâce à cela, on peut, par exemple, dessiner deux lignes sur l'écran :
+Il faudrait au moins ne taper la longue ligne qu'une seule fois.
+Pour cela, on pourrait lui donner un nom, plus court à taper, et l'utiliser autant de fois qu'on veut.
+
+Pour commencer, essayons d'écrire _"Anselm est un magicien en devenir"_ sur la première ligne et sur la dernière.
+On peut utiliser la manière longue :
 
 ```ts
-LOCATE(0, 0)
-PRINT("-" * 40)
-LOCATE(0, 29)
-PRINT("-" * 40)
+CLS()
+LOCATE(0,0)
+PRINT("Anselm est un magicien en devenir")
+LOCATE(0,29)
+PRINT("Anselm est un magicien en devenir")
 ```
 
-Avec tout ça, on peux déjà se dessiner une petite maison :
+Et maintenant la manière courte, en utilisant une __variable__.
 
-```
-BACK &070
-PAPER &F00
-LOCATE 19, 7
-PRINT " "
-LOCATE 18, 8
-PRINT " " * 3
-LOCATE 17, 9
-PRINT " " * 5
-LOCATE 16, 10
-PRINT " " * 7
-LOCATE 15, 11
-PRINT " " * 9
-PAPER &798
-LOCATE 16, 12
-PRINT " " * 7
-LOCATE 16, 13
-PRINT " " * 7
-LOCATE 16, 14
-PRINT " " * 7
-LOCATE 16, 15
-PRINT " " * 7
-LOCATE 16, 16
-PRINT " " * 7
+```ts
+CLS()
+$phrase = "Anselm est un magicien en devenir"
+LOCATE(0,0)
+PRINT($phrase)
+LOCATE(0,29)
+PRINT($phrase)
 ```
 
-A toi de jouer maintenant ! Essaie d'ajouter une petite fenêtre jaune de 3
-espaces de large et 2 de haut.
+L'instruction `$truc = "Bidule"` signifie que partout où TLK-74 verra `$truc`, il doit le remplacer par `"Bidule"`.
+C'est tout bête, mais ça fait gagner beaucoup de temps.
+
+Utilisons ce comcept avec nos lignes d'avant :
+
+```ts
+CLS()
+$ligne = CHR(#9A,#9A,#9A,#9A,#9A,#9A)
+LOCATE(0,0)
+PRINT(CHR(#96), $ligne, CHR(#9C))
+LOCATE(0,29)
+PRINT(CHR(#93), $ligne, CHR(#99))
+```
+
+C'est mieux, mais je n'ai pas mis assez de `$9A,`. Il y en faut 38, mais la bonne nouvelle c'est qu'on a une autre astuce pour ça :
+
+```ts
+CLS()
+$ligne = CHR(#9A) * 38
+LOCATE(0,0)
+PRINT(CHR(#96), $ligne, CHR(#9C))
+LOCATE(0,29)
+PRINT(CHR(#93), $ligne, CHR(#99))
+```
+
+> Hé ! Mais il manque les lignes verticales. On fait comment ?
+
+C'est un poil plus compliqué à comprendre, mais le code est assez court :
+
+```ts
+CLS()
+$ligne = CHR(#9A) * 38
+LOCATE(0,0)
+PRINT(CHR(#96), $ligne, CHR(#9C))
+LOCATE(0,29)
+PRINT(CHR(#93), $ligne, CHR(#99))
+
+$vide = " " * 38
+$bord = CHR(#95) + $vide + CHR(#95)
+LOCATE(0,1)
+PRINT($bord * 28)
+```
 
 ----
 
-* Chapitre suivant : [Les coordonnées fines](coords2)
-* Chapitre précédent : [Un peu de couleurs !](couleurs)
+* Chapitre suivant : [Je t'en pose des questions ?](ask)
+* Chapitre précédent : [Dis bonjour !](dis-bonjour)

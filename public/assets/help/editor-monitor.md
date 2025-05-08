@@ -1,16 +1,12 @@
 # Editeur et Moniteur
 
-Ton __TLK-74__ est composé de deux écrans :
+Ton __TLK-74__ est composé de trois écrans :
 
-* L'__Éditeur__ : celui que tu regardes en ce moment même.
-* Le __Moniteur__ : celui qui a un fond bleu quand tu démarres le __TLK-74__.
+* Le __Moniteur__ : celui qui a un fond bleu quand tu démarres le __TLK-74__. C'est là que vont s'afficher tes créations
+* Le __Manuel__ : la partie que tu lis actuellement et qui contient tout l'aide en ligne disponible.
+* L'__Éditeur__ : où tu écris tes fabuleux programmes.
 
-Tu peux passer de l'un à l'autre en appuyant sur la touche __F1__ comme tu l'as déjà fait.
-
-Sur l'__Éditeur__ tu as ton fidèle manuel sur la gauche et ton programme sur la droite.
-Sur le __Moniteur__ tu vois le résultat de ton programme.
-
-Quand tu tapes un programme dans la partie droite de l'__Éditeur__ et que tu veux voir le résultat, tape sur la touche __F4__.
+Quand tu tapes un programme dans la partie droite de l'__Éditeur__ et que tu veux voir le résultat, tape sur la touche __F1__, ou clique sur le bouton `Run (F1)`.
 
 ## Comment écrire un programme dans l'éditeur ?
 
@@ -48,6 +44,12 @@ Mais le plus fort, c'est que tu peux copier du texte qui vient de n'importe où 
 > Mais comment je sélectionne du texte depuis le manuel ? Il n'y a pas de curseur !!
 
 C'est juste. Mais tu peux aussi sélectionner avec ta souris. Pour cela, tu appuies sur le bouton gauche de la souris à l'endroit où tu veux commencer ta sélection. Puis tu déplaces la souris sans lâcher le bouton. Enfin, tu le lâches seulement quand tu arrives sur l'endroit où tu veux finir la sélection. Ensuite, la touche __CTRL__+__C__ fonctionne sur cette sélection.
+
+Et quand il y a des exemples de code, tu peux juste double-cliquer dessus pour qu'il remplace ton programme courant.
+
+> Aïe ! J'ai fait ça. mais ça m'a supprimé mon beau programme d'avant...
+
+Pas de panique. N'oublie pas la touche magique __CTRL__+__Z__ qui permet de défaire la dernière action.
 
 ----
 

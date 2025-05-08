@@ -1,28 +1,28 @@
 body {
-    width: 100%;
-    height: 100%;
-    font-size: 1.2vmax;
-    overflow: hidden;
-    font-family: "Josefin Sans", josefin-sans, sans-serif;
-    margin: 0;
-    padding: 0;
-    background-color: #eee;
+  width: 100%;
+  height: 100%;
+  font-size: 1.2vmax;
+  overflow: hidden;
+  font-family: "Josefin Sans", josefin-sans, sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #eee;
 }
 
 * {
-    box-sizing: border-box;
+  box-sizing: border-box;
 }
 
 body > * {
-    vertical-align: top;
+  vertical-align: top;
 }
 
 body * {
-    box-sizing: border-box;
+  box-sizing: border-box;
 }
 
 canvas {
-    display: inline-block;
+  display: inline-block;
 }
 
 /**
@@ -33,175 +33,176 @@ canvas {
  */
 
 div#app {
-    background-color: #000;
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    display: grid;
-    padding: 0;
-    margin: 0;
+  background-color: #000;
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  display: grid;
+  padding: 0;
+  margin: 0;
 }
 
 #app > div.left {
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 50%;
-    height: 100%;
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 50%;
+  height: 100%;
 }
 
 #app > div.left > #MONITOR {
-    position: absolute;
-    top: 0;
-    top: 0;
-    width: 100%;
-    height: calc(50% - 1px);
+  position: absolute;
+  top: 0;
+  top: 0;
+  width: 100%;
+  height: calc(50% - 1px);
 }
 
 #app > div.left > #MANUAL {
-    position: absolute;
-    left: 0;
-    bottom: 0;
-    width: 100%;
-    height: 50%;
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 50%;
 }
 
 #app > #EDITOR {
-    position: absolute;
-    right: 0;
-    top: 0;
-    width: calc(50% - 1px);
-    height: 100%;
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: calc(50% - 1px);
+  height: 100%;
 }
 
 #EDITOR {
-    background-color: #ddd;
-    display: grid;
-    grid-template-rows: auto 1fr;
-    min-height: 0;
+  background-color: #ddd;
+  display: grid;
+  grid-template-rows: auto 1fr;
+  min-height: 0;
 }
 
 #EDITOR > #CODE {
-    min-height: 0;
-    overflow: auto;
+  min-height: 0;
+  overflow: auto;
 }
 
 #EDITOR > #HEADER {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 0;
-    background-color: #007;
-    color: #aa0;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0;
+  background-color: #007;
+  color: #aa0;
 }
 
 #EDITOR > #HEADER > div {
-    line-height: 2;
-    text-align: center;
-    cursor: pointer;
-    transition: all 0.3s;
+  line-height: 2;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s;
 }
 
 #EDITOR > #HEADER > div:hover {
-    background-color: #00f;
-    color: #ff0;
+  background-color: #00f;
+  color: #ff0;
 }
 
 #MONITOR {
-    position: relative;
-    background-color: #007;
-    display: grid;
-    place-items: center;
+  position: relative;
+  background-color: #007;
+  display: grid;
+  place-items: center;
 }
 
 canvas#CANVAS {
-    background-color: transparent;
-    height: 100%;
+  background-color: transparent;
+  height: 100%;
 }
 
 #MANUAL {
-    background-color: #fff;
+  background-color: #fff;
 }
 
 div#app > div.left {
-    min-height: 0;
-    display: grid;
-    grid-template-rows: 1fr 1fr;
-    gap: 1px;
-    padding: 0;
-    margin: 0;
+  min-height: 0;
+  display: grid;
+  grid-template-rows: 1fr 1fr;
+  gap: 1px;
+  padding: 0;
+  margin: 0;
 }
 
 #HELP {
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    overflow: auto;
-    background-color: #fff;
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: #fff;
+  padding: 1em;
 }
 
 #HELP pre {
-    font-family: monospace;
-    padding: 0.5rem;
-    margin: 0.5rem;
-    background: #333;
-    color: #fffe;
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.25);
+  font-family: monospace;
+  padding: 0.5rem;
+  margin: 0.5rem;
+  background: #333;
+  color: #fffe;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.25);
 }
 
 #HELP code {
-    font-family: monospace;
+  font-family: monospace;
 }
 
 #HELP blockquote {
-    margin: 0.5em;
-    box-shadow: -0.25em 0 #f90;
-    background: linear-gradient(to right, #f906, #f900);
-    padding: 1em;
-    font-variant: small-caps;
+  margin: 0.5em;
+  box-shadow: -0.25em 0 #f90;
+  background: linear-gradient(to right, #f906, #f900);
+  padding: 1em;
+  font-variant: small-caps;
 }
 
 #HELP blockquote > p {
-    margin: 0;
+  margin: 0;
 }
 
 #CODE {
-    font-family: monospace;
-    border: none;
-    background-color: #ddd;
+  font-family: monospace;
+  border: none;
+  background-color: #ddd;
 }
 
 #ERROR {
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    display: none;
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  display: none;
 }
 
 #ERROR[open] {
-    display: grid;
-    place-items: center;
-    background-color: #fff0;
+  display: grid;
+  place-items: center;
+  background-color: #fff0;
 }
 
 #ERROR > div {
-    border-radius: 1em;
-    border: none;
-    box-shadow: 0 1em 2em #000;
-    padding: 1em;
-    max-width: 640px;
-    background-color: #fffe;
+  border-radius: 1em;
+  border: none;
+  box-shadow: 0 1em 2em #000;
+  padding: 1em;
+  max-width: 640px;
+  background-color: #fffe;
 }
 
 #ERROR > div pre {
-    white-space: pre-wrap;
-    max-height: 66vh;
-    overflow: auto;
-    font-weight: bold;
-    color: #900;
+  white-space: pre-wrap;
+  max-height: 66vh;
+  overflow: auto;
+  font-weight: bold;
+  color: #900;
 }
