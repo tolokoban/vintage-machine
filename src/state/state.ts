@@ -4,6 +4,7 @@ import { createCodeEditor } from "../editor"
 import { Kernel } from "../kernel"
 import { Help } from "../help"
 import { BasikAssembly } from "../basik/asm"
+import { tgdFullscreenToggle } from "@tolokoban/tgd"
 
 export class GlobalState {
     public readonly asm: BasikAssembly
@@ -23,21 +24,23 @@ export class GlobalState {
             globalThis.localStorage.getItem("Basik/current") ??
             "# Tape ton code ici...\n\n"
         // Clicking on index brings the index documentation page.
-        this.get("index").addEventListener("click", (evt: MouseEvent) => {
+        this.get("INDEX").addEventListener("click", (evt: MouseEvent) => {
             evt.preventDefault()
             evt.stopPropagation()
             this.help.load("index")
         })
+        this.get("F1").addEventListener("click", this.executeCurrentCode)
+        this.get("F11").addEventListener("click", this.switchFullscreen)
         globalThis.document.addEventListener(
             "keydown",
             (evt: KeyboardEvent) => {
-                if (evt.key === "F1") {
+                if (evt.key === "F11") {
                     evt.preventDefault()
                     evt.stopPropagation()
-                    this.switchRuntimeAndCodeViews()
+                    this.switchFullscreen()
                     return
                 }
-                if (evt.key === "F4" || (evt.key === "Enter" && evt.ctrlKey)) {
+                if (evt.key === "F1" || (evt.key === "Enter" && evt.ctrlKey)) {
                     evt.preventDefault()
                     evt.stopPropagation()
                     this.executeCurrentCode()
@@ -65,7 +68,7 @@ export class GlobalState {
         })
     }
 
-    async executeCurrentCode() {
+    readonly executeCurrentCode = async () => {
         try {
             globalThis.localStorage.setItem("Basik/current", this.code)
             this.showRuntimeView()
@@ -84,7 +87,8 @@ export class GlobalState {
     /**
      * Switch between code and runtime views.
      */
-    switchRuntimeAndCodeViews() {
+    readonly switchFullscreen = () => {
+        tgdFullscreenToggle(this.get("MONITOR"))
         globalThis.document.body.classList.toggle("show")
     }
 

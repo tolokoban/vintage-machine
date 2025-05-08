@@ -1,4 +1,4 @@
-import { tgdLoadImage, tgdLoadText } from "@tolokoban/tgd"
+import { tgdLoadImage } from "@tolokoban/tgd"
 
 import { initializeState } from "./state"
 
@@ -11,12 +11,6 @@ async function start() {
         throw new Error(`Unable to load "assets/symbols.arr"!`)
     }
     initializeState({ symbols })
-
-    const code = await tgdLoadText("assets/basik/test.bas")
-    if (!code) {
-        throw new Error(`Unable to load "assets/basik/test.bas"!`)
-    }
-
     removeSplashScreen()
 }
 

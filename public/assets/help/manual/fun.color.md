@@ -3,7 +3,6 @@
 > COLOR(rouge, vert, bleu)
 > COLOR(rouge, vert, bleu, transparence)
 
-
 Retourner la valeur d'une couleur à partir de ses composantes rouge, vert et bleu.
 Chaque composante est un nombre entier allant de 0 à 15.
 Il faut imaginer chaque composante comme l'intensité d'une ampoule de la couleur
@@ -38,4 +37,4 @@ voir aussi [`PEN`](ins.pen)
 
 ----
 
-[Index](index)
+[Index](../index)

@@ -1,12 +1,16 @@
 body {
     width: 100%;
     height: 100%;
-    background: #007;
     font-size: 1.2vmax;
     overflow: hidden;
     font-family: "Josefin Sans", josefin-sans, sans-serif;
     margin: 0;
     padding: 0;
+    background-color: #eee;
+}
+
+* {
+    box-sizing: border-box;
 }
 
 body > * {
@@ -21,67 +25,130 @@ canvas {
     display: inline-block;
 }
 
-#CANVAS {
-    background: transparent;
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    width: 132vh;
-    height: 99vh;
-    margin: -49.5vh -66vh;
-}
-@media (orientation: portrait) {
-    #CANVAS {
-        width: 128vw;
-        height: 96vw;
-        transform-origin: center;
-        transform: rotate(90deg);
-        margin: -48vw -64vw;
-    }
-}
+/**
+ * The screen is split in three parts.
+ * On the right, you have the EDITOR,
+ * The left is split into MONITOR at the top
+ * and MANUAL at the bottom.
+ */
 
-#HEADER {
+div#app {
+    background-color: #000;
     position: absolute;
     left: 0;
     top: 0;
-    right: 0;
     width: 100%;
-    height: 2rem;
-    line-height: 2rem;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.3);
+    height: 100%;
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
+    padding: 0;
+    margin: 0;
+}
+
+#app > div.left {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 50%;
+    height: 100%;
+}
+
+#app > div.left > #MONITOR {
+    position: absolute;
+    top: 0;
+    top: 0;
+    width: 100%;
+    height: calc(50% - 1px);
+}
+
+#app > div.left > #MANUAL {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    height: 50%;
+}
+
+#app > #EDITOR {
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: calc(50% - 1px);
+    height: 100%;
+}
+
+#EDITOR {
+    background-color: #ddd;
+    display: grid;
+    grid-template-rows: auto 1fr;
+    min-height: 0;
+}
+
+#EDITOR > #CODE {
+    min-height: 0;
+    overflow: auto;
+}
+
+#EDITOR > #HEADER {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
     gap: 0;
+    background-color: #007;
+    color: #aa0;
 }
 
-#HEADER > * {
+#EDITOR > #HEADER > div {
+    line-height: 2;
     text-align: center;
-}
-
-#HEADER > div {
     cursor: pointer;
-    padding: 0 1rem;
+    transition: all 0.3s;
 }
 
-#HEADER > div:hover {
-    background: rgba(255, 128, 0, 0.3);
+#EDITOR > #HEADER > div:hover {
+    background-color: #00f;
+    color: #ff0;
+}
+
+#MONITOR {
+    position: relative;
+    background-color: #007;
+    display: grid;
+    place-items: center;
+}
+
+canvas#CANVAS {
+    background-color: transparent;
+    height: 100%;
+}
+
+#MANUAL {
+    background-color: #fff;
+}
+
+div#app > div.left {
+    min-height: 0;
+    display: grid;
+    grid-template-rows: 1fr 1fr;
+    gap: 1px;
+    padding: 0;
+    margin: 0;
 }
 
 #HELP {
     position: absolute;
     left: 0;
-    top: 2rem;
-    right: 0;
-    bottom: 0;
+    top: 0;
     width: 100%;
+    height: 100%;
     overflow: auto;
-    padding: 0 0.5rem;
+    background-color: #fff;
 }
 
 #HELP pre {
     font-family: monospace;
     padding: 0.5rem;
-    background: #eee;
+    margin: 0.5rem;
+    background: #333;
+    color: #fffe;
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.25);
 }
 
@@ -101,56 +168,10 @@ canvas {
     margin: 0;
 }
 
-#MANUAL,
-#EDITOR {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 1rem;
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    width: 50vw;
-    height: 100%;
-    background-color: #fffe;
-    transition: transform 0.2s;
-}
-
-#MANUAL {
-    left: 0;
-    transform: translateX(-100%);
-}
-
-#EDITOR {
-    right: 0;
-    transform: translateX(100%);
-}
-
-body.show #MANUAL,
-body.show #EDITOR {
-    transition: transform 0.2s;
-    transform: translateX(0);
-}
-
 #CODE {
-    position: absolute;
-    left: 1vw;
-    top: 1vh;
-    right: 1vw;
-    bottom: 1vh;
-    width: 48vw;
-    height: 98vh;
-    font-size: 1vmax;
     font-family: monospace;
-    background: transparent;
     border: none;
-}
-
-div.tfw-message {
-    position: fixed;
-    left: 0;
-    top: 0;
-    width: 50vw;
-    margin: 0;
+    background-color: #ddd;
 }
 
 #ERROR {

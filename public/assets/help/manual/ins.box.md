@@ -18,4 +18,4 @@ Voir aussi [`CLS`](ins.cls), [`MOVE`](ins.move), [`PEN`](ins.pen).
 
 ----
 
-[Index](index)
+[Index](../index)

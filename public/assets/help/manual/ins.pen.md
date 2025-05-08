@@ -20,4 +20,4 @@ voir aussi [`PAPER`](ins.paper), [`COLOR`](fun.color)
 
 ----
 
-[Index](index)
+[Index](../index)

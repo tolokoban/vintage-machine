@@ -50,7 +50,7 @@ export class Help {
         for (const pre of pres) {
             pre.setAttribute("title", "Double-clique pour jouter à l'éditeur")
             pre.addEventListener("dblclick", () => {
-                getState().code += `\n` + pre.textContent
+                getState().code = (pre.textContent ?? "").trim()
             })
         }
     }

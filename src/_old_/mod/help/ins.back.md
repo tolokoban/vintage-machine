@@ -27,4 +27,4 @@ Voir aussi [`COLOR`](fun.color).
 
 ----
 
-[Index](index)
+[Index](../index)

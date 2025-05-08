@@ -1,7 +1,12 @@
 import { BasikError } from "@/types"
 
 export function consoleError(title: string, err: BasikError) {
-    const output: string[] = [title, err.msg, ""]
+    const output: string[] = [
+        title,
+        `Erreur à partir de : |${err.code.slice(err.pos, err.pos + 32)}...|`,
+        err.msg,
+        "",
+    ]
     console.log(`%c${err.msg}`, "background: #f00;color: #fff")
     const lines: [number, string][] = []
     let start = 0

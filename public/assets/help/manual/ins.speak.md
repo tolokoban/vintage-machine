@@ -15,4 +15,4 @@ SPEAK 1974
 
 ----
 
-[Index](index)
+[Index](../index)

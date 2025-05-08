@@ -18,4 +18,4 @@ voir aussi [`LOCATE`](ins.locate)
 
 ----
 
-[Index](index)
+[Index](../index)

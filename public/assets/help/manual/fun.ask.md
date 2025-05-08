@@ -7,6 +7,7 @@ Demander à l'utilisateur de taper un texte au clavier et retourner sa valeur qu
 On peut lui passer autant d'arguments que l'on veut. Chaque argument sera une ligne de texte affichée pour expliquer à l'utilisateur ce que l'on attend de lui.
 
 Exemple :
+
 ```
 $nom = ASK("Bonjour", "Quel est ton nom ? ")
 ```
@@ -20,4 +21,4 @@ PRINT "Bonjour " + ASK("Nom : ") + " " + ASK("Prenom : ") + ", comment vas-tu ?"
 ```
 
 ----
-[Index](index)
+[Index](../index)

@@ -5,6 +5,7 @@
 Demander à l'utilisateur de taper un nombre.
 
 Exemple :
+
 ```
 $age = ASKNUM("Quel age as-tu ? ")
 PRINT "Tu as " + $age + " ans : " + NL
@@ -15,4 +16,4 @@ Voir aussi [`ASK`](fun.ask)
 
 ----
 
-[Index](index)
+[Index](../index)

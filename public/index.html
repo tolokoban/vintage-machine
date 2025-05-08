@@ -73,25 +73,29 @@
 
     <body class="show">
         <div id="app">
-            <canvas id="CANVAS" width="320" height="240"></canvas>
-            <section id="MANUAL">
-                <div id="HEADER">
-                    <div id="F1">Switch (<strong>F1</strong>)</div>
-                    <div id="index">Index</div>
-                    <div id="F4">Run (<strong>F4</strong>)</div>
+            <div class="left">
+                <div id="MONITOR">
+                    <canvas id="CANVAS" width="320" height="240"></canvas>
+                    <dialog id="ERROR">
+                        <div>
+                            <h1>Erreur !</h1>
+                            <pre id="ERROR-MESSAGE">...</pre>
+                            <button id="ERROR-BUTTON">J'ai compris</button>
+                        </div>
+                    </dialog>
                 </div>
-                <div id="HELP" />
-            </section>
+                <section id="MANUAL">
+                    <div id="HELP" />
+                </section>
+            </div>
             <section id="EDITOR">
+                <div id="HEADER">
+                    <div id="INDEX">Index</div>
+                    <div id="F1">Run (<strong>F1</strong>)</div>
+                    <div id="F11">Fullscreen (<strong>F11</strong>)</div>
+                </div>
                 <div id="CODE"></div>
             </section>
-            <dialog id="ERROR">
-                <div>
-                    <h1>Erreur !</h1>
-                    <pre id="ERROR-MESSAGE">...</pre>
-                    <button id="ERROR-BUTTON">J'ai compris</button>
-                </div>
-            </dialog>
         </div>
         <div id="splash">
             <svg
