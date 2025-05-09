@@ -1,4 +1,3 @@
-import { join } from "./../../node_modules/mdast-util-to-markdown/lib/join.d";
 import { BasikError } from "@/types";
 
 const RX = {
@@ -10,7 +9,7 @@ const RX = {
   HEX: /^#[0-9a-f]+/gi,
   NUM: /^-?([0-9]+(\.[0-9]+)?|\.[0-9]+)/g,
   STR: /^"(\\"|[^"])*"/g,
-  BINOP: /^(and|or|xor|>=|<=|<>|\^|==|[%+*/<>-])/g,
+  BINOP: /^(and|or|xor|>=|<=|<>|\^|==|[%+*/<>-])/gi,
   EQUAL: /^=/g,
   PAR_OPEN: /^\(/g,
   PAR_CLOSE: /^\)/g,
@@ -19,10 +18,13 @@ const RX = {
   SQR_OPEN: /^\[/g,
   SQR_CLOSE: /^\]/g,
   COMMA: /^,/g,
+  WHILE: /^while(?![a-z0-9])/i,
   FOR: /^for(?![a-z0-9])/i,
   IN: /^in(?![a-z0-9])/i,
-  FUNC: /^[a-z][a-z_]*[0-9]*[ \t\r\n]*\(/i,
-  INST: /^[a-z][a-z_]*[0-9]*/gi,
+  IF: /^if(?![a-z0-9])/i,
+  ELSE: /^else(?![a-z0-9])/i,
+  FUNC: /^[a-z_][a-z_0-9]*\(/i,
+  INST: /^[a-z_][a-z_0-9]*/gi,
   EOF: /^<<EOF>>/,
 };
 
@@ -102,6 +104,9 @@ export class BasikLexer {
           case "FUNC":
           case "FOR":
           case "IN":
+          case "IF":
+          case "ELSE":
+          case "WHILE":
             text = text.toUpperCase();
             break;
         }

@@ -1,9 +1,39 @@
 import { BasikValue } from "@/types";
 import { isNumber, isString } from "@tolokoban/type-guards";
 
-export const BINOPS: Record<string, (a: BasikValue, b: BasikValue) => BasikValue> = {
-  "=": (a: BasikValue, b: BasikValue): BasikValue => {
+export const BINOPS: Record<
+  string,
+  (a: BasikValue, b: BasikValue) => BasikValue
+> = {
+  "==": (a: BasikValue, b: BasikValue): BasikValue => {
     return JSON.stringify(a) === JSON.stringify(b) ? 1 : 0;
+  },
+  "<>": (a: BasikValue, b: BasikValue): BasikValue => {
+    return JSON.stringify(a) !== JSON.stringify(b) ? 1 : 0;
+  },
+  ">": (a: BasikValue, b: BasikValue): BasikValue => {
+    if (isNumber(a) && isNumber(b)) {
+      return a > b ? 1 : 0;
+    }
+    return JSON.stringify(a) > JSON.stringify(b) ? 1 : 0;
+  },
+  "<": (a: BasikValue, b: BasikValue): BasikValue => {
+    if (isNumber(a) && isNumber(b)) {
+      return a < b ? 1 : 0;
+    }
+    return JSON.stringify(a) < JSON.stringify(b) ? 1 : 0;
+  },
+  ">=": (a: BasikValue, b: BasikValue): BasikValue => {
+    if (isNumber(a) && isNumber(b)) {
+      return a >= b ? 1 : 0;
+    }
+    return JSON.stringify(a) >= JSON.stringify(b) ? 1 : 0;
+  },
+  "<=": (a: BasikValue, b: BasikValue): BasikValue => {
+    if (isNumber(a) && isNumber(b)) {
+      return a <= b ? 1 : 0;
+    }
+    return JSON.stringify(a) <= JSON.stringify(b) ? 1 : 0;
   },
   "+": (a: BasikValue, b: BasikValue): BasikValue => {
     if (isNumber(a) && isNumber(b)) return a + b;

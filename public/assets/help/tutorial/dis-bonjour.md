@@ -1,22 +1,20 @@
-# Dis bonjour
-
 Notre premier programme est très simple, il va demander à l'ordinateur de dire "Bonjour !".
 Pour commencer, efface le programme qui est actuellement dans la partie droite de l'éditeur. Pour cela, clique dessus, tapes __CTRL__+__A__ puis sur __BACKSPACE__.
 
-Bien, maintenant tape ceci (ou utilise la technique du _copier/coller_) :
+Bien, maintenant tape ceci (ou double clique sur le code) :
 
 ```ts
 PRINT("Bonjour ! Je suis ton ordinateur personnel : TLK-74.")
 ```
 
-Pour exécuter ce programme, c'est-à-dire pour donner l'ordre à ton ordinateur de faire ce qu'il dit, tape sur la touche __F4__.
+Pour exécuter ce programme, c'est-à-dire pour donner l'ordre à ton ordinateur de faire ce qu'il dit, appuie sur le bouton __RUN__, ou tape sur la touche __F2__.
 
-Le mot [`PRINT`](manual/ins.print) en début de ligne est une __instruction__.
+Le mot [PRINT](manual/PRINT) en début de ligne est une __instruction__.
 Elle commande à TLK-74 d'écrire sur l'écran (le Moniteur).
 
 Les instructions sont suivies d'__arguments__.
 Dans notre cas, il s'agit d'un texte que l'on reconnait parce qu'il est entouré par des guillemets (").
-Dans l'éditeur, quand un texte apparait, il est affiché en orange. Les instructions sont en bleu.
+Dans l'éditeur, quand un texte apparait, il est affiché en vert. Les instructions sont en bleu.
 
 Certaines instructions peuvent avoir plusieurs arguments. C'est le cas de `PRINT` qui va écrire tous ses arguments à la suite, comme dans cet exemple :
 
@@ -24,7 +22,7 @@ Certaines instructions peuvent avoir plusieurs arguments. C'est le cas de `PRINT
 PRINT("Je suis ton ordinateur personnel :",  "TLK-", 74, ".")
 ```
 
-Essaie d'appuyer plusieurs fois sur `F4` pour exécuter plusieurs fois ton programme.
+Essaie d'appuyer plusieurs fois sur `F2` pour voir e qui se passe.
 
 > Wahou ! C'est en train de me remplir l'écran ton truc là.
 > Comment je fais pour tout effacer ?
@@ -58,13 +56,11 @@ Ce __manuel__ est un peu comme ton grimoire et tu l'auras sous la main si tu oub
 
 À chaque fois que tu apprends un nouveau concept, essaie d'imaginer un petit jeu que tu pourrais faire avec.
 
-[Voir la solution ici](dis-bonjour.1)
-
-C'est ce qu'on appelle de l'ASCII art. Tu peux donc dessiner avec tous les caractères de ton clavier,
+Tu peux donc dessiner avec tous les caractères de ton clavier,
 mais bien plus encore.
 
 __TLK-74__ connaît 256 caractères numérotés de 0 à 255.
-Si tu veux afficher un caractère qui n'est pas sur ton clavier, tu peux utiliser l'instruction `CHR()` avec le numéro que tu veux.
+Si tu veux afficher un caractère qui n'est pas sur ton clavier, tu peux utiliser l'instruction `CHR()` avec les numéros que tu veux.
 
 Voici un exemple :
 
@@ -89,9 +85,9 @@ utiliseraient 16 chiffres et leurs nombres seraient __hexadécimaux__.
 
 Et bien, c'est simplement parce que c'est très pratique pour notre table de 256 caractères.
 
-Si tu regardes le caractère `A` dans la table,
+Si tu regardes le caractère `A` dans la table ci dessous (appelée table ASCII),
 tu vois qu'il est à la __position 65__,
-mais aussi qu'il est à la __ligne 4__ et __colonne 1__.
+mais aussi qu'il est à la __ligne 4__ et la __colonne 1__.
 
 ![Table ASCII](ascii.webp)
 
@@ -124,8 +120,3 @@ PRINTLN(CHR(#93,#9A,#9B,#9A,#9A,#99))
 ```
 
 Essaie de le modifier pour en faire un plus grand.
-
-----
-
-* Chapitre suivant : [Les coordonnées](coords)
-* Chapitre précédent : [Éditeur et moniteur](editor-monitor)

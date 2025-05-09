@@ -1,3 +1,4 @@
+import { content } from "./../../../../node_modules/micromark-core-commonmark/dev/lib/content.d";
 import React from "react";
 
 import { workbench } from "@/workbench";
@@ -23,17 +24,22 @@ export function useMarkdown() {
   const [div, setDiv] = React.useState<HTMLDivElement | null>(null);
   const [pageId, setPageId] = workbench.state.manualPageId.useState();
   React.useEffect(() => {
-    if (!div) return;
+    const action = async () => {
+      if (!div) return;
 
-    tgdLoadText(`assets/help/${pageId}.md`)
-      .then((content) => {
-        if (!content) {
-          if (pageId !== MAIN_PAGE) setPageId(MAIN_PAGE);
-          return;
-        }
-        parseMarkdown(pageId, div, content, setPageId);
-      })
-      .catch(() => setPageId(MAIN_PAGE));
+      const content = await tgdLoadText(`assets/help/${pageId}.md`);
+      if (!content) {
+        if (pageId !== MAIN_PAGE) setPageId(MAIN_PAGE);
+        return;
+      }
+      parseMarkdown(
+        pageId,
+        div,
+        await addNavigation(pageId, content),
+        setPageId,
+      );
+    };
+    action();
   }, [div, pageId, setPageId]);
   return (elem: HTMLDivElement | null) => setDiv(elem);
 }
@@ -55,7 +61,12 @@ async function parseMarkdown(
   parseImages(div, path);
   parseLinks(div, path, setPageId);
   parsePres(div);
-  div.scrollTop = 0;
+  globalThis.setTimeout(() => {
+    div.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+  }, 50);
 }
 
 function parseImages(div: HTMLDivElement, path: string) {
@@ -99,4 +110,30 @@ function parsePres(div: HTMLDivElement) {
 
 function joinPath(...parts: string[]) {
   return parts.filter((item) => item.trim().length > 0).join("/");
+}
+
+async function addNavigation(pageId: string, content: string) {
+  const indexFile = (
+    (await tgdLoadText(
+      joinPath(
+        "assets/help",
+        [...pageId.split("/").slice(0, -1), "index.txt"].join("/"),
+      ),
+    )) ?? ""
+  ).trim();
+  const episodes = indexFile.split("\n").map((item) => item.trim().split(":"));
+  if (pageId.endsWith("index")) {
+    return `${content}\n\n${episodes.map(([id, caption]) => `- [${caption}](${id})`).join("\n")}`;
+  }
+
+  const output: string[] = [];
+  const index = episodes.findIndex(([id]) => pageId.endsWith(`/${id}`));
+  const prev = episodes[index - 1];
+  const episode = episodes[index];
+  const next = episodes[index + 1];
+  if (episode) output.push(`# ${episode[1]}`, "\n", "\n");
+  output.push(content, "\n\n----\n\n");
+  if (next) output.push(`- Chapitre suivant : [${next[1]}](${next[0]})`);
+  if (prev) output.push(`- Chapitre précédent : [${prev[1]}](${prev[0]})`);
+  return output.join("\n");
 }

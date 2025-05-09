@@ -17,11 +17,11 @@ export const makeCls = (kernel: KernelInterface) =>
         );
         return;
       }
-      kernel.x = kernel.TEXT_ORIGIN_X;
-      kernel.y = kernel.TEXT_ORIGIN_Y;
       const { gl } = kernel;
       gl.clearColor(0, 0, 0, 1);
       gl.clear(gl.COLOR_BUFFER_BIT);
     });
+    kernel.x = kernel.TEXT_ORIGIN_X;
+    kernel.y = kernel.TEXT_ORIGIN_Y;
     kernel.paint();
   });

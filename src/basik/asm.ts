@@ -116,9 +116,14 @@ export class BasikAssembly {
     }
   }
 
-  private pushJmp(label: string) {
+  private pushJump(label: string) {
     this.labelLink(label);
-    this.pushBytecode(this.$jmp);
+    this.pushBytecode(this.$jump);
+  }
+
+  private pushJumpIfZero(label: string) {
+    this.labelLink(label);
+    this.pushBytecode(this.$jumpIfZero);
   }
 
   private labelLink(label: string) {
@@ -135,22 +140,109 @@ export class BasikAssembly {
   }
 
   private readonly parseBloc = () => {
-    if (
-      !this.parseAny(
-        this.parseForIn,
-        this.parseInstruction,
-        this.parseAffectation,
-      )
-    ) {
+    const parsers: Array<() => boolean> = [
+      this.parseInstruction,
+      this.parseAffectation,
+      this.parseIf,
+      this.parseForIn,
+      this.parseWhile,
+    ];
+    if (!this.parseAny(...parsers)) {
       return false;
     }
-    while (
-      this.parseAny(
-        this.parseForIn,
-        this.parseInstruction,
-        this.parseAffectation,
-      )
-    ) {}
+    while (this.parseAny(...parsers)) {}
+    return true;
+  };
+
+  private readonly parseIf = () => {
+    const { lexer } = this;
+    if (!lexer.get("IF")) return false;
+
+    if (!this.parseExpression()) {
+      this.fatal("Après un IF il faut une expression.");
+    }
+    const lblElse = this.labelCreate("Else");
+    const lblEndIf = this.labelCreate("EndIf");
+    this.labelLink(lblElse);
+    lexer.expect(
+      "BRA_OPEN",
+      [
+        "Il faut une accolade ouvrante pour définir un bloc, comme dans cet exemple :",
+        "IF $condition {",
+        `  PRINTLN("Perdu")`,
+        "}",
+      ].join("\n"),
+    );
+    this.pushBytecode(this.$if);
+    this.parseBloc();
+    lexer.expect(
+      "BRA_CLOSE",
+      [
+        "Il faut une accolade fermante à la fin d'un bloc, comme dans cet exemple :",
+        "IF $condition {",
+        `  PRINTLN("Perdu")`,
+        "}",
+      ].join("\n"),
+    );
+    this.pushJump(lblEndIf);
+    this.labelStick(lblElse);
+    if (lexer.get("ELSE")) {
+      lexer.expect(
+        "BRA_OPEN",
+        [
+          "Il faut une accolade ouvrante pour définir un bloc, comme dans cet exemple :",
+          "ELSE {",
+          `  PRINTLN("Perdu")`,
+          "}",
+        ].join("\n"),
+      );
+      this.parseBloc();
+      lexer.expect(
+        "BRA_CLOSE",
+        [
+          "Il faut une accolade fermante à la fin d'un bloc, comme dans cet exemple :",
+          "ELSE {",
+          `  PRINTLN("Perdu")`,
+          "}",
+        ].join("\n"),
+      );
+    }
+    this.labelStick(lblEndIf);
+    return true;
+  };
+
+  private readonly parseWhile = () => {
+    const { lexer } = this;
+    if (!lexer.get("WHILE")) return false;
+
+    const lblBegin = this.labelCreate("Begin");
+    const lblEnd = this.labelCreate("End");
+    this.labelStick(lblBegin);
+    if (!this.parseExpression()) {
+      this.fatal("Après un WHILE il faut une expression.");
+    }
+    this.pushJumpIfZero(lblEnd);
+    lexer.expect(
+      "BRA_OPEN",
+      [
+        "Il faut une accolade ouvrante pour définir un bloc, comme dans cet exemple :",
+        "WHILE $condition {",
+        `  PRINTLN("Perdu")`,
+        "}",
+      ].join("\n"),
+    );
+    this.parseBloc();
+    lexer.expect(
+      "BRA_CLOSE",
+      [
+        "Il faut une accolade fermante à la fin d'un bloc, comme dans cet exemple :",
+        "WHILE $condition {",
+        `  PRINTLN("Perdu")`,
+        "}",
+      ].join("\n"),
+    );
+    this.pushJump(lblBegin);
+    this.labelStick(lblEnd);
     return true;
   };
 
@@ -196,7 +288,7 @@ export class BasikAssembly {
         "}",
       ].join("\n"),
     );
-    this.pushJmp(labelBegin);
+    this.pushJump(labelBegin);
     this.labelStick(labelEnd);
     return true;
   };
@@ -361,8 +453,14 @@ export class BasikAssembly {
     return val;
   }
 
-  private readonly $jmp = makeAsync("JMP", () => {
+  private readonly $jump = makeAsync("JMP", () => {
     this.cursor = this.popNum();
+  });
+
+  private readonly $jumpIfZero = makeAsync("JMP", () => {
+    const cursor = this.popNum();
+    const value = this.pop();
+    if (value === 0) this.cursor = cursor;
   });
 
   private readonly $setVar = makeAsync("setVar(name, value)", () => {
@@ -394,6 +492,14 @@ export class BasikAssembly {
     const args = this.popArr();
     await this.kernel.executeInstruction(name, args);
   };
+
+  private readonly $if = makeAsync("IF ... ELSE", () => {
+    const jump = this.popNum();
+    const cond = this.pop();
+    if (cond === 0) {
+      this.cursor = jump;
+    }
+  });
 
   private readonly $forIn = makeAsync("FOR ... IN", () => {
     const [varName, list, index, jumpOut] = this.stack.slice(-4);

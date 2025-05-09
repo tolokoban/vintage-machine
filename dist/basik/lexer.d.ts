@@ -1,6 +1,5 @@
 declare const RX: {
     SPC: RegExp;
-    DOTS: RegExp;
     COM: RegExp;
     EOL: RegExp;
     VAR: RegExp;
@@ -34,9 +33,10 @@ export declare class BasikLexer {
     private _token;
     constructor(_code: string);
     get token(): Token;
-    get tokenID(): "SPC" | "DOTS" | "COM" | "EOL" | "VAR" | "HEX" | "NUM" | "STR" | "BINOP" | "EQUAL" | "PAR_OPEN" | "PAR_CLOSE" | "BRA_OPEN" | "BRA_CLOSE" | "SQR_OPEN" | "SQR_CLOSE" | "COMMA" | "FOR" | "IN" | "FUNC" | "INST" | "EOF";
+    get tokenID(): "SPC" | "COM" | "EOL" | "VAR" | "HEX" | "NUM" | "STR" | "BINOP" | "EQUAL" | "PAR_OPEN" | "PAR_CLOSE" | "BRA_OPEN" | "BRA_CLOSE" | "SQR_OPEN" | "SQR_CLOSE" | "COMMA" | "FOR" | "IN" | "FUNC" | "INST" | "EOF";
     get tokenCode(): string;
     all(): Token[];
+    highlight(): string;
     hasMoreCode(): boolean;
     fatal(msg: string): never;
     next(): void;

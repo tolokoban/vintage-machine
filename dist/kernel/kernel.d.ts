@@ -4,6 +4,7 @@ import { Symbols } from "./painters/symbols/symbols";
 import { PainterLayer } from "./painters/layer";
 import { KernelInterface } from "./types";
 import { PainterDisk } from "./painters/disk";
+import { PainterRect } from "./painters/rect";
 export declare class Kernel extends TgdPainter implements KernelInterface {
     private static ID;
     readonly id: string;
@@ -17,6 +18,7 @@ export declare class Kernel extends TgdPainter implements KernelInterface {
     readonly TEXT_ORIGIN_Y: number;
     readonly painterSymbols: Symbols;
     readonly painterDisk: PainterDisk;
+    readonly painterRect: PainterRect;
     x: number;
     y: number;
     colorIndex: number;
@@ -42,7 +44,7 @@ export declare class Kernel extends TgdPainter implements KernelInterface {
     delete(): void;
     paint(): void;
     paintFB(action?: () => void): void;
-    print(text: string): void;
+    print(text: string, scale?: number): void;
     getVar(name: string): BasikValue;
     setVar(name: string, value: BasikValue): void;
     debugVariables(): void;
