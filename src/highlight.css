@@ -1,0 +1,31 @@
+pre {
+  background: #333;
+  color: #fff;
+}
+
+pre span.Basik-COM {
+  opacity: 0.5;
+  font-style: italic;
+}
+
+pre span.Basik-FUNC,
+pre span.Basik-PAR_OPEN,
+pre span.Basik-PAR_CLOSE {
+  color: #0af;
+}
+
+pre span.Basik-STR {
+  color: #0fa;
+}
+
+pre span.Basik-VAR {
+  color: #ee0;
+}
+
+pre span.Basik-NUM {
+  color: #d77;
+}
+
+pre span.Basik-HEX {
+  color: #c97;
+}

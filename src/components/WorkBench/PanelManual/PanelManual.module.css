@@ -1,0 +1,24 @@
+.panelManual blockquote {
+  font-family: bangers;
+  color: var(--theme-color-on-neutral-9-7);
+  background: var(--theme-color-neutral-9);
+  border-radius: 2em;
+  padding: 0.5em 1em;
+  box-shadow: 0 0 0.25em #000;
+  letter-spacing: 0.1em;
+  line-height: 1.4;
+}
+
+.panelManual blockquote > p {
+  margin: 0;
+}
+
+div.error {
+  cursor: pointer;
+}
+
+div.error pre {
+  white-space: pre-wrap;
+  background: transparent;
+  color: #fff;
+}

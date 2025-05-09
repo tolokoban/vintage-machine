@@ -1,8 +1,8 @@
+import { join } from "./../../node_modules/mdast-util-to-markdown/lib/join.d";
 import { BasikError } from "@/types";
 
 const RX = {
   SPC: /^[ \t]+/g,
-  DOTS: /^\.\.\.[\n\r \t]+/g,
   COM: /^(REM )[^\n\r]*[\n\r]+/gi,
   EOL: /^[\n\r]+/g,
   //-----------------------------------
@@ -28,7 +28,7 @@ const RX = {
 
 type TokenID = keyof typeof RX;
 
-const TOKENS_TO_SKIP: TokenID[] = ["SPC", "DOTS", "COM", "EOL"];
+const TOKENS_TO_SKIP: TokenID[] = ["SPC", "COM", "EOL"];
 
 export interface Token {
   id: TokenID;
@@ -67,6 +67,51 @@ export class BasikLexer {
     }
     this._cursor = savedCursor;
     return tokens;
+  }
+
+  highlight() {
+    const output: string[] = [];
+    let cursor = 0;
+    while (cursor < this._code.length) {
+      const code = this._code.slice(cursor);
+      let token: Token | null = null;
+      for (const [id, rx] of Object.entries(RX)) {
+        rx.lastIndex = -1;
+        const matcher = rx.exec(code);
+        if (matcher) {
+          token = { id: id as TokenID, val: matcher[0], pos: cursor };
+          break;
+        }
+      }
+      if (token) {
+        cursor += token.val.length;
+        let text = token.val
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#039;");
+        switch (token.id) {
+          case "VAR":
+            text = text.toLowerCase();
+            break;
+          case "COM":
+            text = text.slice(0, 3).toUpperCase() + text.slice(3);
+            break;
+          case "HEX":
+          case "FUNC":
+          case "FOR":
+          case "IN":
+            text = text.toUpperCase();
+            break;
+        }
+        output.push(`<span class="Basik-${token.id}">${text}</span>`);
+      } else {
+        cursor += 1;
+        output.push(code.charAt(0));
+      }
+    }
+    return output.join("");
   }
 
   hasMoreCode() {

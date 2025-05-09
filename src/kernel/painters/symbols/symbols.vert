@@ -14,12 +14,14 @@ uniform vec2 uniSymbolSize;
 // Position of the top left corner of the symbol,
 // expressed in pixels divided by 256.
 uniform vec2 uniSymbolCorner;
+// Scale of a symbol.
+uniform float uniScale;
 
 varying vec2 varUV;
 
 void main() {
     vec2 center = uniCenter * uniScreenSizeInverse;
     vec2 point = 128.0 * uniSymbolSize * attPos;   // Later, we will add rotation and scale.
-    gl_Position = vec4(center + point * uniScreenSizeInverse, 0.0, 1.0);
+    gl_Position = vec4(center + point * uniScale * uniScreenSizeInverse, 0.0, 1.0);
     varUV = uniSymbolCorner + uniSymbolSize * attUV;
 }

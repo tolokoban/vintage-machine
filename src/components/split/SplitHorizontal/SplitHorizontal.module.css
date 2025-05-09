@@ -1,0 +1,13 @@
+.splitHorizontal {
+  --custom-ratio1: 1fr;
+  --custom-ratio2: 1fr;
+  display: grid;
+  grid-template-columns: var(--custom-ratio1) var(--custom-ratio2);
+  width: 100%;
+  height: 100%;
+}
+
+.splitHorizontal > div.container {
+  position: relative;
+  min-width: 0;
+}

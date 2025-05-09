@@ -1,0 +1,11 @@
+{
+    name: "React component with CSS module",
+    params: {
+        name: "Component's name (@tolokoban/ui)",
+    },
+    vars: {
+        namePascal: "pascal($name)",
+        nameCamel: "camel($name)",
+    },
+    open: "{{namePascal}}/{{namePascal}}.tsx",
+}

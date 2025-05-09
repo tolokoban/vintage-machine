@@ -1,3 +1,4 @@
+import { content } from "./../../node_modules/micromark-core-commonmark/dev/lib/content.d";
 import { BasikValue } from "@/types";
 import {
   tgdCalcModulo,
@@ -13,6 +14,7 @@ import { KernelInterface } from "./types";
 import { makeKernelInstructions } from "./instructions";
 import { makeKernelFunctions } from "./functions";
 import { PainterDisk } from "./painters/disk";
+import { PainterRect } from "./painters/rect";
 
 const EMPTY_FUNCTION = () => {};
 export class Kernel extends TgdPainter implements KernelInterface {
@@ -30,6 +32,7 @@ export class Kernel extends TgdPainter implements KernelInterface {
 
   public readonly painterSymbols: Symbols;
   public readonly painterDisk: PainterDisk;
+  public readonly painterRect: PainterRect;
   public x = (this.CHAR_SIZE - this.WIDTH) / 2;
   public y = (this.CHAR_SIZE - this.HEIGHT) / 2;
   public colorIndex = 24;
@@ -63,6 +66,7 @@ export class Kernel extends TgdPainter implements KernelInterface {
     });
     this.context = context;
     this.painterDisk = new PainterDisk(context);
+    this.painterRect = new PainterRect(context);
     this.texturePalette = new TgdTexture2D(context).loadBitmap(
       this.canvasPalette,
     );
@@ -189,7 +193,7 @@ export class Kernel extends TgdPainter implements KernelInterface {
     this.layer.paint(action);
   }
 
-  print(text: string) {
+  print(text: string, scale = 1) {
     this.paintFB(() => {
       for (const char of text.split("")) {
         const sym = char.charCodeAt(0);
@@ -202,11 +206,12 @@ export class Kernel extends TgdPainter implements KernelInterface {
           symbolX: col * this.CHAR_SIZE,
           symbolY: row * this.CHAR_SIZE,
           colorIndex: this.colorIndex,
+          scale,
         });
-        this.x += this.CHAR_SIZE;
+        this.x += this.CHAR_SIZE * scale;
         if (this.x >= this.WIDTH / 2) {
           this.x = this.TEXT_ORIGIN_X;
-          this.y += this.CHAR_SIZE;
+          this.y += this.CHAR_SIZE * scale;
         }
       }
     });
