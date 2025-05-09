@@ -10,7 +10,7 @@ Eh bien, vois-tu, ton ordinateur travaille vite et bien, mais il n'a pas d'imagi
 
 Par exemple, si tu lui dis "_dessine un gros cercle_", il ne va pas savoir ce que tu entends par _gros_. Le français n'est pas une langue précise, alors que le __BASIK__ si. Pour dessiner un cercle, il faudra écrire, par exemple, ceci :
 
-```
+```ts
 MOVE(0,0)
 DISK(200)
 ```
