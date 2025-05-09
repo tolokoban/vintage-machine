@@ -1,0 +1,6 @@
+main:Introduction
+dis-bonjour:Dis bonjour !
+couleurs:Un peu de couleur
+ask:Je t'en pose des questions ?
+if:Conditions
+coords:Les coordonnées

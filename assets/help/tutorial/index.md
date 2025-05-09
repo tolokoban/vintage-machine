@@ -1,8 +1,3 @@
 # Chapitres du tutoriel
 
-* [Introduction](main)
-* [Editeur et Moniteur](editor-monitor)
-* [Dis bonjour!](dis-bonjour)
-* [Couleurs](couleurs)
-* [Les coordonnées](coords)
-* [Les coordonnées fines](coords2)
+Bienvenue dans ce tutoriel (ou didacticiel, on peut dire les deux) !

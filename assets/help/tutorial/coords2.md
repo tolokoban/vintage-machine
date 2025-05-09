@@ -1,10 +1,9 @@
-# Les coordonnées fines
-
 Avec `LOCATE`, on a vu un système de coordonnées bien adapté aux textes.
 Mais il existe un autre système, plus fin, qui permet de placer les choses
 avec plus de précision.
 
 Essaie ceci, par exemple :
+
 ```
 MOVE 100, 100
 PRINT "+"
@@ -57,8 +56,3 @@ Amuse-toi à modifier ce programme tant que tu veux.
 Examine surtout comment on dessine la bouche.
 Et quand tu as bien compris,
 essaie de faire une tête de Mickey.
-
-----
-
-* Chapitre suivant : []()
-* Chapitre précédent : [Les coordonnées](coords)

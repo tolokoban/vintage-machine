@@ -1,5 +1,3 @@
-# Les coordonnées
-
 Essaie ceci :
 
 ```ts
@@ -125,8 +123,3 @@ $bord = CHR(#95) + $vide + CHR(#95)
 LOCATE(0,1)
 PRINT($bord * 28)
 ```
-
-----
-
-* Chapitre suivant : [Je t'en pose des questions ?](ask)
-* Chapitre précédent : [Dis bonjour !](dis-bonjour)
