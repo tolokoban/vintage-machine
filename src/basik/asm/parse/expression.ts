@@ -9,6 +9,7 @@ export function parseExpression(this: BasikAssembly) {
       this.parseString,
       this.parseExpressionBlock,
       this.parseFunction,
+      this.parseList,
     )
   ) {
     while (this.parseBinaryOperator()) {}

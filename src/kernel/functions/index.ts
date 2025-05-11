@@ -10,6 +10,8 @@ import { makeRandom } from "./random";
 import { makeAsk } from "./ask";
 import { makeRgb } from "./rgb";
 import { makeChr } from "./chr";
+import { makePadL, makePadR } from "./pad";
+import { makeLen } from "./len";
 
 export const makeKernelFunctions = (kernel: KernelInterface) => ({
   ABS: make("ABS", argsAreNumbers(1, 1), ([a]) => Math.abs(a)),
@@ -18,6 +20,7 @@ export const makeKernelFunctions = (kernel: KernelInterface) => ({
   INT: make("INT", argsAreStrings(1, 1), ([value]) =>
     Math.round(Number(value)),
   ),
+  LEN: makeLen(),
   LIST: make("LIST", argsAreNumberAny(), ([count, value]) =>
     new Array(count).fill(value),
   ),
@@ -28,6 +31,8 @@ export const makeKernelFunctions = (kernel: KernelInterface) => ({
     rest.reduce((a, b) => Math.max(a, b), first),
   ),
   NOT: make("NOT", argsAreNumbers(1, 1), ([a]) => (a === 0 ? 1 : 0)),
+  PADL: makePadL(),
+  PADR: makePadR(),
   RANDOM: makeRandom(),
   RANGE: makeRange(),
   RGB: makeRgb(),

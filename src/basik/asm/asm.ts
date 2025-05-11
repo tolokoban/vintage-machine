@@ -28,6 +28,7 @@ import { parseNumber } from "./parse/number";
 import { parseString } from "./parse/string";
 import { parseHexa } from "./parse/hexa";
 import { parseVar } from "./parse/var";
+import { parseList } from "./parse/list";
 
 export type ByteCode = {
   pos: number;
@@ -199,6 +200,7 @@ export class BasikAssembly {
   readonly parseFunction = parseFunction.bind(this);
   readonly parseIf = parseIf.bind(this);
   readonly parseInstruction = parseInstruction.bind(this);
+  readonly parseList = parseList.bind(this);
   readonly parseReturn = parseReturn.bind(this);
   readonly parseWhile = parseWhile.bind(this);
   readonly parseNumber = parseNumber.bind(this);

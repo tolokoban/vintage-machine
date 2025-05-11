@@ -6,6 +6,7 @@ import { KernelInterface } from "./types";
 import { PainterDisk } from "./painters/disk";
 import { PainterRect } from "./painters/rect";
 export declare class Kernel extends TgdPainter implements KernelInterface {
+    private readonly canvas;
     private static ID;
     readonly id: string;
     readonly LAYERS_COUNT = 1;
@@ -25,7 +26,7 @@ export declare class Kernel extends TgdPainter implements KernelInterface {
     private readonly instructions;
     private readonly functions;
     private readonly context;
-    private readonly variables;
+    private readonly variablesStack;
     private readonly layers;
     private readonly textureSymbols;
     private readonly texturePalette;
@@ -33,10 +34,13 @@ export declare class Kernel extends TgdPainter implements KernelInterface {
     private canvasPalette;
     private _currentLayerindex;
     constructor(canvas: HTMLCanvasElement, symbols: HTMLImageElement);
+    get instructionsNames(): string[];
+    fullscreenRequest(): void;
+    fullscreenExit(): void;
     get gl(): WebGL2RenderingContext;
     screenSpaceX(xInPixels: number): number;
     screenSpaceY(yInPixels: number): number;
-    executeInstruction(name: string, args: BasikValue[]): void | Promise<void>;
+    executeInstruction(name: string, args: BasikValue[]): Promise<boolean>;
     executeFunction(name: string, args: BasikValue[]): BasikValue | Promise<BasikValue>;
     get currentLayerIndex(): number;
     set currentLayerIndex(value: number);
@@ -45,9 +49,13 @@ export declare class Kernel extends TgdPainter implements KernelInterface {
     paint(): void;
     paintFB(action?: () => void): void;
     print(text: string, scale?: number): void;
+    printChar(sym: number, scale?: number): void;
     getVar(name: string): BasikValue;
     setVar(name: string, value: BasikValue): void;
     debugVariables(): void;
+    subroutineEnter(varNames: string[], varValues: BasikValue[]): void;
+    subroutineExit(): void;
     test(): void;
+    private get variables();
 }
 //# sourceMappingURL=kernel.d.ts.map
