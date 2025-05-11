@@ -21,6 +21,7 @@ export interface KernelInterface {
   paint(): void;
   paintFB(action: () => void): void;
   print(text: string, scale?: number): void;
+  printChar(symbol: number, scale?: number): void;
   screenSpaceX(xInPixels: number): number;
   screenSpaceY(yInPixels: number): number;
 }

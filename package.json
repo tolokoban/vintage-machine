@@ -12,7 +12,6 @@
         "@tolokoban/tgd": "file:../../../game/tgd2/",
         "@tolokoban/type-guards": "^0.8.3",
         "@tolokoban/ui": "^0.21.7",
-        "codemirror": "^6.0.1",
         "marked": "^15.0.11",
         "prismjs": "^1.30.0",
         "react": "18.3.1",

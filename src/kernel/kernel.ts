@@ -1,8 +1,9 @@
-import { content } from "./../../node_modules/micromark-core-commonmark/dev/lib/content.d";
 import { BasikValue } from "@/types";
 import {
   tgdCalcModulo,
   TgdContext,
+  tgdFullscreenExit,
+  tgdFullscreenRequest,
   TgdPainter,
   TgdTexture2D,
 } from "@tolokoban/tgd";
@@ -46,7 +47,7 @@ export class Kernel extends TgdPainter implements KernelInterface {
     (args: BasikValue[]) => BasikValue | Promise<BasikValue>
   >;
   private readonly context: TgdContext;
-  private readonly variables = new Map<string, BasikValue>();
+  private readonly variablesStack = [new Map<string, BasikValue>()];
   private readonly layers: PainterLayer[] = [];
   private readonly textureSymbols: TgdTexture2D;
   private readonly texturePalette: TgdTexture2D;
@@ -54,7 +55,10 @@ export class Kernel extends TgdPainter implements KernelInterface {
   private canvasPalette: HTMLCanvasElement = paletteMakeDefault();
   private _currentLayerindex = 0;
 
-  constructor(canvas: HTMLCanvasElement, symbols: HTMLImageElement) {
+  constructor(
+    private readonly canvas: HTMLCanvasElement,
+    symbols: HTMLImageElement,
+  ) {
     super();
     canvas.width = this.WIDTH;
     canvas.height = this.HEIGHT;
@@ -93,6 +97,19 @@ export class Kernel extends TgdPainter implements KernelInterface {
     this.functions = makeKernelFunctions(this);
   }
 
+  get instructionsNames(): string[] {
+    return Object.keys(this.instructions).sort();
+  }
+
+  fullscreenRequest() {
+    const { canvas } = this;
+    tgdFullscreenRequest(canvas.parentElement);
+  }
+
+  fullscreenExit() {
+    tgdFullscreenExit();
+  }
+
   get gl() {
     return this.context.gl;
   }
@@ -105,20 +122,15 @@ export class Kernel extends TgdPainter implements KernelInterface {
     return (yInPixels * 2) / this.HEIGHT;
   }
 
-  executeInstruction(name: string, args: BasikValue[]): void | Promise<void> {
+  async executeInstruction(name: string, args: BasikValue[]): Promise<boolean> {
     try {
       const instruction = this.instructions[name];
       if (!instruction) {
-        throw new Error(
-          `L'instruction "${name.toUpperCase()}" n'existe pas.\nLes instructions disponibles sont: ${Object.keys(
-            this.instructions,
-          )
-            .sort()
-            .join(", ")}.`,
-        );
+        return false;
       }
 
-      return instruction(args);
+      await instruction(args);
+      return true;
     } catch (ex) {
       const msg = ex instanceof Error ? ex.message : JSON.stringify(ex);
       throw new Error(
@@ -217,8 +229,24 @@ export class Kernel extends TgdPainter implements KernelInterface {
     });
   }
 
+  printChar(sym: number, scale = 1) {
+    this.paintFB(() => {
+      const val = sym & 0xff;
+      const col = val & 0xf;
+      const row = (val - col) >> 4;
+      this.painterSymbols.paint({
+        screenX: this.x,
+        screenY: this.y,
+        symbolX: col * this.CHAR_SIZE,
+        symbolY: row * this.CHAR_SIZE,
+        colorIndex: this.colorIndex,
+        scale,
+      });
+    });
+  }
+
   getVar(name: string) {
-    name = name.toUpperCase();
+    name = sanitizeVarName(name);
     if (!this.variables.has(name)) {
       const output = [`La variable $${name.toLocaleLowerCase()} n'existe pas.`];
       const names = Array.from(this.variables.keys()).map(
@@ -237,13 +265,25 @@ export class Kernel extends TgdPainter implements KernelInterface {
   }
 
   setVar(name: string, value: BasikValue) {
-    this.variables.set(name.toUpperCase(), value);
+    this.variables.set(sanitizeVarName(name), value);
   }
 
   debugVariables() {
     for (const key of this.variables.keys()) {
       console.log(key, "=", this.getVar(key));
     }
+  }
+
+  subroutineEnter(varNames: string[], varValues: BasikValue[]) {
+    const variables = new Map<string, BasikValue>();
+    this.variablesStack.push(variables);
+    for (let i = 0; i < varNames.length; i++) {
+      this.setVar(varNames[i], varValues[i] ?? 0);
+    }
+  }
+
+  subroutineExit() {
+    this.variablesStack.pop();
   }
 
   test() {
@@ -259,4 +299,16 @@ export class Kernel extends TgdPainter implements KernelInterface {
       });
     });
   }
+
+  private get variables(): Map<string, BasikValue> {
+    const v = this.variablesStack.at(-1);
+    if (!v) throw Error("Nothing left on the variables stack!");
+
+    return v;
+  }
+}
+
+function sanitizeVarName(name: string) {
+  const varName = (name.startsWith("$") ? name.slice(1) : name).toUpperCase();
+  return varName;
 }

@@ -15,7 +15,25 @@ export const makeAsk = (kernel: KernelInterface) =>
           .join("");
         kernel.print(text);
         kernel.paint();
+        let isCursorVisible = true;
+        const cursorShow = () => {
+          kernel.printChar(0x8f);
+          kernel.paint();
+        };
+        const cursorHide = () => {
+          const colorIndex = kernel.colorIndex;
+          kernel.colorIndex = 0;
+          kernel.printChar(0x8f);
+          kernel.colorIndex = colorIndex;
+          kernel.paint();
+        };
+        const cursorBlink = globalThis.setInterval(() => {
+          if (isCursorVisible) cursorShow();
+          else cursorHide();
+          isCursorVisible = !isCursorVisible;
+        }, 500);
         let value = "";
+        cursorShow();
         const handleKey = (evt: KeyboardEvent) => {
           if (evt.ctrlKey || evt.altKey || evt.metaKey) return;
 
@@ -23,17 +41,19 @@ export const makeAsk = (kernel: KernelInterface) =>
             const { key } = evt;
             if (key.length === 1) {
               value += key;
+              cursorHide();
               kernel.print(key);
               return;
             }
             if (key === "Enter") {
               globalThis.document.removeEventListener("keydown", handleKey);
+              cursorHide();
               kernel.x = kernel.TEXT_ORIGIN_X;
               kernel.y += kernel.CHAR_SIZE;
+              globalThis.clearInterval(cursorBlink);
               resolve(value);
               return;
             }
-            console.log("🚀 [input] key =", key); // @FIXME: Remove this line written on 2025-05-06 at 23:34
           } finally {
             kernel.paint();
           }

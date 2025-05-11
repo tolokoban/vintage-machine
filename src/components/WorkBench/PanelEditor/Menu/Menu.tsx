@@ -1,16 +1,19 @@
 import * as React from "react";
 
 import {
+  IconFullscreen,
   IconPause,
   IconPlay,
+  IconSpaceInvader,
   Theme,
   useHotKey,
   ViewButton,
   ViewPanel,
 } from "@tolokoban/ui";
 
-import Styles from "./Menu.module.css";
 import { workbench } from "@/workbench";
+
+import Styles from "./Menu.module.css";
 
 const $ = Theme.classNames;
 
@@ -24,6 +27,11 @@ export function CompMenu(props: CompMenuProps) {
 
     workbench.run();
   });
+  useHotKey("f3", () => {
+    if (workbench.state.running.value) return;
+
+    workbench.run({ fullscreen: true });
+  });
   console.log("🚀 [Menu] running =", running); // @FIXME: Remove this line written on 2025-05-09 at 17:42
 
   return (
@@ -35,14 +43,32 @@ export function CompMenu(props: CompMenuProps) {
       justifyContent="space-between"
     >
       {!running && (
-        <ViewButton
-          enabled={ready}
-          onClick={() => {
-            workbench.run();
-          }}
-        >
-          <IconPlay /> Run (F2)
-        </ViewButton>
+        <>
+          <ViewButton
+            enabled={ready}
+            onClick={() => {
+              workbench.run();
+            }}
+          >
+            <IconPlay /> Run (F2)
+          </ViewButton>
+          <ViewButton
+            enabled={ready}
+            onClick={() => {
+              workbench.run({ fullscreen: true });
+            }}
+          >
+            <IconFullscreen /> Fullscreen (F3)
+          </ViewButton>
+          <ViewButton
+            enabled={ready}
+            onClick={() => {
+              workbench.share();
+            }}
+          >
+            <IconSpaceInvader /> Share
+          </ViewButton>
+        </>
       )}
       {running && (
         <ViewButton

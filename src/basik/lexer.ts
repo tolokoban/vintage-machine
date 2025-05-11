@@ -19,7 +19,7 @@ const RX = {
   SQR_CLOSE: /^\]/g,
   COMMA: /^,/g,
   DEF: /^def(?![a-z0-9])/i,
-  RETURN: /^def(?![a-z0-9])/i,
+  RETURN: /^return(?![a-z0-9])/i,
   WHILE: /^while(?![a-z0-9])/i,
   FOR: /^for(?![a-z0-9])/i,
   IN: /^in(?![a-z0-9])/i,
@@ -104,6 +104,8 @@ export class BasikLexer {
             break;
           case "HEX":
           case "FUNC":
+          case "DEF":
+          case "RETURN":
           case "FOR":
           case "IN":
           case "IF":
