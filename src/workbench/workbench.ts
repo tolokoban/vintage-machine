@@ -1,9 +1,9 @@
 import { Kernel } from "@/kernel";
 import { assets } from "@/assets";
 import { state } from "./state";
-import { BasikAssembly } from "@/basik/asm";
 import { workbench } from ".";
 import { isString } from "@tolokoban/type-guards";
+import { createBasikAssembly } from "@/basik/asm";
 
 export class Workbench {
   public readonly state = state;
@@ -32,7 +32,7 @@ export class Workbench {
     try {
       workbench.state.error.value = null;
       workbench.state.running.value = true;
-      const asm = new BasikAssembly(kernel);
+      const asm = createBasikAssembly(kernel);
       await asm.execute(this.state.code.value);
     } catch (ex) {
       console.error(ex);

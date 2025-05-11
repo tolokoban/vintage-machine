@@ -18,6 +18,8 @@ const RX = {
   SQR_OPEN: /^\[/g,
   SQR_CLOSE: /^\]/g,
   COMMA: /^,/g,
+  DEF: /^def(?![a-z0-9])/i,
+  RETURN: /^def(?![a-z0-9])/i,
   WHILE: /^while(?![a-z0-9])/i,
   FOR: /^for(?![a-z0-9])/i,
   IN: /^in(?![a-z0-9])/i,
@@ -123,9 +125,13 @@ export class BasikLexer {
     return this._cursor < this._code.length - 1;
   }
 
-  fatal(msg: string): never {
-    var e: BasikError = { pos: this._cursor, code: this._code, msg: msg };
-    console.error(e, this.token);
+  fatal(msg: string, token?: Token): never {
+    var e: BasikError = {
+      pos: token?.pos ?? this._cursor,
+      code: this._code,
+      msg: msg,
+    };
+    console.error(e, token ?? this.token);
     throw e;
   }
 

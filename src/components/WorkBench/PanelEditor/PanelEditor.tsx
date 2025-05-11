@@ -16,6 +16,7 @@ export function CompPanelEditor(props: CompPanelEditorProps) {
       template="*1"
       orientation="column"
       className={$.join(Styles.panelEditor)}
+      fullsize
     >
       <CompMenu />
       <CompEditor />

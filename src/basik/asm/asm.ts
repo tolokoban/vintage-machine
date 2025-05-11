@@ -1,11 +1,14 @@
 import { Kernel } from "@/kernel";
-import { BasikLexer } from "./lexer";
+import { BasikLexer } from "../lexer";
 import { isFunction, isNumber, isString } from "@tolokoban/type-guards";
 import { isBasikError, BasikValue, BasikError } from "@/types";
-import { consoleError } from "./error";
-import { BINOPS } from "./binops";
-import { Labels } from "./labels";
+import { consoleError } from "../error";
+import { BINOPS } from "../binops";
+import { Labels } from "../labels";
 import { workbench } from "@/workbench";
+
+import { parseReturn } from "./parse/parseReturn";
+import { parseInstruction } from "./parse/parseInstruction";
 
 export type ByteCode = {
   pos: number;
@@ -20,14 +23,18 @@ export type ByteCode = {
  * - Otherwise, the lexer should swallow everything the method needs.
  */
 export class BasikAssembly {
-  private readonly labels = new Labels();
-  private readonly bytecode: ByteCode[] = [];
-  private readonly stack: BasikValue[] = [];
-  private lexer: BasikLexer = new BasikLexer("");
-  private cursor = 0;
-  private code: string = "";
+  public readonly labels = new Labels();
+  public readonly bytecode: ByteCode[] = [];
+  public readonly stack: BasikValue[] = [];
+  /**
+   * Used to keep track of a caller position of a function.
+   */
+  public readonly callStack: number[] = [];
+  public lexer: BasikLexer = new BasikLexer("");
+  public cursor = 0;
+  public code: string = "";
 
-  constructor(private readonly kernel: Kernel) {}
+  constructor(public readonly kernel: Kernel) {}
 
   async execute(code: string) {
     try {
@@ -78,7 +85,7 @@ export class BasikAssembly {
     }
   }
 
-  private compile() {
+  public compile() {
     this.labels.reset();
     this.bytecode.splice(0, this.bytecode.length);
     const lexer = new BasikLexer(this.code);
@@ -94,12 +101,12 @@ export class BasikAssembly {
     console.log("Compiled!", this.bytecode);
   }
 
-  private link() {
+  public link() {
     this.labels.apply(this.bytecode);
     this.debugBytecode();
   }
 
-  private fatal(msg: string) {
+  public fatal(msg: string): never {
     const bytecode = this.bytecode[this.cursor];
     if (bytecode) {
       console.error(msg, bytecode);
@@ -107,7 +114,7 @@ export class BasikAssembly {
     throw new Error(msg);
   }
 
-  private pushBytecode(...bytecodes: ByteCode["val"][]) {
+  public pushBytecode(...bytecodes: ByteCode["val"][]) {
     for (const bytecode of bytecodes) {
       this.bytecode.push({
         pos: this.lexer.token.pos,
@@ -116,36 +123,48 @@ export class BasikAssembly {
     }
   }
 
-  private pushJump(label: string) {
-    this.labelLink(label);
+  public pushJump(label: string) {
+    this.labelPushItsValue(label);
     this.pushBytecode(this.$jump);
   }
 
-  private pushJumpIfZero(label: string) {
-    this.labelLink(label);
+  public pushJumpIfZero(label: string) {
+    this.labelPushItsValue(label);
     this.pushBytecode(this.$jumpIfZero);
   }
 
-  private labelLink(label: string) {
+  /**
+   * The position defined by the label is a number.
+   * This function add an instruction that pushes this number to the stack.
+   */
+  public labelPushItsValue(label: string) {
     this.pushBytecode(0);
     this.labels.link(this.bytecode.length - 1, label);
   }
 
-  private labelStick(label: string) {
+  /**
+   * Stick the label at the current position.
+   */
+  public labelStickHere(label: string) {
     return this.labels.stick(label, this.bytecode.length);
   }
 
-  private labelCreate(name: string = "") {
+  /**
+   * Ceate a label with an unique name.
+   */
+  public labelCreate(name: string = "") {
     return this.labels.create(name);
   }
 
-  private readonly parseBloc = () => {
+  public readonly parseBloc = () => {
     const parsers: Array<() => boolean> = [
       this.parseInstruction,
       this.parseAffectation,
       this.parseIf,
       this.parseForIn,
       this.parseWhile,
+      this.parseReturn,
+      this.parseDef,
     ];
     if (!this.parseAny(...parsers)) {
       return false;
@@ -154,7 +173,7 @@ export class BasikAssembly {
     return true;
   };
 
-  private readonly parseIf = () => {
+  public readonly parseIf = () => {
     const { lexer } = this;
     if (!lexer.get("IF")) return false;
 
@@ -163,7 +182,7 @@ export class BasikAssembly {
     }
     const lblElse = this.labelCreate("Else");
     const lblEndIf = this.labelCreate("EndIf");
-    this.labelLink(lblElse);
+    this.labelPushItsValue(lblElse);
     lexer.expect(
       "BRA_OPEN",
       [
@@ -185,7 +204,7 @@ export class BasikAssembly {
       ].join("\n"),
     );
     this.pushJump(lblEndIf);
-    this.labelStick(lblElse);
+    this.labelStickHere(lblElse);
     if (lexer.get("ELSE")) {
       lexer.expect(
         "BRA_OPEN",
@@ -207,17 +226,17 @@ export class BasikAssembly {
         ].join("\n"),
       );
     }
-    this.labelStick(lblEndIf);
+    this.labelStickHere(lblEndIf);
     return true;
   };
 
-  private readonly parseWhile = () => {
+  public readonly parseWhile = () => {
     const { lexer } = this;
     if (!lexer.get("WHILE")) return false;
 
     const lblBegin = this.labelCreate("Begin");
     const lblEnd = this.labelCreate("End");
-    this.labelStick(lblBegin);
+    this.labelStickHere(lblBegin);
     if (!this.parseExpression()) {
       this.fatal("Après un WHILE il faut une expression.");
     }
@@ -242,11 +261,11 @@ export class BasikAssembly {
       ].join("\n"),
     );
     this.pushJump(lblBegin);
-    this.labelStick(lblEnd);
+    this.labelStickHere(lblEnd);
     return true;
   };
 
-  private readonly parseForIn = () => {
+  public readonly parseForIn = () => {
     const { lexer } = this;
     if (!lexer.get("FOR")) return false;
 
@@ -266,8 +285,8 @@ export class BasikAssembly {
     this.pushBytecode(0);
     const labelBegin = this.labelCreate();
     const labelEnd = this.labelCreate();
-    this.labelLink(labelEnd);
-    this.labelStick(labelBegin);
+    this.labelPushItsValue(labelEnd);
+    this.labelStickHere(labelBegin);
     lexer.expect(
       "BRA_OPEN",
       [
@@ -289,11 +308,28 @@ export class BasikAssembly {
       ].join("\n"),
     );
     this.pushJump(labelBegin);
-    this.labelStick(labelEnd);
+    this.labelStickHere(labelEnd);
     return true;
   };
 
-  private readonly parseAffectation = () => {
+  public readonly parseReturn = parseReturn.bind(this);
+
+  //   public readonly parseReturn = () => {
+  //     const token = this.lexer.get("RETURN");
+  //     if (!token) return false;
+
+  //     if (!this.parseExpression()) {
+  //       this.lexer.fatal("Il faut une expression après un RETURN.", token);
+  //     }
+  //     this.pushBytecode(this.$return);
+  //     return true;
+  //   };
+
+  public readonly parseDef = () => {
+    return false;
+  };
+
+  public readonly parseAffectation = () => {
     const token = this.lexer.get("VAR");
     if (!token) return false;
 
@@ -308,26 +344,9 @@ export class BasikAssembly {
     return true;
   };
 
-  private readonly parseInstruction = () => {
-    const { lexer } = this;
-    const tknInstruction = lexer.get("FUNC");
-    if (!tknInstruction) return false;
+  readonly parseInstruction = parseInstruction.bind(this);
 
-    const name = tknInstruction.val.slice(0, -1).trim().toUpperCase();
-    let argsCount = 0;
-    while (this.parseExpression()) {
-      argsCount++;
-      if (!lexer.get("COMMA")) break;
-    }
-    lexer.expect(
-      "PAR_CLOSE",
-      `Il manque une parenthèse fermante après les arguments de l'instruction "${name}".`,
-    );
-    this.pushBytecode(argsCount, this.$makeArray, name, this.$instruction);
-    return true;
-  };
-
-  private readonly parseExpression = () => {
+  public readonly parseExpression = () => {
     if (
       this.parseAny(
         this.parseNumber,
@@ -344,7 +363,7 @@ export class BasikAssembly {
     return false;
   };
 
-  private readonly parseFunction = () => {
+  public readonly parseFunction = () => {
     const { lexer } = this;
     const tknFunction = lexer.get("FUNC");
     if (!tknFunction) return false;
@@ -363,7 +382,7 @@ export class BasikAssembly {
     return true;
   };
 
-  private readonly parseExpressionBlock = () => {
+  public readonly parseExpressionBlock = () => {
     const { lexer } = this;
     if (!lexer.get("PAR_OPEN")) return false;
 
@@ -375,7 +394,7 @@ export class BasikAssembly {
     return true;
   };
 
-  private readonly parseBinaryOperator = () => {
+  public readonly parseBinaryOperator = () => {
     const { lexer } = this;
     const token = lexer.get("BINOP");
     if (!token) return false;
@@ -390,7 +409,7 @@ export class BasikAssembly {
     return true;
   };
 
-  private readonly parseNumber = () => {
+  public readonly parseNumber = () => {
     const token = this.lexer.get("NUM");
     if (!token) return false;
 
@@ -398,7 +417,7 @@ export class BasikAssembly {
     return true;
   };
 
-  private readonly parseString = () => {
+  public readonly parseString = () => {
     const token = this.lexer.get("STR");
     if (!token) return false;
 
@@ -406,7 +425,7 @@ export class BasikAssembly {
     return true;
   };
 
-  private readonly parseHexa = () => {
+  public readonly parseHexa = () => {
     const token = this.lexer.get("HEX");
     if (!token) return false;
 
@@ -414,7 +433,7 @@ export class BasikAssembly {
     return true;
   };
 
-  private readonly parseVar = () => {
+  public readonly parseVar = () => {
     const token = this.lexer.get("VAR");
     if (!token) return false;
 
@@ -422,29 +441,29 @@ export class BasikAssembly {
     return true;
   };
 
-  private parseAny(...parsers: Array<() => boolean>) {
+  public parseAny(...parsers: Array<() => boolean>) {
     for (const parser of parsers) {
       if (parser()) return true;
     }
     return false;
   }
 
-  private pop() {
+  public pop() {
     const val = this.stack.pop();
     return val ?? 0;
   }
 
-  private popStr(): string {
+  public popStr(): string {
     const val = this.stack.pop();
     return isString(val) ? val : JSON.stringify(val);
   }
 
-  private popNum(): number {
+  public popNum(): number {
     const val = this.stack.pop();
     return isNumber(val) ? val : 0;
   }
 
-  private popArr(): BasikValue[] {
+  public popArr(): BasikValue[] {
     const val = this.stack.pop();
     if (!Array.isArray(val)) {
       console.error("We were expecting an array, but got:", val);
@@ -453,47 +472,55 @@ export class BasikAssembly {
     return val;
   }
 
-  private readonly $jump = makeAsync("JMP", () => {
+  public readonly $return = makeAsync("RETURN", () => {
+    const back = this.callStack.pop();
+    if (!isNumber(back)) {
+      this.fatal("Call stack is empty!");
+    }
+    this.cursor = back;
+  });
+
+  public readonly $jump = makeAsync("JMP", () => {
     this.cursor = this.popNum();
   });
 
-  private readonly $jumpIfZero = makeAsync("JMP", () => {
+  public readonly $jumpIfZero = makeAsync("JMP", () => {
     const cursor = this.popNum();
     const value = this.pop();
     if (value === 0) this.cursor = cursor;
   });
 
-  private readonly $setVar = makeAsync("setVar(name, value)", () => {
+  public readonly $setVar = makeAsync("setVar(name, value)", () => {
     const varValue = this.pop();
     const varName = this.popStr();
     this.kernel.setVar(varName, varValue);
   });
 
-  private readonly $getVar = makeAsync("getVar(name)", () => {
+  public readonly $getVar = makeAsync("getVar(name)", () => {
     const varName = this.popStr();
     this.stack.push(this.kernel.getVar(varName) ?? 0);
   });
 
-  private readonly $makeArray = makeAsync("makeArray(count, ...)", () => {
+  public readonly $makeArray = makeAsync("makeArray(count, ...)", () => {
     const count = this.popNum();
     const array = this.stack.splice(this.stack.length - count, count);
     this.stack.push(array);
   });
 
-  private readonly $function = async () => {
+  public readonly $function = async () => {
     const name = this.popStr();
     const args = this.popArr();
     const result = await this.kernel.executeFunction(name, args);
     this.stack.push(result);
   };
 
-  private readonly $instruction = async () => {
+  public readonly $instruction = async () => {
     const name = this.popStr();
     const args = this.popArr();
     await this.kernel.executeInstruction(name, args);
   };
 
-  private readonly $if = makeAsync("IF ... ELSE", () => {
+  public readonly $if = makeAsync("IF ... ELSE", () => {
     const jump = this.popNum();
     const cond = this.pop();
     if (cond === 0) {
@@ -501,7 +528,7 @@ export class BasikAssembly {
     }
   });
 
-  private readonly $forIn = makeAsync("FOR ... IN", () => {
+  public readonly $forIn = makeAsync("FOR ... IN", () => {
     const [varName, list, index, jumpOut] = this.stack.slice(-4);
     const arr = isString(list) ? list.split("") : list;
     if (!Array.isArray(arr)) {
@@ -528,7 +555,7 @@ export class BasikAssembly {
     this.stack[this.stack.length - 2] = index + 1;
   });
 
-  private makeBinOp(operator: string) {
+  public makeBinOp(operator: string) {
     return makeAsync(operator, () => {
       const varB = this.pop();
       const varA = this.pop();

@@ -2,18 +2,17 @@ import * as React from "react";
 
 import { Theme } from "@tolokoban/ui";
 
-import Styles from "./WorkBench.module.css";
 import { CompSplitHorizontal } from "../split/SplitHorizontal";
 import { CompSplitVertical } from "../split/SplitVertical";
 import { CompPanelEditor } from "./PanelEditor";
 import { CompPanelMonitor } from "./PanelMonitor";
 import { CompPanelManual } from "./PanelManual";
 
+import Styles from "./WorkBench.module.css";
+
 const $ = Theme.classNames;
 
-export type CompWorkBenchProps = {};
-
-export function CompWorkBench(props: CompWorkBenchProps) {
+export function CompWorkBench() {
   return (
     <CompSplitHorizontal className={$.join(Styles.workBench)}>
       <CompSplitVertical>
