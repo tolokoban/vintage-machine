@@ -1,3 +1,5 @@
+# Écrire du texte où on veut
+
 Essaie ceci :
 
 ```ts
@@ -22,10 +24,10 @@ PRINT("E")
 ```
 
 Comme tu le vois, il est possible d'écrire du texte à un endroit précis grâce à
-l'instruction [LOCATE](manual/ins.locate).
+l'instruction `LOCATE()`.
 
 Elle attend deux arguments qu'on appelle __coordonnées__.
-Le premier argument donne la colonne et la deuxième la ligne.
+Le premier argument donne la colonne et le deuxième la ligne.
 Sur l'écran, il y a __40 colonnes__ et __30 lignes__.
 
 Ainsi, le numéro de colonne va de __0 à 39__ et le numéro de ligne va de __0 à 29__.
