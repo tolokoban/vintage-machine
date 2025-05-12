@@ -1,19 +1,29 @@
 .panelMonitor {
-  position: absolute;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  background: #007;
-  overflow: hidden;
-  display: grid;
-  place-items: center;
-  padding: 0;
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url(./amiga.webp);
+    background-size: cover;
+    overflow: hidden;
 }
 
-.panelMonitor > canvas {
-  border: none;
-  box-shadow: none;
-  background: transparent;
-  height: 100%;
+.panelMonitor > div {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: var(--custom-monitor-color);
+    display: grid;
+    place-items: center;
+    padding: 0;
+}
+
+.panelMonitor > div > canvas {
+    border: none;
+    box-shadow: none;
+    background: transparent;
+    height: 100%;
 }
