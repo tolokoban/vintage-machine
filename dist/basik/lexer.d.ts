@@ -38,7 +38,7 @@ export declare class BasikLexer {
     private _token;
     constructor(_code: string);
     get token(): Token;
-    get tokenID(): "DEF" | "RETURN" | "SPC" | "COM" | "EOL" | "VAR" | "HEX" | "NUM" | "STR" | "BINOP" | "EQUAL" | "PAR_OPEN" | "PAR_CLOSE" | "BRA_OPEN" | "BRA_CLOSE" | "SQR_OPEN" | "SQR_CLOSE" | "COMMA" | "WHILE" | "FOR" | "IN" | "IF" | "ELSE" | "FUNC" | "INST" | "EOF";
+    get tokenID(): "HEX" | "DEF" | "RETURN" | "SPC" | "COM" | "EOL" | "VAR" | "NUM" | "STR" | "BINOP" | "EQUAL" | "PAR_OPEN" | "PAR_CLOSE" | "BRA_OPEN" | "BRA_CLOSE" | "SQR_OPEN" | "SQR_CLOSE" | "COMMA" | "WHILE" | "FOR" | "IN" | "IF" | "ELSE" | "FUNC" | "INST" | "EOF";
     get tokenCode(): string;
     all(): Token[];
     highlight(): string;

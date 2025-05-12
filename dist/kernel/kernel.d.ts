@@ -2,6 +2,7 @@ import { BasikValue } from "@/types";
 import { TgdPainter } from "@tolokoban/tgd";
 import { Symbols } from "./painters/symbols/symbols";
 import { PainterLayer } from "./painters/layer";
+import { BasikPalette } from "./palette/main";
 import { KernelInterface } from "./types";
 import { PainterDisk } from "./painters/disk";
 import { PainterRect } from "./painters/rect";
@@ -17,6 +18,7 @@ export declare class Kernel extends TgdPainter implements KernelInterface {
     readonly TEXT_ROWS: number;
     readonly TEXT_ORIGIN_X: number;
     readonly TEXT_ORIGIN_Y: number;
+    readonly palette: BasikPalette;
     readonly painterSymbols: Symbols;
     readonly painterDisk: PainterDisk;
     readonly painterRect: PainterRect;
@@ -31,7 +33,6 @@ export declare class Kernel extends TgdPainter implements KernelInterface {
     private readonly textureSymbols;
     private readonly texturePalette;
     private readonly colorizer;
-    private canvasPalette;
     private _currentLayerindex;
     constructor(canvas: HTMLCanvasElement, symbols: HTMLImageElement);
     get instructionsNames(): string[];

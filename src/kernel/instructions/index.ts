@@ -9,6 +9,7 @@ import { makeMove, makeMoveR } from "./move"
 import { makePause } from "./pause"
 import { makePrint, makePrintLn } from "./print"
 import { makeRect } from "./rect"
+import { makeReset } from "./reset"
 
 export const makeKernelInstructions = (kernel: KernelInterface) => ({
     CLS: makeCls(kernel),
@@ -23,4 +24,5 @@ export const makeKernelInstructions = (kernel: KernelInterface) => ({
     PRINT: makePrint(kernel),
     PRINTLN: makePrintLn(kernel),
     RECT: makeRect(kernel),
+    RESET: makeReset(kernel),
 })

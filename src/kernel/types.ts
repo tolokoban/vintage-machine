@@ -20,6 +20,7 @@ export interface KernelInterface {
     x: number
     y: number
     colorIndex: number
+    reset(): void
     paint(): void
     paintFB(action: () => void): void
     print(text: string, scale?: number): void

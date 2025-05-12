@@ -100,6 +100,20 @@ export class Kernel extends TgdPainter implements KernelInterface {
         return Object.keys(this.instructions).sort()
     }
 
+    async reset() {
+        this.variables.clear()
+        this.palette.reset()
+        this.colorIndex = 24
+        this.paintFB(() => {
+            const { gl } = this
+            gl.clearColor(0, 0, 0, 1)
+            gl.clear(gl.COLOR_BUFFER_BIT)
+        })
+        this.x = this.TEXT_ORIGIN_X
+        this.y = this.TEXT_ORIGIN_Y
+        this.paint()
+    }
+
     fullscreenRequest() {
         const { canvas } = this
         tgdFullscreenRequest(canvas.parentElement)
