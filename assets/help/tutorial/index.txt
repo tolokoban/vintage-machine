@@ -2,5 +2,5 @@ main:Introduction
 dis-bonjour:Dis bonjour !
 couleurs:Un peu de couleur
 ask:Je t'en pose des questions ?
-if:Conditions
+if:Conditions et boucles
 coords:Les coordonnées
