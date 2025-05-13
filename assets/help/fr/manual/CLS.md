@@ -1,14 +1,27 @@
 # CLS
 
-> CLS()
+## `CLS()`
 
 Efface le calque courant.
 
-> CLS( couleur )
+### Exemple
+
+```ts
+FOR $boucle IN RANGE(10) {
+  FOR $x IN RANGE(34) {
+    CLS()
+    LOCATE($x, 15)
+    PRINT("Anselm")
+    PAUSE(0.02)
+  }
+}
+```
+
+## `CLS( $couleur )`
 
 Efface le calque courant et le remplit avec la couleur `couleur`.
 
-## Exemple 1
+### Exemple 1
 
 ```ts
 FOR $color IN RANGE(28) {
@@ -17,7 +30,7 @@ FOR $color IN RANGE(28) {
 }
 ```
 
-## Exemple 2
+### Exemple 2
 
 ```ts
 cls(7)
@@ -25,7 +38,3 @@ color(0)
 move(0,0)
 label("La vie en rose", 2.5)
 ```
-
-----
-
-[Index](../index)

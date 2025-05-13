@@ -1,14 +1,22 @@
 # DISK()
 
-> DISK( taille )
+## `DISK( taille )`
 
 Dessine un cercle.
 
-> DISK( largeur, hauteur )
+### Exemple
+
+```ts
+RESET()
+MOVE(0,0)
+DISK(200)
+```
+
+## `DISK( largeur, hauteur )`
 
 Dessine une ellipse.
 
-## Exemple
+### Exemple
 
 ```ts
 cls()
@@ -19,3 +27,5 @@ for $i in range(1000) {
   pause()
 }
 ```
+
+Voir aussi [RECT](rect), [LABEL](LABEL).

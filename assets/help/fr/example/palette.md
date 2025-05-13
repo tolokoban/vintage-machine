@@ -1,7 +1,7 @@
 # Afficher la palette courante
 
 ```ts
-CLS()
+RESET()
 for $row in range(16) {
   color(26)
   locate($row + 1, 0)

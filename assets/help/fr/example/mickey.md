@@ -1,6 +1,7 @@
 # Mickey Mouse
 
 ```ts
+RESET()
 CLS(11)
 $x = 0
 $y = 0

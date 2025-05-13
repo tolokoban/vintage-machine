@@ -1,7 +1,7 @@
 # Afficher la table ASCII (table des 256 caractères)
 
 ```ts
-CLS()
+RESET()
 COLOR(24)
 LOCATE(0,1)
 PRINT("Voici la table des caracteres :")

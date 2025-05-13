@@ -1,6 +1,6 @@
 ## Ne pas s'emmeler les crayons
 
-Pour dessiner sur l'écran, TLK-80 utilise __256 crayons de couleurs__.
+Pour dessiner sur l'écran, TLK-74 utilise __256 crayons de couleurs__.
 
 L'instruction `COLOR()` est celle qui permet de dire quel crayon utiliser.
 
