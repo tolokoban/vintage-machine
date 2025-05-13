@@ -7,7 +7,7 @@ import {
 } from "@/basik/guards"
 import { makeRange } from "./range"
 import { makeRandom } from "./random"
-import { makeAsk } from "./ask"
+import { makeAsk, makeAskInt, makeAskNum } from "./ask"
 import { makeChr } from "./chr"
 import { makePadL, makePadR } from "./pad"
 import { makeLen } from "./len"
@@ -15,8 +15,12 @@ import { makeInk } from "./ink"
 
 export const makeKernelFunctions = (kernel: KernelInterface) => ({
     ABS: make("ABS", argsAreNumbers(1, 1), ([a]) => Math.abs(a)),
+    ASC: make("ASC", argsAreStrings(1, 1), ([s]) => s.charCodeAt(0)),
     ASK: makeAsk(kernel),
+    ASKINT: makeAskInt(kernel),
+    ASKNUM: makeAskNum(kernel),
     CHR: makeChr(),
+    COLOR: make("COLOR", argsAreNumbers(0, 0), () => kernel.colorIndex),
     HEX: make("HEX", argsAreNumbers(1, 1), ([a]) =>
         a.toString(16).toUpperCase()
     ),
@@ -24,9 +28,13 @@ export const makeKernelFunctions = (kernel: KernelInterface) => ({
     INT: make("INT", argsAreStrings(1, 1), ([value]) =>
         Math.round(Number(value))
     ),
+    LAYER: make("LAYER", argsAreNumbers(0, 0), () => kernel.currentLayerIndex),
     LEN: makeLen(),
     LIST: make("LIST", argsAreNumberAny(), ([count, value]) =>
         new Array(count).fill(value)
+    ),
+    LOWERCASE: make("LOWERCASE", argsAreStrings(1), parts =>
+        parts.join("").toLowerCase()
     ),
     MIN: make("MIN", argsAreNumbers(1), ([first, ...rest]) =>
         rest.reduce((a, b) => Math.min(a, b), first)
@@ -40,4 +48,7 @@ export const makeKernelFunctions = (kernel: KernelInterface) => ({
     RANDOM: makeRandom(),
     RANGE: makeRange(),
     TIME: make("TIME", argsAreNumbers(0, 0), () => Date.now()),
+    UPPERCASE: make("UPPERCASE", argsAreStrings(1), parts =>
+        parts.join("").toUpperCase()
+    ),
 })

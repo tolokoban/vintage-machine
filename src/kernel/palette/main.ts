@@ -105,7 +105,7 @@ export class BasikPalette {
             }
         }
         for (let step = 0; step < 16; step++) {
-            this.set(241 + step, step, step, step)
+            this.set(240 + step, step, step, step)
         }
         this.updateCanvas()
     }

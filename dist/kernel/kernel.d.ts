@@ -36,6 +36,7 @@ export declare class Kernel extends TgdPainter implements KernelInterface {
     private _currentLayerindex;
     constructor(canvas: HTMLCanvasElement, symbols: HTMLImageElement);
     get instructionsNames(): string[];
+    reset(): Promise<void>;
     fullscreenRequest(): void;
     fullscreenExit(): void;
     get gl(): WebGL2RenderingContext;

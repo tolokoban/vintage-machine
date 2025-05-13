@@ -20,6 +20,7 @@ export interface KernelInterface {
     x: number
     y: number
     colorIndex: number
+    currentLayerIndex: number
     reset(): void
     paint(): void
     paintFB(action: () => void): void

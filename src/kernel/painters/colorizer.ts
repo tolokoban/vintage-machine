@@ -1,11 +1,13 @@
 import {
     TgdContext,
     TgdDataset,
+    TgdPainterState,
     TgdProgram,
     TgdShaderFragment,
     TgdShaderVertex,
     TgdTexture2D,
     TgdVertexArray,
+    webglPresetBlend,
 } from "@tolokoban/tgd"
 
 /**
@@ -19,6 +21,10 @@ export class PainterColorizer {
         private readonly context: TgdContext,
         private readonly texturePalette: TgdTexture2D
     ) {
+        texturePalette.setParams({
+            magFilter: "NEAREST",
+            minFilter: "NEAREST",
+        })
         const vert = new TgdShaderVertex({
             varying: {
                 varUV: "vec2",
@@ -39,7 +45,8 @@ export class PainterColorizer {
             mainCode: [
                 "vec4 texel = texture(uniTexture, varUV);",
                 "float colorIndex = texel.r;",
-                "float u = colorIndex + 1.0 / 512.0;",
+                "if (colorIndex == 0.0) discard;",
+                "float u = colorIndex;",
                 "FragColor = texture(uniPalette, vec2(u, 0.5));",
                 "if (colorIndex == 0.0) FragColor.a = 0.0;",
             ],
@@ -70,8 +77,16 @@ export class PainterColorizer {
         prg.use()
         texture.activate(0, prg, "uniTexture")
         texturePalette.activate(1, prg, "uniPalette")
-        vao.bind()
-        gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4)
-        vao.unbind()
+        TgdPainterState.do(
+            {
+                gl,
+                blend: webglPresetBlend.alpha,
+            },
+            () => {
+                vao.bind()
+                gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4)
+                vao.unbind()
+            }
+        )
     }
 }

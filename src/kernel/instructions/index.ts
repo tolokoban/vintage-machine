@@ -4,6 +4,7 @@ import { makeColor } from "./color"
 import { makeDisk } from "./disk"
 import { makeInk } from "./ink"
 import { makeLabel } from "./label"
+import { makeLayer } from "./layer"
 import { makeLocate } from "./locate"
 import { makeMove, makeMoveR } from "./move"
 import { makePause } from "./pause"
@@ -17,6 +18,7 @@ export const makeKernelInstructions = (kernel: KernelInterface) => ({
     DISK: makeDisk(kernel),
     INK: makeInk(kernel),
     LABEL: makeLabel(kernel),
+    LAYER: makeLayer(kernel),
     LOCATE: makeLocate(kernel),
     MOVE: makeMove(kernel),
     MOVER: makeMoveR(kernel),

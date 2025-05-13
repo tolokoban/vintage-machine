@@ -22,7 +22,7 @@ export class Kernel extends TgdPainter implements KernelInterface {
     private static ID = 0
 
     public readonly id = `Kernel#${Kernel.ID++}`
-    public readonly LAYERS_COUNT = 1
+    public readonly LAYERS_COUNT = 3
     public readonly WIDTH = 640
     public readonly HEIGHT = 480
     public readonly CHAR_SIZE = 16
@@ -62,6 +62,7 @@ export class Kernel extends TgdPainter implements KernelInterface {
         super()
         canvas.width = this.WIDTH
         canvas.height = this.HEIGHT
+        canvas.style.aspectRatio = `${this.WIDTH}/${this.HEIGHT}`
         const context = new TgdContext(canvas, {
             alpha: true,
             antialias: false,
@@ -94,6 +95,7 @@ export class Kernel extends TgdPainter implements KernelInterface {
         })
         this.instructions = makeKernelInstructions(this)
         this.functions = makeKernelFunctions(this)
+        this.reset()
     }
 
     get instructionsNames(): string[] {
@@ -104,11 +106,19 @@ export class Kernel extends TgdPainter implements KernelInterface {
         this.variables.clear()
         this.palette.reset()
         this.colorIndex = 24
-        this.paintFB(() => {
-            const { gl } = this
-            gl.clearColor(0, 0, 0, 1)
-            gl.clear(gl.COLOR_BUFFER_BIT)
-        })
+        for (
+            let currentLayerIndex = 0;
+            currentLayerIndex < this.LAYERS_COUNT;
+            currentLayerIndex++
+        ) {
+            this.paintFB(() => {
+                const { gl } = this
+                this.currentLayerIndex = currentLayerIndex
+                gl.clearColor(0, 0, 0, 1)
+                gl.clear(gl.COLOR_BUFFER_BIT)
+            })
+        }
+        this.currentLayerIndex = 0
         this.x = this.TEXT_ORIGIN_X
         this.y = this.TEXT_ORIGIN_Y
         this.paint()
@@ -184,10 +194,7 @@ export class Kernel extends TgdPainter implements KernelInterface {
         return this._currentLayerindex
     }
     set currentLayerIndex(value: number) {
-        value =
-            this.LAYERS_COUNT === 1
-                ? 0
-                : tgdCalcModulo(Math.round(value), 0, this.LAYERS_COUNT - 1)
+        value = tgdCalcModulo(Math.round(value), 0, this.LAYERS_COUNT - 1)
         this._currentLayerindex = value
     }
 

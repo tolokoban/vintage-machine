@@ -1,10 +1,10 @@
-import { content } from "./../../../../node_modules/micromark-core-commonmark/dev/lib/content.d"
 import React from "react"
 
 import { workbench } from "@/workbench"
 import { marked, Tokens } from "marked"
 import { tgdLoadText } from "@tolokoban/tgd"
 import { BasikLexer } from "@/basik/lexer"
+import { translations } from "@/translate"
 
 marked.use({
     renderer: {
@@ -27,7 +27,7 @@ export function useMarkdown() {
         const action = async () => {
             if (!div) return
 
-            const content = await tgdLoadText(`assets/help/${pageId}.md`)
+            const content = await tgdLoadText(absolutePath(`${pageId}.md`))
             if (!content) {
                 if (pageId !== MAIN_PAGE) setPageId(MAIN_PAGE)
                 return
@@ -75,7 +75,7 @@ function parseImages(div: HTMLDivElement, path: string) {
         const src = img.getAttribute("src")
         if (!src) continue
 
-        img.setAttribute("src", joinPath(`assets/help`, path, src))
+        img.setAttribute("src", absolutePath(path, src))
     }
 }
 
@@ -98,11 +98,12 @@ function parseLinks(
 }
 
 function parsePres(div: HTMLDivElement) {
+    const tr = translations()
     const pres = div.querySelectorAll("pre")
     for (const pre of pres) {
         const code = pre.textContent ?? ""
         const lexer = new BasikLexer(code)
-        pre.setAttribute("title", "Double clique pour utiliser ce code")
+        pre.setAttribute("title", tr.dblClickOnCode)
         pre.innerHTML = lexer.highlight()
         pre.addEventListener(
             "dblclick",
@@ -120,12 +121,10 @@ function joinPath(...parts: string[]) {
  * and navigation links (plus the header) in the other files.
  */
 async function addNavigation(pageId: string, content: string) {
+    const tr = translations()
     const indexFile = (
         (await tgdLoadText(
-            joinPath(
-                "assets/help",
-                [...pageId.split("/").slice(0, -1), "index.txt"].join("/")
-            )
+            absolutePath(...pageId.split("/").slice(0, -1), "index.txt")
         )) ?? ""
     ).trim()
     const episodes = indexFile.split("\n").map(item => item.trim().split(":"))
@@ -142,7 +141,11 @@ async function addNavigation(pageId: string, content: string) {
     const next = episodes[index + 1]
     if (episode) output.push(`# ${episode[1]}`, "\n", "\n")
     output.push(content, "\n\n----\n\n")
-    if (next) output.push(`- Chapitre suivant : [${next[1]}](${next[0]})`)
-    if (prev) output.push(`- Chapitre précédent : [${prev[1]}](${prev[0]})`)
+    if (next) output.push(`- ${tr.nextChapter} [${next[1]}](${next[0]})`)
+    if (prev) output.push(`- ${tr.prevChapter} [${prev[1]}](${prev[0]})`)
     return output.join("\n")
+}
+
+function absolutePath(...path: string[]) {
+    return joinPath("assets/help", workbench.state.lang.value, ...path)
 }

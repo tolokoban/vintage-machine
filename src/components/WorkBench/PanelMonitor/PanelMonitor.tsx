@@ -11,8 +11,8 @@ export type CompPanelMonitorProps = {}
 
 export function CompPanelMonitor(props: CompPanelMonitorProps) {
     const handleMount = (canvas: HTMLCanvasElement | null) => {
-        workbench.setCanvas(canvas)
-        workbench.state.ready.value = true
+        // We need to delay this because the listeners are not ready yet.
+        globalThis.requestAnimationFrame(() => workbench.setCanvas(canvas))
     }
     return (
         <div className={$.join(Styles.panelMonitor)}>
