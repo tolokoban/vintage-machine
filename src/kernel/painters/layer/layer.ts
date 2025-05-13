@@ -1,7 +1,27 @@
 import { PainterFramebuffer } from "./framebuffer"
-import { TgdContext, TgdTexture2D } from "@tolokoban/tgd"
+import {
+    TgdContext,
+    TgdPainterStateOptions,
+    TgdTexture2D,
+    webglPresetBlend,
+} from "@tolokoban/tgd"
+
+export type BlendMode = "replace" | "alpha" | "add"
+
+const BLEND_MODES: Record<BlendMode, Partial<TgdPainterStateOptions>> = {
+    replace: {
+        blend: webglPresetBlend.off,
+    },
+    alpha: {
+        blend: webglPresetBlend.alpha,
+    },
+    add: {
+        blend: webglPresetBlend.add,
+    },
+}
 
 export class PainterLayer {
+    public mode: BlendMode = "alpha"
     private action: () => void = EMPTY_FUNCTION
     private readonly textures: [TgdTexture2D, TgdTexture2D]
     private readonly framebuffers: [PainterFramebuffer, PainterFramebuffer]
@@ -24,6 +44,10 @@ export class PainterLayer {
             new PainterFramebuffer(context, tex1, tex0, action),
             new PainterFramebuffer(context, tex0, tex1, action),
         ]
+    }
+
+    get blend() {
+        return BLEND_MODES[this.mode]
     }
 
     get texture(): TgdTexture2D {

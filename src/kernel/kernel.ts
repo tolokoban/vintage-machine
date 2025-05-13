@@ -219,7 +219,7 @@ export class Kernel extends TgdPainter implements KernelInterface {
             gl.clearColor(0, 0, 0, 0)
             gl.clear(gl.COLOR_BUFFER_BIT)
             for (const layer of this.layers) {
-                colorizer.paint(layer.texture)
+                colorizer.paint(layer)
             }
         } catch (ex) {
             console.error("Error while painting:", ex)

@@ -1,5 +1,5 @@
 import AtomicState from "@tolokoban/react-state"
-import { isString } from "@tolokoban/type-guards"
+import { isBoolean, isString } from "@tolokoban/type-guards"
 
 export const state = {
     lang: new AtomicState<string>("fr", {
@@ -11,6 +11,9 @@ export const state = {
     error: new AtomicState<string | null>(null),
     ready: new AtomicState(false),
     running: new AtomicState(false),
+    focusOnManual: new AtomicState(false, {
+        storage: { id: "TLK-74/focusOnManual", guard: isBoolean },
+    }),
     code: new AtomicState(
         ["REM Ceci est un commentaire", `PRINT("Bonjour le monde !")`].join(
             "\n"

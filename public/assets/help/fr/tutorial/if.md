@@ -8,9 +8,10 @@ Puis il te demande de le deviner.
 Si tu as trouvé, il te dit bravo.
 
 ```ts
+CLS()
 $de = RANDOM(1, 6)
 println("J'ai lance un de a 6 faces.")
-$prop = int(ask("Devine sa valeur : "))
+$prop = askint("Devine sa valeur : ")
 if $prop == $de {
     println("Tu as gagne. Bravo !")
 }
@@ -27,6 +28,27 @@ __IF__ veut dire __si__ et __ELSE__ veut dire __sinon__.
 Du coup, ce programme dit : __si__ `$prop` est égal à `$de` alors afficher "Tu as gagne. Bravo", __sinon__ afficher "Non. C'etait ...".
 
 Les accolades servent à grouper plusieurs instructions ensemble.
+
+### Exercice
+
+Écris un programme qui demande l'age du joueur.
+Si c'est moins de 18 ans, affiche "Tu n'es pas encore majeur".
+Sinon, affiche "Bonjour Monsieur".
+
+<details>
+<summary>Solution...</summary>
+
+```ts
+CLS()
+$age = ASKINT("Quel est ton age ? ")
+if ($age < 18) {
+    PRINTLN("Tu n'es pas encore majeur")
+} ELSE {
+    PRINTLN("Bonjour Monieur")
+}
+```
+
+</details>
 
 ## WHILE $condition { ... }
 
@@ -83,7 +105,7 @@ while ($continuer == 1) AND ($coups < 10) {
 }
 println()
 if $coups < 10 {
-    color(9)
+    color(#12)
     println("Bravo tu as gagne en ", $coups, " coups.")
 } else {
     COLOR(6)
@@ -102,7 +124,7 @@ L'instruction `FOR...IN` permet de boucler sur les éléments d'une __liste__.
 Une liste, c'est un ensemble de valeurs qui se suivent dans un certain ordre.
 On peut dire qu'un mot est une liste de lettres, par exemple.
 
-D'ailleurs, en Basik, toutes les chaînes de caractères sont en fait des listes de caractères.
+D'ailleurs, en Basik, les textes sont en fait des listes de symboles.
 
 ```ts
 CLS()

@@ -1,3 +1,4 @@
+import { translations } from "@/translate"
 import { BasikValue } from "@/types"
 
 export function argsAreNumbers(min = 1, max = 999) {
@@ -18,7 +19,10 @@ export function argsAreNumbers(min = 1, max = 999) {
         for (const arg of args) {
             if (typeof arg !== "number") {
                 throw new Error(
-                    "Tous les arguments de cette fonction doivent être des nombres."
+                    [
+                        "Tous les arguments de cette fonction doivent être des nombres.",
+                        `Mais on a reçu : (${args.map(typeName).join(", ")}).`,
+                    ].join("\n")
                 )
             }
         }
@@ -43,7 +47,10 @@ export function argsAreStrings(min = 1, max = 999) {
         for (const arg of args) {
             if (typeof arg !== "string") {
                 throw new Error(
-                    "Tous les arguments de cette fonction doivent être des nombres."
+                    [
+                        "Tous les arguments de cette fonction doivent être des textes.",
+                        `Mais on a reçu : (${args.map(typeName).join(", ")}).`,
+                    ].join("\n")
                 )
             }
         }
@@ -76,5 +83,18 @@ export function argsAreNumberAny() {
                 "Cette fonction attends deux arguments: le nombre d'éléments et la valeur initiale de ces éléments."
             )
         }
+    }
+}
+
+function typeName(value: BasikValue): string {
+    const tr = translations()
+    if (Array.isArray(value)) return tr.typeArray
+    switch (typeof value) {
+        case "number":
+            return tr.typeNumber
+        case "string":
+            return tr.typeString
+        default:
+            return tr.typeUnknown
     }
 }

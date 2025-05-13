@@ -1,4 +1,5 @@
 import { PainterDisk } from "./painters/disk"
+import { PainterLayer } from "./painters/layer"
 import { PainterRect } from "./painters/rect"
 import { Symbols } from "./painters/symbols/symbols"
 import { BasikPalette } from "./palette/main"
@@ -17,6 +18,7 @@ export interface KernelInterface {
     readonly painterSymbols: Symbols
     readonly gl: WebGL2RenderingContext
     readonly palette: BasikPalette
+    readonly layer: PainterLayer
     x: number
     y: number
     colorIndex: number

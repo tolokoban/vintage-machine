@@ -1,10 +1,14 @@
 import React from "react"
+import { createRoot } from "react-dom/client"
 
 import { workbench } from "@/workbench"
 import { marked, Tokens } from "marked"
 import { tgdLoadText } from "@tolokoban/tgd"
 import { BasikLexer } from "@/basik/lexer"
 import { translations } from "@/translate"
+import { isString } from "@tolokoban/type-guards"
+import { IconCode, IconPlay, ViewButton, ViewPanel } from "@tolokoban/ui"
+import { CompCodeControl } from "./CodeControl"
 
 marked.use({
     renderer: {
@@ -103,12 +107,10 @@ function parsePres(div: HTMLDivElement) {
     for (const pre of pres) {
         const code = pre.textContent ?? ""
         const lexer = new BasikLexer(code)
-        pre.setAttribute("title", tr.dblClickOnCode)
         pre.innerHTML = lexer.highlight()
-        pre.addEventListener(
-            "dblclick",
-            () => (workbench.state.code.value = code)
-        )
+        const container = tag("div")
+        pre.insertAdjacentElement("afterend", container)
+        createRoot(container).render(<CompCodeControl code={code} />)
     }
 }
 
@@ -148,4 +150,23 @@ async function addNavigation(pageId: string, content: string) {
 
 function absolutePath(...path: string[]) {
     return joinPath("assets/help", workbench.state.lang.value, ...path)
+}
+
+function tag<K extends keyof HTMLElementTagNameMap>(
+    tagName: K,
+    ...args: Array<string | HTMLElement | Record<string, string>>
+): HTMLElementTagNameMap[K] {
+    const elem = document.createElement(tagName)
+    for (const arg of args) {
+        if (isString(arg)) {
+            elem.textContent += arg
+        } else if (arg instanceof HTMLElement) {
+            elem.appendChild(arg)
+        } else {
+            for (const attName of Object.keys(arg)) {
+                elem.setAttribute(attName, arg[attName])
+            }
+        }
+    }
+    return elem
 }

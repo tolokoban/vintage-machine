@@ -1,3 +1,5 @@
+## Afficher du texte
+
 Notre premier programme est très simple, il va demander à l'ordinateur de dire "Bonjour !".
 Pour commencer, efface le programme qui est actuellement dans la partie droite de l'éditeur. Pour cela, clique dessus, tapes __CTRL__+__A__ puis sur __BACKSPACE__.
 
@@ -56,11 +58,13 @@ Ce __manuel__ est un peu comme ton grimoire et tu l'auras sous la main si tu oub
 
 À chaque fois que tu apprends un nouveau concept, essaie d'imaginer un petit jeu que tu pourrais faire avec.
 
-Tu peux donc dessiner avec tous les caractères de ton clavier,
-mais bien plus encore.
+## Les symboles
 
-__TLK-74__ connaît 256 caractères numérotés de 0 à 255.
-Si tu veux afficher un caractère qui n'est pas sur ton clavier, tu peux utiliser l'instruction `CHR()` avec les numéros que tu veux.
+Un __texte__ est une liste de lettres et chaque lettre est associé à un __symbole__.
+Quand tu demandes à TLK-74 d'afficher du texte, il va juste dessiner des symboles,les uns derrière les autres.
+Un symbole est un petit dessin, et il en existe 256 (numéroté de 0 à 255), dont certains sont farfelus.
+
+Si tu veux afficher un symbole qui n'est pas sur ton clavier, tu peux utiliser l'instruction `CHR()` avec les numéros que tu veux.
 
 Voici un exemple :
 
@@ -83,13 +87,13 @@ utiliseraient 16 chiffres et leurs nombres seraient __hexadécimaux__.
 
 > Et pourquoi pas 13 ou 71 chiffres, pendant qu'on y est ?
 
-Et bien, c'est simplement parce que c'est très pratique pour notre table de 256 caractères.
+Et bien, c'est simplement parce que c'est très pratique pour notre table de 256 symboles.
 
-Si tu regardes le caractère `A` dans la table ci dessous (appelée table ASCII),
+Si tu regardes le symbole `A` dans la table ci dessous (appelée __table ASCII__),
 tu vois qu'il est à la __position 65__,
 mais aussi qu'il est à la __ligne 4__ et la __colonne 1__.
 
-![Table ASCII](ascii.webp)
+![Table ASCII](../ascii.webp)
 
 Et par la magie des maths, on a le décimal __65__ qui est égal à l'hexadécimal __#41__.
 
@@ -102,9 +106,9 @@ PRINTLN(CHR(#41))
 
 > Je ne suis pas sûr d'avoir bien compris cette histoire d'hexatruc...
 
-La seule chose à retenir ici, c'est que si tu veux utiliser un caractère un peu cool,
+La seule chose à retenir ici, c'est que si tu veux utiliser un symbole un peu cool,
 comme un cœur par exemple, il faut utiliser le nombre `#E4` parce que le cœur se trouve
-à la ligne __E__ et la colonne __4__ dans la table des caractères.
+à la ligne __E__ et la colonne __4__ dans la table des symboles.
 
 ## Exercice
 

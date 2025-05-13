@@ -1,42 +1,46 @@
-import { Theme } from "@tolokoban/ui";
-import { createRoot } from "react-dom/client";
+import { ModalProvider, Theme } from "@tolokoban/ui"
+import { createRoot } from "react-dom/client"
 
-import App from "./app";
-import { assets } from "./assets";
+import App from "./app"
+import { assets } from "./assets"
 
-import "./index.css";
-import "./highlight.css";
-import "./font/josefin.css";
+import "./index.css"
+import "./highlight.css"
+import "./font/josefin.css"
 
 async function start() {
-  await assets.initialize();
+    await assets.initialize()
 
-  new Theme({
-    colors: {
-      neutral: ["#999", "#fff"],
-    },
-  }).apply();
-  const container = document.getElementById("app");
-  if (!container) throw Error(`No element with id "app"!`);
+    new Theme({
+        colors: {
+            neutral: ["#999", "#fff"],
+        },
+    }).apply()
+    const container = document.getElementById("app")
+    if (!container) throw Error(`No element with id "app"!`)
 
-  const root = createRoot(container);
-  root.render(<App />);
+    const root = createRoot(container)
+    root.render(
+        <ModalProvider>
+            <App />
+        </ModalProvider>
+    )
 
-  removeSplashScreen();
+    removeSplashScreen()
 }
 
 function removeSplashScreen() {
-  const SPLASH_VANISHING_DELAY = 900;
-  const splash = document.getElementById("splash");
-  if (!splash) return;
+    const SPLASH_VANISHING_DELAY = 900
+    const splash = document.getElementById("splash")
+    if (!splash) return
 
-  splash.classList.add("vanish");
-  window.setTimeout(() => {
-    const parent = splash.parentNode;
-    if (!parent) return;
+    splash.classList.add("vanish")
+    window.setTimeout(() => {
+        const parent = splash.parentNode
+        if (!parent) return
 
-    parent.removeChild(splash);
-  }, SPLASH_VANISHING_DELAY);
+        parent.removeChild(splash)
+    }, SPLASH_VANISHING_DELAY)
 }
 
-void start();
+void start()

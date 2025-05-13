@@ -84,7 +84,19 @@ PRINT($phrase)
 ```
 
 L'instruction `$truc = "Bidule"` signifie que partout où TLK-74 verra `$truc`, il doit le remplacer par `"Bidule"`.
-C'est tout bête, mais ça fait gagner beaucoup de temps.
+On l'avait djà vu avec l'instruction `ASK()`.
+
+```ts
+$nom = ASK("Ton nom, petit ? ")
+PRINTLN("Salut ", $nom)
+```
+
+Tout ce qui commence par un dollar (`$`) est ce qu'on appelle une __variable__.
+Tu peux aussi voir ça comme la mémoire de TLK-47.
+La première ligne du programme juste au dessus signifie :
+_demande la nom au joueur et met le dans un tiroir appelé `$nom`_.
+
+Et la deuxième ligne veut dire : _affiche "Salut" suivi de ce qu'il y a en ce moment dans le tiroir ppelé `$nom`"_.
 
 Utilisons ce comcept avec nos lignes d'avant :
 
@@ -125,3 +137,54 @@ $bord = CHR(#95) + $vide + CHR(#95)
 LOCATE(0,1)
 PRINT($bord * 28)
 ```
+
+## Exercices
+
+Écris un programme qui affiche la table du 7. tu devrais avoir quelque chose comme ça :
+
+![Table du 7](if-1.webp)
+
+Je te conseille d'utiliser `FOR $value IN RANGE(1, 9)` si tu ne veux pas écrire 9 fois la mēme chose.
+
+<details>
+<summary>Solution...</summary>
+
+```ts
+RESET()
+FOR $valeur IN RANGE(1, 9) {
+    PRINTLN($valeur, " x 7 = ", $valeur * 7)
+}
+```
+
+</details>
+
+Et maintenant, écris un programme qui affiche toutes les tables de 1 à 9, comme dans l'image suivante :
+
+![Toutes les tables](if-2.webp)
+
+<details>
+<summary>Solution...</summary>
+
+```ts
+RESET()
+$x = 0
+$y = 0
+FOR $table IN RANGE(1, 9) {
+  IF $table == 4 {
+    $x = 15
+    $y = 0
+  }
+  IF $table == 7 {
+    $x = 30
+    $y = 0
+  }
+  FOR $valeur IN RANGE(1, 9) {
+    LOCATE($x, $y)
+    PRINT($valeur, " x ", $table, " = ", $valeur * $table)
+    $y = $y + 1
+  }
+  $y = $y + 1
+}
+```
+
+</details>

@@ -24,7 +24,7 @@ Les fonctions retournent une valeur. Les procédures pas.
 * [ABS](ABS): retourne la valeur absolue d'un nombre
 * [ASC](ASC): retourne la valeur ASCII de la première lettre d'un texte
 * [ASK](ASK): retourne le texte tapé par l'utilisateur
-* [CHR](CHR): retourne un caractère dont on passe la valeur
+* [CHR](CHR): retourne un symbole dont on passe la valeur
 * [HEX](HEX): retourne la représentation hexadécimale d'un nombre
 * [INK](INK): retourne une liste des composantes de la couleur d'un crayon
 * [INT](INT): retourne la valeur entière la plus proche d'un nombre

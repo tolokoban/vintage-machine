@@ -3,6 +3,7 @@ import * as React from "react"
 import {
     IconArrowUp,
     IconBook,
+    IconInvert,
     Theme,
     useHotKey,
     ViewFloatingButton,
@@ -23,9 +24,13 @@ export type CompPanelManualProps = {}
 export function CompPanelManual() {
     const [error, setError] = workbench.state.error.useState()
     useHotKey("escape", () => setError(null))
+    const [focusOnManual, setFocusOnManual] =
+        workbench.state.focusOnManual.useState()
     const handleMount = useMarkdown()
+    const handleSwap = () => {
+        setFocusOnManual(!focusOnManual)
+    }
 
-    console.log("🚀 [PanelManual] error =", error) // @FIXME: Remove this line written on 2025-05-09 at 20:02
     if (error) {
         return (
             <ViewPanel
@@ -70,6 +75,11 @@ export function CompPanelManual() {
                     color="secondary-5"
                     onClick={handleGoUp}
                 />
+                <ViewFloatingButton
+                    icon={IconInvert}
+                    color="secondary-5"
+                    onClick={handleSwap}
+                />
             </ViewPanel>
             <ViewPanel
                 className={$.join(Styles.panelManual)}
@@ -89,10 +99,6 @@ function handleGoToIndex() {
     parts.pop()
     parts.push("index")
     workbench.state.manualPageId.value = parts.join("/")
-    console.log(
-        "🚀 [PanelManual] workbench.state.manualPageId.value =",
-        workbench.state.manualPageId.value
-    ) // @FIXME: Remove this line written on 2025-05-12 at 18:00
 }
 
 function handleGoUp() {
@@ -104,8 +110,4 @@ function handleGoUp() {
     parts.pop()
     parts.push("index")
     workbench.state.manualPageId.value = parts.join("/")
-    console.log(
-        "🚀 [PanelManual] workbench.state.manualPageId.value =",
-        workbench.state.manualPageId.value
-    ) // @FIXME: Remove this line written on 2025-05-12 at 18:00
 }

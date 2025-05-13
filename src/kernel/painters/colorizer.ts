@@ -9,6 +9,7 @@ import {
     TgdVertexArray,
     webglPresetBlend,
 } from "@tolokoban/tgd"
+import { PainterLayer } from "./layer"
 
 /**
  * Get a monochrome texture and apply colors from a palette.
@@ -71,16 +72,16 @@ export class PainterColorizer {
         this.vao.delete()
     }
 
-    paint(texture: TgdTexture2D): void {
+    paint(layer: PainterLayer): void {
         const { context, prg, vao, texturePalette } = this
         const { gl } = context
         prg.use()
-        texture.activate(0, prg, "uniTexture")
+        layer.texture.activate(0, prg, "uniTexture")
         texturePalette.activate(1, prg, "uniPalette")
         TgdPainterState.do(
             {
                 gl,
-                blend: webglPresetBlend.alpha,
+                ...layer.blend,
             },
             () => {
                 vao.bind()

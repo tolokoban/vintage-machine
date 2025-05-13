@@ -14,7 +14,7 @@ $nom = ASK("Bonjour. ", "Quel est ton nom ? ")
 println("Enchante ", $nom)
 ```
 
-Ici, TLK-74 va afficher `Bonjour. Quel est ton nom ?`. À cet endroit, un cursor (carré clignotant) apparait. L'utilisateur peut alors taper du texte. Il peut même effacer le dernier caractère tapé avec la touche _BACKSPACE_. Pour terminer son texte, il doit taper sur la toucher _ENTER_.
+Ici, TLK-74 va afficher `Bonjour. Quel est ton nom ?`. À cet endroit, un cursor (carré clignotant) apparait. L'utilisateur peut alors taper du texte. Il peut même effacer le dernier symbole tapé avec la touche _BACKSPACE_. Pour terminer son texte, il doit taper sur la toucher _ENTER_.
 
 ### Exemple 2
 

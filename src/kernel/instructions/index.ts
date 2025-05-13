@@ -6,6 +6,7 @@ import { makeInk } from "./ink"
 import { makeLabel } from "./label"
 import { makeLayer } from "./layer"
 import { makeLocate } from "./locate"
+import { makeMode } from "./mode"
 import { makeMove, makeMoveR } from "./move"
 import { makePause } from "./pause"
 import { makePrint, makePrintLn } from "./print"
@@ -20,6 +21,7 @@ export const makeKernelInstructions = (kernel: KernelInterface) => ({
     LABEL: makeLabel(kernel),
     LAYER: makeLayer(kernel),
     LOCATE: makeLocate(kernel),
+    MODE: makeMode(kernel),
     MOVE: makeMove(kernel),
     MOVER: makeMoveR(kernel),
     PAUSE: makePause(kernel),

@@ -3,7 +3,7 @@
 > LOCATE(colonne, ligne)
 
 L'écran est composé de 30 lignes et 40 colonnes.
-Cette fonction permet de définir où sera affiché le prochain caractère avec un [PRINT](PRINT).
+Cette fonction permet de définir où sera affiché le prochain symbole avec un [PRINT](PRINT).
 
 Exemple :
 

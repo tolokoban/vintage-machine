@@ -1,24 +1,114 @@
 .panelManual blockquote {
-  font-family: bangers;
-  color: var(--theme-color-on-neutral-9-7);
-  background: var(--theme-color-neutral-9);
-  border-radius: 2em;
-  padding: 0.5em 1em;
-  box-shadow: 0 0 0.25em #000;
-  letter-spacing: 0.1em;
-  line-height: 1.4;
+    font-family: bangers;
+    color: var(--theme-color-on-neutral-9-7);
+    background: var(--theme-color-neutral-9);
+    border-radius: 2em;
+    padding: 0.5em 1em;
+    box-shadow: 0 0 0.25em #000;
+    letter-spacing: 0.1em;
+    line-height: 1.4;
+    margin-left: 0;
+    margin-right: 0;
+    white-space: pre-wrap;
+}
+
+.panelManual strong {
+    background: var(--theme-color-neutral-4);
+    color: var(--theme-color-on-neutral-4);
+    border-radius: 100vmax;
+    padding: 0 0.5em;
+}
+
+.panelManual em {
+    background: var(--theme-color-primary-8);
+    color: var(--theme-color-on-primary-8);
+    border-radius: 100vmax;
+    padding: 0 0.5em;
 }
 
 .panelManual blockquote > p {
-  margin: 0;
+    margin: 0;
+}
+
+.panelManual img {
+    max-width: 100%;
+}
+
+.panelManual pre {
+    margin-bottom: 0;
+}
+
+.panelManual h1,
+.panelManual h2,
+.panelManual h3,
+.panelManual h4 {
+    text-decoration: none;
+    font-weight: bold;
+    padding: 0.25em 0.5em;
+    border-radius: 0 100vmax 100vmax 0;
+    margin-left: -0.75em;
+}
+
+.panelManual h1 {
+    color: var(--theme-color-on-primary-2);
+    background: linear-gradient(
+        to left,
+        transparent,
+        var(--theme-color-primary-2) 40%
+    );
+}
+
+.panelManual h2 {
+    color: var(--theme-color-on-primary-4);
+    background: linear-gradient(
+        to left,
+        transparent,
+        var(--theme-color-primary-4) 40%
+    );
+}
+
+.panelManual h3 {
+    color: var(--theme-color-on-primary-6);
+    background: linear-gradient(
+        to left,
+        transparent,
+        var(--theme-color-primary-6) 40%
+    );
+}
+
+.panelManual h4 {
+    color: var(--theme-color-on-primary-8);
+    background: linear-gradient(
+        to left,
+        transparent,
+        var(--theme-color-primary-8) 40%
+    );
+}
+
+.panelManual details {
+    color: var(--theme-color-on-secondary-9);
+    background: var(--theme-color-secondary-9);
+    padding: 0.5em;
+    border-radius: 1em;
+    box-shadow: 0 0.25em 0.5em #0006;
+}
+
+.panelManual details > summary {
+    color: var(--theme-color-on-secondary-7);
+    background: var(--theme-color-secondary-7);
+    padding: 0.5em;
+    margin: -0.5em;
+    border-radius: 1em;
+    cursor: pointer;
+    font-weight: bold;
 }
 
 div.error {
-  cursor: pointer;
+    cursor: pointer;
 }
 
 div.error pre {
-  white-space: pre-wrap;
-  background: transparent;
-  color: #fff;
+    white-space: pre-wrap;
+    background: transparent;
+    color: #fff;
 }

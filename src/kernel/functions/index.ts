@@ -1,6 +1,7 @@
 import { KernelInterface } from "../types"
 import { make } from "./_common"
 import {
+    argsAreAnys,
     argsAreNumberAny,
     argsAreNumbers,
     argsAreStrings,
@@ -25,9 +26,10 @@ export const makeKernelFunctions = (kernel: KernelInterface) => ({
         a.toString(16).toUpperCase()
     ),
     INK: makeInk(kernel),
-    INT: make("INT", argsAreStrings(1, 1), ([value]) =>
-        Math.round(Number(value))
-    ),
+    INT: make("INT", argsAreAnys(1, 1), ([value]) => {
+        if (Array.isArray(value)) return value.length
+        return Math.round(Number(value))
+    }),
     LAYER: make("LAYER", argsAreNumbers(0, 0), () => kernel.currentLayerIndex),
     LEN: makeLen(),
     LIST: make("LIST", argsAreNumberAny(), ([count, value]) =>
@@ -42,6 +44,7 @@ export const makeKernelFunctions = (kernel: KernelInterface) => ({
     MAX: make("MAX", argsAreNumbers(1), ([first, ...rest]) =>
         rest.reduce((a, b) => Math.max(a, b), first)
     ),
+    MODE: make("MODE", argsAreNumbers(0, 0), () => kernel.layer.mode),
     NOT: make("NOT", argsAreNumbers(1, 1), ([a]) => (a === 0 ? 1 : 0)),
     PADL: makePadL(),
     PADR: makePadR(),
