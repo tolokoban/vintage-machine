@@ -11,14 +11,33 @@ CLS(2)
 COLOR(24)
 PRINT("Bonjour ")
 COLOR(17)
-PRINT("le monde !")
+PRINTLN("le monde !")
+PRINTLN("Tout ce que j'ecris maintenant est rose.")
 ```
 
-Et comme tu le vois, tu peux aussi effacer l'écran avec le crayon de ton choix.
+Comme tu le vois, tu peux aussi effacer l'écran avec le crayon de ton choix.
+
+Et comme pour les symboles, tu peux utiliser les nombres héxadécimaux.
+Par exemple `COLOR(24)`, c'est pareil que `COLOR(#18)`.
 
 ### Exercice
 
-Essaie d'écrire ton nom en vert sur fond rouge.
+Essaie d'écrire ton nom en __vert__ sur fond __rouge__.
+Pour cela, tu peux essayer des numéros de crayon au hasard,
+ou regarder la table des couleurs ci-dessous :
+
+![Table des coleurs](../symbols-and-colors.webp)
+
+<details>
+<summary>Solution...</summary>
+
+```ts
+CLS(6)
+COLOR(#12)
+PRINT("ANSELM LE MAGICIEN DU CODE")
+```
+
+</details>
 
 ## Changer la couleur d'un crayon
 
@@ -61,7 +80,7 @@ On a quatre arguments ici :
 
 > Je ne comprends pas... On ne peut faire que du rouge, du vert ou du bleu ?
 
-Oh non ! Avec ça, tu peux faire 4096 couleurs différentes.
+Oh non ! Avec ça, tu peux faire __4096 couleurs__ différentes.
 
 En fait, derrière chaque pixel de ton écran, il y a trois petites ampoules :
 une rouge, une verte et une bleue. Ce sont ces ampoules que tu manipules avec `INK()`.
@@ -73,6 +92,10 @@ Mais ça ne fonctionne pas comme en peinture.
 
 Si aucune ampoule n'est allumée (`INK(24, 0, 0, 0)` par exemple), alors le résultat est __noir__.
 Si elles sont toutes à fond (`INK(24, 15, 15, 15)`), alors c'est du __blanc__.
+
+Voici un petit diagramme des mélange de couleurs les plus simples :
+
+![Addition des couleurs](colors.webp)
 
 ### Exercice
 

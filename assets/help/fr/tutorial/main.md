@@ -15,4 +15,4 @@ DISK(200)
 
 Ça peut paraître barbare à première lecture, mais c'est très simple : on demande d'abord à TLK-74 de se placer au centre de l'écran (`MOVE(0,0)`) puis de dessiner un disque (un cercle plein) de rayon 200 (`DISK(200)`).
 
-Mais nous y reviendrons. Pour le moment, il faut apprendre à utiliser le clavier et la souris.
+Mais nous y reviendrons. Pour le moment, il faut apprendre les bases.

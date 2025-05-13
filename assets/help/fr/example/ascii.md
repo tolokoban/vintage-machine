@@ -1,4 +1,4 @@
-# Afficher la table ASCII (table des 256 caractères)
+# Afficher la table ASCII (table des 256 symboles)
 
 ```ts
 RESET()
