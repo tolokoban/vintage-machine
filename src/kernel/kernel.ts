@@ -53,7 +53,7 @@ export class Kernel extends TgdPainter implements KernelInterface {
     private readonly textureSymbols: TgdTexture2D
     private readonly texturePalette: TgdTexture2D
     private readonly colorizer: PainterColorizer
-    private _currentLayerindex = 0
+    private _currentLayerindex = 1
 
     constructor(
         private readonly canvas: HTMLCanvasElement,
@@ -96,6 +96,10 @@ export class Kernel extends TgdPainter implements KernelInterface {
         this.instructions = makeKernelInstructions(this)
         this.functions = makeKernelFunctions(this)
         this.reset()
+    }
+
+    get allVarNames() {
+        return Array.from(this.variables.keys())
     }
 
     get instructionsNames(): string[] {
