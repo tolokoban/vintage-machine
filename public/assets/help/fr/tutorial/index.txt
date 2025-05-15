@@ -4,3 +4,4 @@ couleurs:Un peu de couleur
 ask:Je t'en pose des questions ?
 if:Conditions et boucles
 coords:Les coordonnées
+draw:Faisons un beau dessin

@@ -28,15 +28,15 @@ Les fonctions retournent une valeur. Les procédures pas.
 * [HEX](HEX): retourne la représentation hexadécimale d'un nombre
 * [INK](INK): retourne une liste des composantes de la couleur d'un crayon
 * [INT](INT): retourne la valeur entière la plus proche d'un nombre
-* [LEN](LEN): retourne la longueur d'une chaine ou d'une liste
+* [LEN](LEN): retourne la longueur d'un texte ou d'une liste
 * [LIST](LIST): retourne une liste remplie d'un mēme élément
-* [LOWERCASE](LOWERCASE): retourne une chaine en minuscules
+* [LOWERCASE](LOWERCASE): retourne un texte en minuscules
 * [MIN](MIN): retoune le plus petit des nombres passés en argument
 * [MAX](MAX): retoune le plus grand des nombres passés en argument
 * [NOT](NOT): retourne la valeur booléenne inverse
-* [PADL](PADL): retourne une chaine avec une taille donnée en remplissant à droite
-* [PADR](PADR): retourne une chaine avec une taille donnée en remplissant à gauche
+* [PADL](PADL): retourne un texte avec une taille donnée en remplissant à droite
+* [PADR](PADR): retourne un texte avec une taille donnée en remplissant à gauche
 * [RANDOM](RANDOM): retourne un nombre aléatoire entier
 * [RANGE](RANGE): retourne une liste de nombres qui se suivent
 * [TIME](TIME): retourne le temps actuel en millisecondes depuis le 1er janvier 1970
-* [UPPERCASE](UPPERCASE): retourne une chaine en majuscules
+* [UPPERCASE](UPPERCASE): retourne un texte en majuscules

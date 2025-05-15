@@ -3,7 +3,7 @@
 Essaie ceci :
 
 ```ts
-CLS()
+RESET()
 PRINT(CHR(#F9))
 LOCATE(1,1)
 PRINT("Hortense")
@@ -87,6 +87,7 @@ L'instruction `$truc = "Bidule"` signifie que partout où TLK-74 verra `$truc`, 
 On l'avait djà vu avec l'instruction `ASK()`.
 
 ```ts
+RESET()
 $nom = ASK("Ton nom, petit ? ")
 PRINTLN("Salut ", $nom)
 ```
