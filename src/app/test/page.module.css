@@ -1,0 +1,53 @@
+.page {
+  font-size: 16px;
+}
+
+.page ul {
+  padding-left: 0;
+}
+
+.page ul ul {
+  padding-left: 1em;
+}
+
+.page ul > li {
+  margin: 1px 0;
+}
+
+.page ul > li::marker {
+  content: "";
+}
+
+.page summary {
+  cursor: pointer;
+  transition: 0.2s;
+  padding: 0 0.5em;
+  border-radius: 100vmax;
+}
+
+.page summary:hover {
+  background-color: var(--theme-color-neutral-6);
+  color: var(--theme-color-on-neutral-6);
+}
+
+.page details > div {
+  border-left: 1px solid currentColor;
+  padding-left: 0.5em;
+  margin-bottom: 1em;
+  margin-left: 0.5em;
+}
+
+.page details > div pre {
+  padding: 0.5em;
+  white-space: pre-wrap;
+}
+
+.page summary.pass {
+  background-color: #8f8;
+  font-weight: bold;
+}
+
+.page summary.fail {
+  background-color: #f88;
+  font-weight: bolder;
+}

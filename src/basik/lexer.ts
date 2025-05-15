@@ -7,9 +7,10 @@ const RX = {
   //-----------------------------------
   VAR: /^\$[a-z0-9\._]+/gi,
   HEX: /^#[0-9a-f]+/gi,
-  NUM: /^-?([0-9]+(\.[0-9]+)?|\.[0-9]+)/g,
+  NUM: /^([0-9]+(\.[0-9]+)?|\.[0-9]+)/g,
   STR: /^"(\\"|[^"])*"/g,
-  BINOP: /^(and|or|xor|>=|<=|<>|\^|==|[%+*/<>-])/gi,
+  SIGN: /^[+-]/gi,
+  BINOP: /^(and|or|xor|>=|<=|<>|\^|==|[%*/<>])/gi,
   EQUAL: /^=/g,
   PAR_OPEN: /^\(/g,
   PAR_CLOSE: /^\)/g,
@@ -188,9 +189,9 @@ export class BasikLexer {
    * @param expectedTokens List of expected token ids.
    * @returns The token we were expecting.
    */
-  get(...tokens: TokenID[]): Token | null {
+  get(...tokens: TokenID[]): Token | undefined {
     if (!tokens.includes(this._token.id)) {
-      return null;
+      return undefined;
     }
 
     const token = structuredClone(this._token);

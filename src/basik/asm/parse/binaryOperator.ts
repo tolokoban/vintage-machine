@@ -2,7 +2,7 @@ import { BasikAssembly } from "@/basik/asm/asm";
 
 export function parseBinaryOperator(this: BasikAssembly) {
   const { lexer } = this;
-  const token = lexer.get("BINOP");
+  const token = lexer.get("BINOP", "SIGN");
   if (!token) return false;
 
   const operator = token.val;
