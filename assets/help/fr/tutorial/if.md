@@ -128,7 +128,7 @@ D'ailleurs, en Basik, les textes sont en fait des listes de symboles.
 
 ```ts
 CLS()
-FOR $lettre IN "Anselm" {
+FOR $lettre IN "Anselm et Alois" {
     println($lettre)
 }
 ```

@@ -11,10 +11,10 @@ PRINT("Bonjour ! Je suis ton ordinateur personnel : TLK-74.")
 
 Pour exécuter ce programme, c'est-à-dire pour donner l'ordre à ton ordinateur de faire ce qu'il dit, appuie sur le bouton __RUN__, ou tape sur la touche __F2__.
 
-Le mot [PRINT](manual/PRINT) en début de ligne est une __instruction__.
+Le mot [PRINT](manual/PRINT) en début de ligne est une __procedure__.
 Elle commande à TLK-74 d'écrire sur l'écran (le Moniteur).
 
-Les instructions sont suivies d'__arguments__.
+Les procédures sont suivies d'__arguments__.
 Dans notre cas, il s'agit d'un texte que l'on reconnait parce qu'il est entouré par des guillemets (").
 Dans l'éditeur, quand un texte apparait, il est affiché en vert. Les instructions sont en bleu.
 
@@ -64,6 +64,8 @@ Un __texte__ est une liste de lettres et chaque lettre est associé à un __symb
 Quand tu demandes à TLK-74 d'afficher du texte, il va juste dessiner des symboles,les uns derrière les autres.
 Un symbole est un petit dessin, et il en existe 256 (numéroté de 0 à 255), dont certains sont farfelus.
 
+![les symboles](../ascii.webp)
+
 Si tu veux afficher un symbole qui n'est pas sur ton clavier, tu peux utiliser l'instruction `CHR()` avec les numéros que tu veux.
 
 Voici un exemple :
@@ -97,9 +99,10 @@ mais aussi qu'il est à la __ligne 4__ et la __colonne 1__.
 
 Et par la magie des maths, on a le décimal __65__ qui est égal à l'hexadécimal __#41__.
 
-Du coup, les deux lignes suivantes font la même chose :
+Du coup, les trois lignes suivantes font la même chose :
 
 ```ts
+PRINTLN("A")
 PRINTLN(CHR(65))
 PRINTLN(CHR(#41))
 ```
