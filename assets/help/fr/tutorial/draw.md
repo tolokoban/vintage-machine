@@ -74,7 +74,22 @@ FOR $a IN RANGE(100) {
 }
 ```
 
-Et quand on compine plusieurs ellipses et qu'on choisit bien les couleurs,
+> Ça s'affiche super vite ! J'ai pas le temps de voir moi.
+
+La machine est puissante, mais on peut la calmer en lui demandant de faire des pauses.
+
+```ts
+RESET()
+FOR $a IN RANGE(1000) {
+  COLOR(RANDOM(30))
+  MOVE(RANDOM(-320, 320), RANDOM(-240, 240))
+  LABEL("Anselm le magicien", RANDOM(100) / 10)
+  REM Sans argument, PAUSE() fait la plus petite pause possible.
+  PAUSE()
+}
+```
+
+Et quand on combine plusieurs ellipses et qu'on choisit bien les couleurs,
 on peut dessiner un bonhomme :
 
 ```ts
@@ -126,7 +141,7 @@ RESET()
 CLS(11)
 $x = 0
 $y = 0
-$noir = 27
+$noir = 1
 $blanc = 26
 color($noir)
 rem Cheveux
@@ -200,7 +215,8 @@ DRAW("C1 M0,0 D100 m-90,-90 D70 m180,0 D70")
 Voici un tableau de correspondance entre les commandes et les procédures que tu connaîs déjà
 (les lettres minuscules remplacent des nombres) :
 
-|| Commande || Procédure ||
+| Commande | Procédure |
+| -------- | --------- |
 | `C x` | `COLOR(x)` |
 | `M x,y` | `MOVE(x,y)` |
 | `m x,y` | `MOVER(x,y)` |
@@ -218,3 +234,30 @@ DRAW("C1 D100 m-90,-90 D70 m90,-90 D70")
 MOVE(160,0)
 DRAW("C1 D100 (m-90,-90 D70) m90,-90 D70")
 ```
+
+### Exercice
+
+Redessine Mickey, mais en utilisant la procédure `DRAW`. Tu verras que c'est beaucoup plus court.
+
+<details>
+<summary>Solution...</summary>
+
+```ts
+RESET()
+cls(11)
+MOVE(0,0)
+$oeil = "C1D24,34C26D20,30C1m5,10D13"
+DRAW(
+    "C1D100(m-90,-90D70)(m90,-90D70)",
+    "(C1m5,55D100,45C26D96,41)",
+    "C26(m-25,-10D45,60)(m25,-10D45,60)",
+    "(m-25,-10", $oeil, ")",
+    "(m25,-10", $oeil, ")",
+    "(m5,27C1D20)",
+    "(C1m10,60R50,2)",
+)
+```
+
+Note comme j'ai utilisé une variale pour réduire encore plus le code.
+
+</details>
