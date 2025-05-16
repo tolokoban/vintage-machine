@@ -1,5 +1,5 @@
 import { isNumber, isString } from "@tolokoban/type-guards";
-import { KernelInterface } from "../types";
+import { KernelInterface } from "../../types";
 import { make } from "./_common";
 import { argsAreAnys } from "@/basik/guards";
 import { BasikValue } from "@/types";

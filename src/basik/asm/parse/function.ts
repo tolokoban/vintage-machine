@@ -15,6 +15,7 @@ export function parseFunction(this: BasikAssembly) {
     "PAR_CLOSE",
     `Il manque une parenthèse fermante après les arguments de la fonction "${name}".`,
   );
-  this.pushBytecode(argsCount, this.$makeArray, name, this.$function);
+  this.pushBytecode(argsCount, this.$makeArray, name);
+  this.pushFunction(this.$function, tknFunction);
   return true;
 }

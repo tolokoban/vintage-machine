@@ -1,4 +1,6 @@
 
+## Les formes de base
+
 Avec `LOCATE`, on a vu un système de coordonnées bien adapté aux textes.
 Mais il existe un autre système, plus fin, qui permet de placer les choses
 avec plus de précision.
@@ -72,7 +74,8 @@ FOR $a IN RANGE(100) {
 }
 ```
 
-Et quand on compine plusieurs ellipses, on peut dessiner un bonhomme :
+Et quand on compine plusieurs ellipses et qu'on choisit bien les couleurs,
+on peut dessiner un bonhomme :
 
 ```ts
 RESET()
@@ -109,7 +112,7 @@ Amuse-toi à modifier ce programme tant que tu veux.
 Examine surtout comment on dessine la bouche.
 Et quand tu as bien compris, essaie de le remettre à l'en droit.
 
-## Exercice
+### Exercice
 
 Essaie de faire une tête de Mickey en noir et blanc.
 
@@ -181,3 +184,37 @@ rect(50,2)
 ```
 
 </details>
+
+## La procédure `DRAW`
+
+Il est possible de faire des dessins évolués avec une seule procédure : `DRAW`.
+
+```ts
+RESET()
+COLOR(24)
+DRAW("C1 M0,0 D100 m-90,-90 D70 m180,0 D70")
+```
+
+`DRAW` reconnaît une série de __commandes graphiques__ qui commencent pas un mot (qui fait souvent une seule lettre) et des nombres.
+
+Voici un tableau de correspondance entre les commandes et les procédures que tu connaîs déjà
+(les lettres minuscules remplacent des nombres) :
+
+|| Commande || Procédure ||
+| `C x` | `COLOR(x)` |
+| `M x,y` | `MOVE(x,y)` |
+| `m x,y` | `MOVER(x,y)` |
+| `D rx,ry` | `DISK(rx,ry)` |
+| `R rx,ry` | `RECT(rx,ry)` |
+
+Et tu peux aussi utiliser des parenthèses. Tout ce qui est entre parenthèses préserve la position du curseur.
+
+Essaie ce code :
+
+```ts
+RESET()
+MOVE(-160,0)
+DRAW("C1 D100 m-90,-90 D70 m90,-90 D70")
+MOVE(160,0)
+DRAW("C1 D100 (m-90,-90 D70) m90,-90 D70")
+```

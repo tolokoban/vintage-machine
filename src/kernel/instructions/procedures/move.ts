@@ -1,4 +1,4 @@
-import { KernelInterface } from "../types";
+import { KernelInterface } from "../../types";
 import { make } from "./_common";
 import { argsAreNumbers } from "@/basik/guards";
 

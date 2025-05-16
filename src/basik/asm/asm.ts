@@ -13,7 +13,7 @@ import { Labels } from "../labels";
 import { workbench } from "@/workbench";
 
 import { parseReturn } from "./parse/return";
-import { parseInstruction } from "./parse/instruction";
+import { parseProcedure } from "./parse/procedure";
 import { parseBloc } from "./parse/bloc";
 import { parseIf } from "./parse/if";
 import { parseWhile } from "./parse/while";
@@ -209,7 +209,7 @@ export class BasikAssembly {
   readonly parseForIn = parseForIn.bind(this);
   readonly parseFunction = parseFunction.bind(this);
   readonly parseIf = parseIf.bind(this);
-  readonly parseInstruction = parseInstruction.bind(this);
+  readonly parseInstruction = parseProcedure.bind(this);
   readonly parseList = parseList.bind(this);
   readonly parseReturn = parseReturn.bind(this);
   readonly parseWhile = parseWhile.bind(this);
