@@ -1,6 +1,14 @@
 
 ## Créer sa propre procédure
 
+Ce serait bien d'avoir une procécure qui dessine un mickey.
+On pourrrait même l'appeler `MICKEY()` pour s'en souvenir facilement.
+
+> On peut faire ça ?
+
+Oui. Il suffit d'apprendre cette nouvelle procédure à TLK-74 grace à l'instruction
+`DEF ...`.
+
 ```ts
 RESET()
 DEF Mickey() {
@@ -17,8 +25,10 @@ DEF Mickey() {
 }
 
 cls(11)
-MOVE(-160,0)
+MOVE(-160,-80)
 MICKEY()
-MOVE(160,0)
+MOVE(160,-80)
 MICKEY()
+MOVE(0,140)
+mickey()
 ```
