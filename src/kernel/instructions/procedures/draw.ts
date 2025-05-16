@@ -4,12 +4,8 @@ import { argsAreStrings } from "@/basik/guards";
 
 export const makeDraw = (kernel: KernelInterface) =>
   make("draw", argsAreStrings(1), (args) => {
-    const commands = parseCommands(
-      args
-        .join("")
-        .split(/[,; \n\r\t]+/)
-        .join(" "),
-    );
+    const code = args.join("");
+    const commands = parseCommands(code.split(/[,; \n\r\t]+/).join(" "));
     const coords: Array<[x: number, y: number]> = [];
     kernel.paintFB(() => {
       for (const [name, ...args] of commands) {
@@ -39,14 +35,12 @@ export const makeDraw = (kernel: KernelInterface) =>
             kernel.y += y;
             break;
           }
-          case "C":
-          case "c": {
+          case "C": {
             const [colorIndex] = args;
             kernel.colorIndex = colorIndex ?? kernel.colorIndex;
             break;
           }
-          case "D":
-          case "d": {
+          case "D": {
             const [rx, ry] = args;
             kernel.painterDisk.paint(
               kernel.screenSpaceX(kernel.x),
@@ -57,8 +51,7 @@ export const makeDraw = (kernel: KernelInterface) =>
             );
             break;
           }
-          case "R":
-          case "r": {
+          case "R": {
             const [rx, ry] = args;
             kernel.painterRect.paint(
               kernel.screenSpaceX(kernel.x),
@@ -68,6 +61,17 @@ export const makeDraw = (kernel: KernelInterface) =>
               kernel.colorIndex,
             );
             break;
+          }
+          default: {
+            const index = code.indexOf(name);
+            const start = Math.max(0, index - 20);
+            const end = Math.min(code.length, index + 20);
+            throw new Error(
+              `Je ne reconnais pas la commande "${name}".
+N'oublie pas que la différence entre majuscules et minuscules est importante ici.
+${start > 0 ? "..." : "   "}${code.slice(start, end)}${end < code.length ? "..." : "   "}
+   ${" ".repeat(index - start)}^`,
+            );
           }
         }
       }
