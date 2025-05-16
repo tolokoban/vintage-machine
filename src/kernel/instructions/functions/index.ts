@@ -14,6 +14,8 @@ import { makePadL, makePadR } from "./pad";
 import { makeLen } from "./len";
 import { makeInk } from "./ink";
 
+const RAD_PER_DEG = Math.PI / 180;
+
 export const makeKernelFunctions = (kernel: KernelInterface) => ({
   ABS: make("ABS", argsAreNumbers(1, 1), ([a]) => Math.abs(a)),
   ASC: make("ASC", argsAreStrings(1, 1), ([s]) => s.charCodeAt(0)),
@@ -22,6 +24,9 @@ export const makeKernelFunctions = (kernel: KernelInterface) => ({
   ASKNUM: makeAskNum(kernel),
   CHR: makeChr(),
   COLOR: make("COLOR", argsAreNumbers(0, 0), () => kernel.colorIndex),
+  COS: make("COS", argsAreNumbers(1, 1), ([deg]) =>
+    Math.cos(deg * RAD_PER_DEG),
+  ),
   HEX: make("HEX", argsAreNumbers(1, 1), ([a]) => a.toString(16).toUpperCase()),
   INK: makeInk(kernel),
   INT: make("INT", argsAreAnys(1, 1), ([value]) => {
@@ -48,6 +53,9 @@ export const makeKernelFunctions = (kernel: KernelInterface) => ({
   PADR: makePadR(),
   RANDOM: makeRandom(),
   RANGE: makeRange(),
+  SIN: make("SIN", argsAreNumbers(1, 1), ([deg]) =>
+    Math.sin(deg * RAD_PER_DEG),
+  ),
   TIME: make("TIME", argsAreNumbers(0, 0), () => Date.now()),
   UPPERCASE: make("UPPERCASE", argsAreStrings(1), (parts) =>
     parts.join("").toUpperCase(),

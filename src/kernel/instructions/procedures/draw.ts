@@ -1,10 +1,13 @@
+import { isString } from "@tolokoban/type-guards";
 import { KernelInterface } from "../../types";
 import { make } from "./_common";
-import { argsAreStrings } from "@/basik/guards";
+import { argsAreAnys } from "@/basik/guards";
 
 export const makeDraw = (kernel: KernelInterface) =>
-  make("draw", argsAreStrings(1), (args) => {
-    const code = args.join("");
+  make("draw", argsAreAnys(1), (args) => {
+    const code = args
+      .map((item) => (isString(item) ? item : JSON.stringify(item)))
+      .join("");
     const commands = parseCommands(code.split(/[,; \n\r\t]+/).join(" "));
     const coords: Array<[x: number, y: number]> = [];
     kernel.paintFB(() => {
@@ -80,7 +83,8 @@ ${start > 0 ? "..." : "   "}${code.slice(start, end)}${end < code.length ? "..."
 
 type Command = [name: string, ...args: number[]];
 
-const RX_NUM = /^[ \n\r\t]*^[-+]?([0-9]+(\.[0-9]+)?|\.[0-9]+)[ \n\r\t,]*/g;
+const RX_NUM =
+  /^[ \n\r\t]*^[-+]?([0-9]+(\.[0-9]+)?|\.[0-9]+)([Ee][+-]?[0-9]+)?[ \n\r\t,]*/g;
 const RX_COM = /^[ \n\r\t]*[a-zA-Z]+[ \n\r\t]*/g;
 const RX_PAR_OPEN = /^\(/g;
 const RX_PAR_CLOSE = /^\)/g;
