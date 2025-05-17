@@ -6,3 +6,7 @@ if:Conditions et boucles
 coords:Les coordonnées
 draw:Faisons un beau dessin
 function:Il te manque une procédure ou fonction ? Crée la toi-même !
+arkanoid:Le casse-briques : afficher une brique
+arkanoid2:Le casse-briques : créer un tableau
+arkanoid3:Le casse-briques : contrôler la raquette
+arkanoid4:Le casse-briques : faire rebondir la balle
