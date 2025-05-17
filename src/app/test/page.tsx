@@ -210,7 +210,7 @@ function ViewTestItem({
             <ul>
               {Object.keys(testItem.vars).map((key) => (
                 <li key={key}>
-                  {key}: <code>{testItem.vars[key]}</code>
+                  {key}: <code>{JSON.stringify(testItem.vars[key])}</code>
                 </li>
               ))}
             </ul>
@@ -220,7 +220,7 @@ function ViewTestItem({
             <ul>
               {Object.keys(result.vars).map((key) => (
                 <li key={key}>
-                  {key}: <code>{result.vars[key]}</code>
+                  {key}: <code>{JSON.stringify(result.vars[key])}</code>
                 </li>
               ))}
             </ul>

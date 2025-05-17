@@ -7,7 +7,7 @@ export const makeDraw = (kernel: KernelInterface) =>
   make("draw", argsAreAnys(1), (args) => {
     const code = args
       .map((item) => (isString(item) ? item : JSON.stringify(item)))
-      .join("");
+      .join(" ");
     const commands = parseCommands(code.split(/[,; \n\r\t]+/).join(" "));
     const coords: Array<[x: number, y: number]> = [];
     kernel.paintFB(() => {

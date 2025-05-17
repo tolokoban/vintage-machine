@@ -20,6 +20,51 @@ export const TEST_CASES: TestCase = [
   "expression",
   [
     [
+      "functions",
+      [
+        [
+          "RANGE",
+          [
+            {
+              name: "RANGE(3)",
+              code: ["$a=RANGE(3)"],
+              vars: { $a: [0, 1, 2] },
+            },
+            {
+              name: "RANGE(3,6)",
+              code: ["$a=RANGE(3,6)"],
+              vars: { $a: [3, 4, 5, 6] },
+            },
+            {
+              name: "RANGE(6,3)",
+              code: ["$a=RANGE(6,3)"],
+              vars: { $a: [6, 5, 4, 3] },
+            },
+            {
+              name: "RANGE(0,360,90)",
+              code: ["$a=RANGE(0,360,90)"],
+              vars: { $a: [0, 90, 180, 270, 360] },
+            },
+            {
+              name: "RANGE(0,10,4)",
+              code: ["$a=RANGE(0,10,4)"],
+              vars: { $a: [0, 4, 8] },
+            },
+            {
+              name: "RANGE(0,10,-4)",
+              code: ["$a=RANGE(0,10,-4)"],
+              vars: { $a: [0, 4, 8] },
+            },
+            {
+              name: "RANGE(+1,-1,0.5)",
+              code: ["$a=RANGE(+1,-1,0.5)"],
+              vars: { $a: [1, 0.5, 0, -0.5, -1] },
+            },
+          ],
+        ],
+      ],
+    ],
+    [
       "atomic",
       [
         [

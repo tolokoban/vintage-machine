@@ -16,6 +16,6 @@ export function parseProcedure(this: BasikAssembly) {
     `Il manque une parenthèse fermante après les arguments de la procédure "${name}".`,
   );
   this.pushBytecode(argsCount, this.$makeArray, name);
-  this.pushFunction(this.$instruction, tknProcedure);
+  this.pushFunction(this.$procedure, tknProcedure);
   return true;
 }

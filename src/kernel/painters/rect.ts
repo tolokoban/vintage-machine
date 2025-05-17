@@ -64,7 +64,7 @@ export class PainterRect {
     const { gl } = context;
     prg.use();
     prg.uniform2f("uniCenter", centerX, centerY);
-    prg.uniform2f("uniRadius", width, height);
+    prg.uniform2f("uniRadius", width / 2, height / 2);
     prg.uniform1f("uniColor", colorIndex / 255);
     vao.bind();
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);

@@ -3,6 +3,7 @@ import { makeCls } from "./cls";
 import { makeColor } from "./color";
 import { makeDisk } from "./disk";
 import { makeDraw } from "./draw";
+import { makeExit } from "./exit";
 import { makeInk } from "./ink";
 import { makeLabel } from "./label";
 import { makeLayer } from "./layer";
@@ -19,6 +20,7 @@ export const makeKernelInstructions = (kernel: KernelInterface) => ({
   COLOR: makeColor(kernel),
   DISK: makeDisk(kernel),
   DRAW: makeDraw(kernel),
+  EXIT: makeExit(kernel),
   INK: makeInk(kernel),
   LABEL: makeLabel(kernel),
   LAYER: makeLayer(kernel),

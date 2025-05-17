@@ -334,28 +334,54 @@ export class BasikAssembly {
   });
 
   readonly $function = async () => {
+    const { kernel } = this;
     const name = this.popStr();
     const args = this.popArr();
-    const result = await this.kernel.executeFunction(name, args);
-    this.stack.push(result);
+    if (kernel.hasFunction(name)) {
+      const result = await kernel.executeFunction(name, args);
+      this.stack.push(result);
+      return;
+    }
+    const userFunc = this.functionsDefinitions.get(name);
+    if (!userFunc) {
+      throw new Error(
+        `La fonction "${name.toUpperCase()}" n'existe pas.\nLes fonctions disponibles sont: ${[
+          Array.from(this.functionsDefinitions.keys()).map(
+            (name) =>
+              `${name}(${this.functionsDefinitions
+                .get(name)
+                ?.args.join(", ")})`,
+          ),
+          ...this.kernel.functionsNames,
+        ].join(", ")}.`,
+      );
+    }
+    if (args.length !== userFunc.args.length) {
+      throw new Error(
+        `La fonction ${name}(${userFunc.args.join(", ")}) attend ${userFunc.args.length} argument${userFunc.args.length > 1 ? "s" : ""}, pas ${args.length}.`,
+      );
+    }
+    this.kernel.subroutineEnter(userFunc.args, args, null);
+    this.callStack.push(this.cursor);
+    this.cursor = userFunc.cursor;
   };
 
-  readonly $instruction = async () => {
+  readonly $procedure = async () => {
     const name = this.popStr();
     const args = this.popArr();
-    const instructionExist = await this.kernel.executeInstruction(name, args);
+    const instructionExist = await this.kernel.executeProcedure(name, args);
     if (!instructionExist) {
       const userFunc = this.functionsDefinitions.get(name);
       if (!userFunc) {
         throw new Error(
-          `L'instruction "${name.toUpperCase()}" n'existe pas.\nLes instructions disponibles sont: ${[
+          `La procédure "${name.toUpperCase()}" n'existe pas.\nLes procédures disponibles sont: ${[
             Array.from(this.functionsDefinitions.keys()).map(
               (name) =>
                 `${name}(${this.functionsDefinitions
                   .get(name)
                   ?.args.join(", ")})`,
             ),
-            ...this.kernel.instructionsNames,
+            ...this.kernel.proceduresNames,
           ].join(", ")}.`,
         );
       }
@@ -364,7 +390,7 @@ export class BasikAssembly {
           `La fonction ${name}(${userFunc.args.join(", ")}) attend ${userFunc.args.length} argument${userFunc.args.length > 1 ? "s" : ""}, pas ${args.length}.`,
         );
       }
-      this.kernel.subroutineEnter(userFunc.args, args);
+      this.kernel.subroutineEnter(userFunc.args, args, () => this.stack.pop());
       this.callStack.push(this.cursor);
       this.cursor = userFunc.cursor;
     }

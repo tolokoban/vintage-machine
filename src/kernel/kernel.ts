@@ -4,6 +4,7 @@ import {
   TgdContext,
   tgdFullscreenExit,
   tgdFullscreenRequest,
+  TgdInputPointerEventMove,
   TgdPainter,
   TgdTexture2D,
 } from "@tolokoban/tgd";
@@ -39,7 +40,7 @@ export class Kernel extends TgdPainter implements KernelInterface {
   public y = (this.CHAR_SIZE - this.HEIGHT) / 2;
   public colorIndex = 24;
 
-  private readonly instructions: Record<
+  private readonly procedures: Record<
     string,
     (args: BasikValue[]) => void | Promise<void>
   >;
@@ -49,11 +50,20 @@ export class Kernel extends TgdPainter implements KernelInterface {
   >;
   private readonly context: TgdContext;
   private readonly variablesStack = [new Map<string, BasikValue>()];
+  /**
+   * The user can defined functions, but not procedures.
+   * But those functions can be called as procedures.
+   * In this case, we need to get rid of what the function
+   * returns.
+   */
+  private readonly subroutineCleanupFunctions: Array<(() => void) | null> = [];
   private readonly layers: PainterLayer[] = [];
   private readonly textureSymbols: TgdTexture2D;
   private readonly texturePalette: TgdTexture2D;
   private readonly colorizer: PainterColorizer;
   private _currentLayerindex = 1;
+  private _mouseX = 0;
+  private _mouseY = 0;
 
   constructor(
     private readonly canvas: HTMLCanvasElement,
@@ -93,17 +103,34 @@ export class Kernel extends TgdPainter implements KernelInterface {
       screenWidth: this.WIDTH,
       screenHeight: this.HEIGHT,
     });
-    this.instructions = makeKernelInstructions(this);
+    this.procedures = makeKernelInstructions(this);
     this.functions = makeKernelFunctions(this);
     this.reset();
+    context.inputs.pointer.eventMove.addListener(this.handleMouseMove);
+  }
+
+  get mouseX() {
+    return this._mouseX;
+  }
+
+  get mouseY() {
+    return this._mouseY;
   }
 
   get allVarNames() {
     return Array.from(this.variables.keys());
   }
 
-  get instructionsNames(): string[] {
-    return Object.keys(this.instructions).sort();
+  get proceduresNames(): string[] {
+    return Object.keys(this.procedures).sort();
+  }
+
+  get functionsNames(): string[] {
+    return Object.keys(this.functions).sort();
+  }
+
+  hasFunction(name: string) {
+    return this.functions[name.trim().toUpperCase()] !== undefined;
   }
 
   async reset() {
@@ -149,9 +176,9 @@ export class Kernel extends TgdPainter implements KernelInterface {
     return (yInPixels * 2) / this.HEIGHT;
   }
 
-  async executeInstruction(name: string, args: BasikValue[]): Promise<boolean> {
+  async executeProcedure(name: string, args: BasikValue[]): Promise<boolean> {
     try {
-      const instruction = this.instructions[name];
+      const instruction = this.procedures[name];
       if (!instruction) {
         return false;
       }
@@ -298,7 +325,12 @@ export class Kernel extends TgdPainter implements KernelInterface {
     }
   }
 
-  subroutineEnter(varNames: string[], varValues: BasikValue[]) {
+  subroutineEnter(
+    varNames: string[],
+    varValues: BasikValue[],
+    cleanupFunction: (() => void) | null,
+  ) {
+    this.subroutineCleanupFunctions.push(cleanupFunction);
     const variables = new Map<string, BasikValue>();
     this.variablesStack.push(variables);
     for (let i = 0; i < varNames.length; i++) {
@@ -308,6 +340,8 @@ export class Kernel extends TgdPainter implements KernelInterface {
 
   subroutineExit() {
     this.variablesStack.pop();
+    const cleanupFunction = this.subroutineCleanupFunctions.pop();
+    cleanupFunction?.();
   }
 
   test() {
@@ -330,6 +364,11 @@ export class Kernel extends TgdPainter implements KernelInterface {
 
     return v;
   }
+
+  private handleMouseMove = (evt: TgdInputPointerEventMove) => {
+    this._mouseX = (evt.current.x * this.WIDTH) / 2;
+    this._mouseY = (-evt.current.y * this.HEIGHT) / 2;
+  };
 }
 
 function sanitizeVarName(name: string) {

@@ -126,5 +126,32 @@ Regarde l'animation suivante pour essayer de sentir ce que ces fonctions font, e
 
 ```ts
 RESET()
+DEF LIGNE($y, $op, $angle) {
+    $w = 480 / 2
+    $x = 0
+    IF $op == "COS" { $valeur = COS($angle) }
+    ELSe { $valeur = SIN($angle) }
+    COLOR(#B)
+    DRAW("M",$x,$y,"R",$w*2,2,"R1,10m",$w,0,"R1,10m",-($w*2),0,"R1,10")
+    $y = $y - 24
+    MOVE($x,$y) LABEL("0")
+    MOVE($x-$w,$y) LABEL("-1")
+    MOVE($x+$w,$y) LABEL("+1")
 
+    COLOR(15)
+    $y = $y + 24    
+    MOVE($x + ($valeur*$w),$y)
+    DISK(10)
+    MOVER(0,24)
+    LABEL($op + "( " + INT($angle) + " )")
+}
+
+WHILE 1 {
+  FOR $angle IN RANGE(0, 360, .1) {
+    CLS()
+    LIGNE(60, "SIN", $angle)
+    LIGNE(-60, "COS", $angle)
+    PAUSE()
+  }
+}
 ```

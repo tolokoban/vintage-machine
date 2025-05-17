@@ -13,6 +13,8 @@ import { makeChr } from "./chr";
 import { makePadL, makePadR } from "./pad";
 import { makeLen } from "./len";
 import { makeInk } from "./ink";
+import { tgdCalcClamp } from "@tolokoban/tgd";
+import { makeMouseX, makeMouseY } from "./mouse";
 
 const RAD_PER_DEG = Math.PI / 180;
 
@@ -23,6 +25,9 @@ export const makeKernelFunctions = (kernel: KernelInterface) => ({
   ASKINT: makeAskInt(kernel),
   ASKNUM: makeAskNum(kernel),
   CHR: makeChr(),
+  CLAMP: make("CLAMP", argsAreNumbers(3, 3), ([value, min, max]) =>
+    tgdCalcClamp(value, min, max),
+  ),
   COLOR: make("COLOR", argsAreNumbers(0, 0), () => kernel.colorIndex),
   COS: make("COS", argsAreNumbers(1, 1), ([deg]) =>
     Math.cos(deg * RAD_PER_DEG),
@@ -48,6 +53,8 @@ export const makeKernelFunctions = (kernel: KernelInterface) => ({
     rest.reduce((a, b) => Math.max(a, b), first),
   ),
   MODE: make("MODE", argsAreNumbers(0, 0), () => kernel.layer.mode),
+  MOUSEX: makeMouseX(kernel),
+  MOUSEY: makeMouseY(kernel),
   NOT: make("NOT", argsAreNumbers(1, 1), ([a]) => (a === 0 ? 1 : 0)),
   PADL: makePadL(),
   PADR: makePadR(),
