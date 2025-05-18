@@ -4,7 +4,7 @@
 
 Efface le calque courant.
 
-### Exemple
+### Exemple 1
 
 ```ts
 FOR $boucle IN RANGE(10) {
@@ -21,7 +21,7 @@ FOR $boucle IN RANGE(10) {
 
 Efface le calque courant et le remplit avec la couleur `couleur`.
 
-### Exemple 1
+### Exemple 2
 
 ```ts
 FOR $color IN RANGE(28) {
@@ -30,7 +30,7 @@ FOR $color IN RANGE(28) {
 }
 ```
 
-### Exemple 2
+### Exemple 3
 
 ```ts
 cls(7)

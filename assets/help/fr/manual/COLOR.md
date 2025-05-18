@@ -3,7 +3,7 @@
 ## `COLOR( $numero_de_crayon )`
 
 TLK-74 possède 256 crayons pour tout ce qu'il affiche.
-Les crayins sont numérotés de 0 à 255.
+Les crayons sont numérotés de 0 à 255.
 
 Cette instruction permet de définir quel crayon utiliser pour la suite.
 

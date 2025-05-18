@@ -28,4 +28,4 @@ for $i in range(1000) {
 }
 ```
 
-Voir aussi [RECT](rect), [LABEL](LABEL).
+Voir aussi [DRAW](DRAW), [LABEL](LABEL), [RECT](rect), [MOVE](MOVE).
