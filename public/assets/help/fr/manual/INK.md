@@ -28,7 +28,7 @@ INK(17, 12, 4, 4)
 
 Le dernier argument contrōle l'opacité de cette couleur.
 Les valeurs vont de 0 à 15. Une valeur de 0 signifie "invisible".
-Et june valeur de 1 "par transparent du tout", c'est-à-dire "opaque".
+Et une valeur de 1 signifie "pas transparent du tout", c'est-à-dire "opaque".
 
 ```ts
 RESET()
@@ -48,3 +48,7 @@ COLOR(102)
 MOVE(50, -30)
 DISK(100)
 ```
+
+La transparence est surtout utilie quand tu utilises plusieurs calques.
+
+Voir aussi [COLOR](COLOR), [LAYER](LAYER), [MODE](MODE).

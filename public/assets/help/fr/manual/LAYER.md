@@ -8,7 +8,9 @@ Donc si tu dessines quelque chose sur le calque 2,
 ça va cacher ce qu'il y a à cet endroit sur les calques 1 et 0.
 
 La procédure `LAYER()` te permets de dire quel calque utiliser pour les
-prochains affichages.
+prochains affichages. Par exemple `CLS()` ne va effacer que le alque courant et ne pas toucher aux autres.
+
+C'est donc pratique pour les animations. On peut dessiner une seule fois le décor immoble sur un calque, et utiliser un autre calque pour les dessins qui bougent.
 
 ### Exemple
 
@@ -59,3 +61,15 @@ WHILE 1 {
     PAUSE()
 }
 ```
+
+## `LAYER()`
+
+Retourne l'index du calque courant.
+
+### Exemple
+
+```ts
+PRINTLN("Je dessine sur le calque ", LAYER())
+```
+
+Voir aussi [MODE](MODE).

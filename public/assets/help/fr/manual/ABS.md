@@ -3,7 +3,7 @@
 ## `ABS( $nombre )`
 
 Retourne la _valeur absolue_ d'un nombre, c'est-à-dire ce nombre sans son signe __-__.
-Du coup, `ABS(-3)=3` et `ABS(3)=3`.
+Du coup, `ABS(-3) == 3` et `ABS(3) == 3`.
 
 Exemple :
 

@@ -1,4 +1,18 @@
-# Les couleurs principales
+# MODE()
+
+## `MODE( mode )`
+
+Cette procédure controle comment ce calque va se superposer à celui du dessous.
+
+Il existe trois modes qui sont les textes suivants :
+
+- `"alpha"` : si une coleur est transparent, on verra un peu du calque de dessous.
+- `"add"` : les couleurs de ce calque s'ajoutent à celles du dessous.
+- `"replace"` : les couleurs de ce calque cachent complètement celle du calque dessous. La transparence n'a pas d'effet sur le calque du dessous.
+
+### Exemple
+
+Voici comment utiliser le mode `"add"` pour montrer comment les couleurs se mélangent.
 
 ```ts
 RESET()
