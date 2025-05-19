@@ -2,6 +2,7 @@ import * as React from "react"
 
 import {
     IconCode,
+    IconPause,
     IconPlay,
     Theme,
     useModal,
@@ -43,14 +44,24 @@ export function CompCodeControl({ code }: CompCodeControlProps) {
             margin={0}
             padding={0}
         >
-            <ViewButton
-                icon={IconPlay}
-                enabled={!running}
-                variant="filled"
-                onClick={() => workbench.run({ code })}
-            >
-                Run
-            </ViewButton>
+            <ViewPanel display="flex" gap="S" alignItems="center">
+                <ViewButton
+                    icon={IconPlay}
+                    enabled={!running}
+                    variant="filled"
+                    onClick={() => workbench.run({ code })}
+                >
+                    Run
+                </ViewButton>
+                <ViewButton
+                    icon={IconPause}
+                    enabled={running}
+                    variant="filled"
+                    onClick={() => workbench.stop()}
+                >
+                    Stop
+                </ViewButton>
+            </ViewPanel>
             <ViewButton
                 icon={IconCode}
                 variant="filled"

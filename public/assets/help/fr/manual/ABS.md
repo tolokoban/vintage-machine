@@ -8,6 +8,7 @@ Du coup, `ABS(-3) == 3` et `ABS(3) == 3`.
 Exemple :
 
 ```ts
+RESET()
 $n1 = ASKNUM("Donne moi un nombre : ")
 $n2 = ASKNUM("Donne moi-en un autre : ")
 PRINT("La difference entre les deux est " + ABS($n1 - $n2))

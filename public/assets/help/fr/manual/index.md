@@ -21,6 +21,7 @@ Les fonctions retournent une valeur. Les procédures pas.
 * [PRINTLN](PRINT) : afficher du texte et sauter une ligne
 * [RECT](RECT) : dessiner un rectangle
 * [RESET](RESET) : réinitialiser TLK-74
+* [SOUND](SOUND) : émettre un son
 
 ## Fonctions
 
@@ -34,22 +35,26 @@ Les fonctions retournent une valeur. Les procédures pas.
 * [COLOR](COLOR) : retourne le numéro du crayon courant
 * [COS](COS) : retourne le cosinus d'un angle en degrés
 * [HEX](HEX) : retourne la représentation hexadécimale d'un nombre
+* [HOUR](HMS) : retourne l'heure courante
 * [INK](INK) : retourne une liste des composantes de la couleur d'un crayon
 * [INT](INT) : retourne la valeur entière la plus proche d'un nombre
 * [LAYER](LAYER) : retourne le numéro du calque courant
 * [LEN](LEN) : retourne la longueur d'un texte ou d'une liste
 * [LIST](LIST) : retourne une liste remplie d'un mēme élément
 * [LOWERCASE](LOWERCASE) : retourne un texte en minuscules
-* [MIN](MIN) : retoune le plus petit des nombres passés en argument
 * [MAX](MAX) : retoune le plus grand des nombres passés en argument
+* [MIN](MIN) : retoune le plus petit des nombres passés en argument
+* [MINUTE](HMS) : retourne la minute courante
 * [MODE](MODE) : retourne le type de mélange du calque courant avec celui du dessous
 * [MOUSEX](MOUSE) : retourne la coordonnée X du pointeur de souris
 * [MOUSEY](MOUSE) : retourne la coordonnée Y du pointeur de souris
 * [NOT](NOT) : retourne la valeur booléenne inverse
-* [PADL](PADL) : retourne un texte avec une taille donnée en remplissant à droite
-* [PADR](PADR) : retourne un texte avec une taille donnée en remplissant à gauche
+* [PADL](PAD) : retourne un texte avec une taille donnée en remplissant à droite
+* [PADR](PAD) : retourne un texte avec une taille donnée en remplissant à gauche
 * [RANDOM](RANDOM) : retourne un nombre aléatoire entier
 * [RANDOMF](RANDOM) : retourne un nombre aléatoire à virgule
 * [RANGE](RANGE) : retourne une liste de nombres qui se suivent
+* [SECOND](HMS) : retourne la seconde courante
+* [SIN](COS) : retourne le sinus d'un angle en degrés
 * [TIME](TIME) : retourne le temps actuel en millisecondes depuis le 1er janvier 1970
 * [UPPERCASE](UPPERCASE) : retourne un texte en majuscules

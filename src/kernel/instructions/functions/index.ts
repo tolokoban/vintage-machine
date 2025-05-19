@@ -35,6 +35,7 @@ export const makeKernelFunctions = (kernel: KernelInterface) => ({
     HEX: make("HEX", argsAreNumbers(1, 1), ([a]) =>
         a.toString(16).toUpperCase()
     ),
+    HOUR: make("HOUR", argsAreAnys(0, 0), () => new Date().getHours()),
     INK: makeInk(kernel),
     INT: make("INT", argsAreAnys(1, 1), ([value]) => {
         if (Array.isArray(value)) return value.length
@@ -51,6 +52,7 @@ export const makeKernelFunctions = (kernel: KernelInterface) => ({
     MIN: make("MIN", argsAreNumbers(1), ([first, ...rest]) =>
         rest.reduce((a, b) => Math.min(a, b), first)
     ),
+    MINUTE: make("MINUTE", argsAreAnys(0, 0), () => new Date().getMinutes()),
     MAX: make("MAX", argsAreNumbers(1), ([first, ...rest]) =>
         rest.reduce((a, b) => Math.max(a, b), first)
     ),
@@ -63,6 +65,7 @@ export const makeKernelFunctions = (kernel: KernelInterface) => ({
     RANDOM: makeRandom(),
     RANDOMF: makeRandomFloat(),
     RANGE: makeRange(),
+    SECOND: make("SECOND", argsAreAnys(0, 0), () => new Date().getSeconds()),
     SIN: make("SIN", argsAreNumbers(1, 1), ([deg]) =>
         Math.sin(deg * RAD_PER_DEG)
     ),
