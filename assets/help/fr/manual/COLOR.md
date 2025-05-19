@@ -26,7 +26,9 @@ On peut aussi utiliser la fonction pour retourner le numéro du crayon courant.
 ### Exemple
 
 ```ts
+RESET()
+COLOR(RANDOM(2, 27))
 PRINTLN("J'utilise le crayon ", COLOR(), " en ce moment.")
 ```
 
-Voir aussi [LAYER](LAYER).
+Voir aussi [INK](INK).

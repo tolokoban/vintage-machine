@@ -1,6 +1,6 @@
 # ASK
 
-## `ASK( $texte, ... )`
+## `ASK( texte, texte, ... )`
 
 Demander à l'utilisateur de taper un texte au clavier et retourner sa valeur quand l'utilisateur tapes sur _ENTER_.
 
@@ -29,3 +29,11 @@ PRINTLN(
     ", comment vas-tu ?"
 )
 ```
+
+## `ASKINT( texte, texte, ... )`
+
+Fait la meme chose, mais retourne un nombre entier.
+
+## `ASKNUM( texte, texte, ... )`
+
+Fait la meme chose, mais retourne un nombre à virgule.

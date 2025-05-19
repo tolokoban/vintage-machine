@@ -69,6 +69,8 @@ Retourne l'index du calque courant.
 ### Exemple
 
 ```ts
+CLS()
+COLOR(24)
 PRINTLN("Je dessine sur le calque ", LAYER())
 ```
 
