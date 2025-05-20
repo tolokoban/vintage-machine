@@ -58,6 +58,36 @@ Ce __manuel__ est un peu comme ton grimoire et tu l'auras sous la main si tu oub
 
 À chaque fois que tu apprends un nouveau concept, essaie d'imaginer un petit jeu que tu pourrais faire avec.
 
+## Faire des calculs
+
+TLK-74 est très fort en maths : tu peux lui demander de faire n'importe quel calcul mental.
+
+```ts
+CLS()
+PRINTLN(52374 + 88427)
+PRINTLN(88766 * 99703)
+```
+
+Voici des opérations que tu peux faire :
+
+- __+__ : addition
+- __-__ : soustraction
+- __*__ : multiplication
+- __/__ : division
+- __^__ : puissance (`2^5` est la meme chose que `2*2*2*2*2`)
+- __%__ : reste de la division
+
+Et tu peux utiliser les parenthèses pour dire ce que tu veux calculer en premier.
+Regarde la différence que ça peut faire :
+
+```ts
+CLS()
+PRINTLN(3 * 5 + 2 / 4)
+PRINTLN(3 * (5 + 2) / 4)
+PRINTLN((3 * 5) + 2 / 4)
+PRINTLN((3 * 5) + (2 / 4))
+```
+
 ## Les symboles
 
 Un __texte__ est une liste de lettres et chaque lettre est associé à un __symbole__.
