@@ -105,4 +105,30 @@ PAUSE(
 
 Rien ne lui fait peur. Il va simplement faire une note un peu plus longue qu'une croche.
 
+Tu peux aussi jouer des notes plus ou moins fort. Tu as 9 niveaux de volume à ta disposition.
+Si tu ne dis rien, tout est joué au volume 5.
+Si tu veux plus fort, tu peux ajouter `@9` pour le maximum, ou `@1` pour le minimum.
+
+```ts
+PAUSE(
+    PLAY(
+        "@3 E4 @4 E4 @5 E4 @6 E4 @7 E4 @8 E4 @9 E4"
+    )
+)
+```
+
+Enfin, tu peux jouer plusieurs notes en meme temps.
+Pour cela, il suffit de passer une liste de partitions.
+
+```ts
+PAUSE(
+    PLAY(
+      [
+        ":16 F3 B3 D4 F3 B3 D4 F3 B3 D4 F3 B3 D4",
+        ":16 --- :4 C3 D3"
+      ], 25
+    )
+)
+```
+
 Allez ! Amuse-toi à créer de magnifiques compositions pour tes jeux.
