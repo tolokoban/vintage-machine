@@ -1,5 +1,6 @@
 main:Introduction
 dis-bonjour:Dis bonjour !
+sound:Qui c'est le chef... d'orchestre ?
 couleurs:Un peu de couleur
 ask:Je t'en pose des questions ?
 if:Conditions et boucles

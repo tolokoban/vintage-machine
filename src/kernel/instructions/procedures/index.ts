@@ -11,10 +11,12 @@ import { makeLocate } from "./locate"
 import { makeMode } from "./mode"
 import { makeMove, makeMoveR } from "./move"
 import { makePause } from "./pause"
+import { makePlay } from "./play"
 import { makePrint, makePrintLn } from "./print"
 import { makeRect } from "./rect"
 import { makeReset } from "./reset"
 import { makeSound } from "./sound"
+import { makeStop } from "./stop"
 
 export const makeKernelInstructions = (kernel: KernelInterface) => ({
     CLS: makeCls(kernel),
@@ -30,9 +32,11 @@ export const makeKernelInstructions = (kernel: KernelInterface) => ({
     MOVE: makeMove(kernel),
     MOVER: makeMoveR(kernel),
     PAUSE: makePause(kernel),
+    PLAY: makePlay(kernel),
     PRINT: makePrint(kernel),
     PRINTLN: makePrintLn(kernel),
     RECT: makeRect(kernel),
     RESET: makeReset(kernel),
     SOUND: makeSound(kernel),
+    STOP: makeStop(kernel),
 })

@@ -126,7 +126,8 @@
 }
 
 div.error {
-    cursor: pointer;
+    color: var(--theme-color-error);
+    background-color: #000;
 }
 
 div.error pre {

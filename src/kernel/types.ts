@@ -1,3 +1,4 @@
+import { Music } from "./music"
 import { PainterDisk } from "./painters/disk"
 import { PainterLayer } from "./painters/layer"
 import { PainterRect } from "./painters/rect"
@@ -19,6 +20,7 @@ export interface KernelInterface {
     readonly gl: WebGL2RenderingContext
     readonly palette: BasikPalette
     readonly layer: PainterLayer
+    readonly music: Music
     readonly mouseX: number
     readonly mouseY: number
     x: number

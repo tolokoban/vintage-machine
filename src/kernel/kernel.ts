@@ -17,6 +17,7 @@ import { makeKernelInstructions } from "./instructions/procedures"
 import { makeKernelFunctions } from "./instructions/functions"
 import { PainterDisk } from "./painters/disk"
 import { PainterRect } from "./painters/rect"
+import { Music } from "./music"
 
 const EMPTY_FUNCTION = () => {}
 export class Kernel extends TgdPainter implements KernelInterface {
@@ -32,6 +33,7 @@ export class Kernel extends TgdPainter implements KernelInterface {
     public readonly TEXT_ORIGIN_X = (this.CHAR_SIZE - this.WIDTH) / 2
     public readonly TEXT_ORIGIN_Y = (this.CHAR_SIZE - this.HEIGHT) / 2
 
+    public readonly music = new Music()
     public readonly palette: BasikPalette
     public readonly painterSymbols: Symbols
     public readonly painterDisk: PainterDisk
@@ -134,6 +136,7 @@ export class Kernel extends TgdPainter implements KernelInterface {
     }
 
     async reset() {
+        this.music.stop()
         this.variables.clear()
         this.palette.reset()
         this.colorIndex = 24
@@ -185,8 +188,6 @@ export class Kernel extends TgdPainter implements KernelInterface {
         osc.start()
         osc.stop(context.currentTime + durationInSeconds)
     }
-
-    music(score: string) {}
 
     get gl() {
         return this.context.gl
@@ -261,6 +262,7 @@ export class Kernel extends TgdPainter implements KernelInterface {
         this.painterDisk.delete()
         this.painterSymbols.delete()
         this.textureSymbols.delete()
+        this.music.stop()
     }
 
     paint(): void {

@@ -3,6 +3,7 @@ import * as React from "react"
 import {
     IconArrowUp,
     IconBook,
+    IconClose,
     IconInvert,
     Theme,
     useHotKey,
@@ -36,15 +37,25 @@ export function CompPanelManual() {
             <ViewPanel
                 fullsize
                 position="absolute"
-                padding="M"
+                padding={0}
                 overflow="auto"
-                color="error"
                 className={Styles.error}
             >
-                <div onClick={() => setError(null)}>
-                    <h1>Erreur !</h1>
-                    <pre>{error}</pre>
-                </div>
+                <ViewStrip template="*1" orientation="column">
+                    <ViewPanel
+                        display="flex"
+                        justifyContent="space-between"
+                        alignItems="center"
+                        color="secondary-5"
+                        padding="M"
+                    >
+                        <strong>Erreur !</strong>
+                        <IconClose onClick={() => setError(null)} />
+                    </ViewPanel>
+                    <ViewPanel overflow="auto" padding="M">
+                        <pre>{error}</pre>
+                    </ViewPanel>
+                </ViewStrip>
             </ViewPanel>
         )
     }

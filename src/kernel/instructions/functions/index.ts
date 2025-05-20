@@ -15,6 +15,7 @@ import { makeLen } from "./len"
 import { makeInk } from "./ink"
 import { tgdCalcClamp } from "@tolokoban/tgd"
 import { makeMouseX, makeMouseY } from "./mouse"
+import { makePlay } from "./play"
 
 const RAD_PER_DEG = Math.PI / 180
 
@@ -62,6 +63,7 @@ export const makeKernelFunctions = (kernel: KernelInterface) => ({
     NOT: make("NOT", argsAreNumbers(1, 1), ([a]) => (a === 0 ? 1 : 0)),
     PADL: makePadL(),
     PADR: makePadR(),
+    PLAY: makePlay(kernel),
     RANDOM: makeRandom(),
     RANDOMF: makeRandomFloat(),
     RANGE: makeRange(),
