@@ -105,4 +105,15 @@ PAUSE(
 
 Rien ne lui fait peur. Il va simplement faire une note un peu plus longue qu'une croche.
 
+Et pour finir, tu as 9 niveaux de volume. Si tu ne dis rien, tout est joué au volume 5.
+Si tu veux plus fort, tu peux ajouter `@9` pour le maximum, ou `@1` pour le minimum.
+
+```ts
+PAUSE(
+    PLAY(
+        "@3 E4 @4 E4 @5 E4 @6 E4 @7 E4 @8 E4 @9 E4"
+    )
+)
+```
+
 Allez ! Amuse-toi à créer de magnifiques compositions pour tes jeux.

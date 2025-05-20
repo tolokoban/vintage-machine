@@ -79,7 +79,15 @@ function parseScore(score: string) {
     const notes: Note[] = []
     let duration = 1 / 4
     let cursor = 0
+    let volume = 0.5
     while (cursor < score.length) {
+        RX_VOLUME.lastIndex = -1
+        const matchVolume = RX_VOLUME.exec(score.slice(cursor))
+        if (matchVolume) {
+            volume = Number(matchVolume[0].slice(1)) / 10
+            cursor += matchVolume[0].length
+            continue
+        }
         RX_DURATION.lastIndex = -1
         const matchDuration = RX_DURATION.exec(score.slice(cursor))
         if (matchDuration) {
@@ -93,7 +101,7 @@ function parseScore(score: string) {
             cursor += matchNote[0].length
             notes.push({
                 note: matchNote[0],
-                volume: 0.5,
+                volume,
                 duration,
             })
             continue
@@ -113,9 +121,11 @@ const RX_NOTE = /^(-|[A-G][b#]?[0-9])/g
 
 const RX_DURATION = /^:[1-9][0-9]*/g
 
+const RX_VOLUME = /^@[1-9]/g
+
 // Octave 5.
 const NOTES = {
-    Cb: 523.25,
+    Cb: 493.88,
     C: 523.25,
     "C#": 554.37,
     Db: 554.37,
@@ -124,7 +134,7 @@ const NOTES = {
     Eb: 622.25,
     E: 659.26,
     "E#": 698.46,
-    Fb: 698.46,
+    Fb: 659.26,
     F: 698.46,
     "F#": 739.99,
     Gb: 739.99,
