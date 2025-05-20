@@ -1,8 +1,15 @@
+import { workbench } from "@/workbench"
+
 export class Music {
     private readonly frequencies: Record<string, number> = {}
-    private notes: Note[] = []
-    private index = 0
-    private timeout: number = 0
+    /**
+     * We can have several channels playing simultaneously
+     */
+    private notes: Note[][] = []
+    /**
+     * The index can be different from one channel to another
+     */
+    private indexes: number[] = []
     private playing = false
 
     constructor() {
@@ -13,38 +20,55 @@ export class Music {
                 this.frequencies[key] = freq5 * Math.pow(2, octave - 5)
             }
         }
-        console.log("🚀 [music] this.frequencies =", this.frequencies) // @FIXME: Remove this line written on 2025-05-19 at 20:04
     }
 
-    play(score: string) {
-        this.notes = parseScore(score)
-        console.log("🚀 [music] score, notes =", score, this.notes) // @FIXME: Remove this line written on 2025-05-19 at 20:05
-        this.playing = true
-        this.index = 0
-        setTimeout(this.next)
-        return this.notes.reduce((prv, cur) => prv + cur.duration, 0)
+    play(scoreArg: string | string[], tempo = 120) {
+        const scores = Array.isArray(scoreArg) ? scoreArg : [scoreArg]
+        let totalTime = 0
+        this.notes = []
+        this.indexes = []
+        for (const score of scores) {
+            const notes = parseScore(score, tempo)
+            this.notes.push(notes)
+            this.playing = true
+            this.indexes.push(0)
+            totalTime = Math.max(
+                totalTime,
+                notes.reduce((prv, cur) => prv + cur.duration, 0)
+            )
+        }
+        for (let channel = 0; channel < this.indexes.length; channel++) {
+            setTimeout(() => this.next(channel))
+        }
+        return totalTime
     }
 
     stop() {
         this.playing = false
-        clearTimeout(this.timeout)
-        this.timeout = 0
     }
 
-    private readonly next = () => {
-        if (!window.AudioContext || !this.playing) return
+    private readonly next = (channel: number) => {
+        if (
+            !window.AudioContext ||
+            !this.playing ||
+            !workbench.state.running.value
+        ) {
+            return
+        }
 
-        clearTimeout(this.timeout)
-        const note = this.notes[this.index % this.notes.length]
-        console.log("🚀 [music] note =", note) // @FIXME: Remove this line written on 2025-05-19 at 20:05
-        this.index++
+        const notes = this.notes[channel]
+        const index = this.indexes[channel]
+        const note = notes[index % notes.length]
+        if (!note) return
+
+        this.indexes[channel]++
         const duration = note.duration
-        this.timeout = setTimeout(
-            this.next,
+        setTimeout(
+            () => this.next(channel),
             duration * 1000
         ) as unknown as number
 
-        const fade = Math.min(0.2, duration / 10)
+        const fade = Math.min(0.1, duration / 10)
         const ctx = new window.AudioContext()
         const osc = ctx.createOscillator()
         const gain = ctx.createGain()
@@ -69,15 +93,18 @@ export class Music {
             0.000001,
             ctx.currentTime + duration
         )
-
         osc.start()
         osc.stop(ctx.currentTime + duration)
     }
 }
 
-function parseScore(score: string) {
+/**
+ * @param tempo Number of blacks (:4) per minute.
+ */
+function parseScore(score: string, tempo: number) {
     const notes: Note[] = []
-    let duration = 1 / 4
+    const timeMultiplier = (4 * 60) / tempo
+    let duration = timeMultiplier / 4
     let cursor = 0
     let volume = 0.5
     while (cursor < score.length) {
@@ -91,7 +118,7 @@ function parseScore(score: string) {
         RX_DURATION.lastIndex = -1
         const matchDuration = RX_DURATION.exec(score.slice(cursor))
         if (matchDuration) {
-            duration = 1 / Number(matchDuration[0].slice(1))
+            duration = timeMultiplier / Number(matchDuration[0].slice(1))
             cursor += matchDuration[0].length
             continue
         }
