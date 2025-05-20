@@ -22,6 +22,7 @@ Les fonctions retournent une valeur. Les procédures pas.
 * [RECT](RECT) : dessiner un rectangle
 * [RESET](RESET) : réinitialiser TLK-74
 * [SOUND](SOUND) : émettre un son
+* [STOP](STOP) : Arrete une partition de musique en train de se jouer
 
 ## Fonctions
 
@@ -51,6 +52,7 @@ Les fonctions retournent une valeur. Les procédures pas.
 * [NOT](NOT) : retourne la valeur booléenne inverse
 * [PADL](PAD) : retourne un texte avec une taille donnée en remplissant à droite
 * [PADR](PAD) : retourne un texte avec une taille donnée en remplissant à gauche
+* [PLAY](PLAY) : lance une partition et retourne immédiatement le temps en secondes que le morceau va durer.
 * [RANDOM](RANDOM) : retourne un nombre aléatoire entier
 * [RANDOMF](RANDOM) : retourne un nombre aléatoire à virgule
 * [RANGE](RANGE) : retourne une liste de nombres qui se suivent
