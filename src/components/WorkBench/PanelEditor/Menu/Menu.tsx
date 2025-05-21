@@ -1,19 +1,24 @@
 import * as React from "react"
+import FileSaver from "file-saver"
 
 import {
+    IconExport,
     IconFullscreen,
+    IconImport,
     IconPause,
     IconPlay,
     IconSpaceInvader,
     Theme,
     useHotKey,
     ViewButton,
+    ViewInputFile,
     ViewPanel,
 } from "@tolokoban/ui"
 
 import { workbench } from "@/workbench"
 
 import Styles from "./Menu.module.css"
+import { isString } from "@tolokoban/type-guards"
 
 const $ = Theme.classNames
 
@@ -32,11 +37,29 @@ export function CompMenu(props: CompMenuProps) {
 
         workbench.run({ fullscreen: true })
     })
-    console.log("🚀 [Menu] running, ready =", running, ready) // @FIXME: Remove this line written on 2025-05-09 at 17:42
-    console.log(
-        "🚀 [Menu] workbench.state.ready.value =",
-        workbench.state.ready.value
-    ) // @FIXME: Remove this line written on 2025-05-13 at 09:33
+
+    const handleLoad = (files: File[]) => {
+        const [file] = files
+        if (!file) return
+
+        const reader = new FileReader()
+        reader.onload = () => {
+            const { result } = reader
+            if (isString(result)) workbench.state.code.value = result
+        }
+        reader.onerror = () => {
+            console.error("Unable to read the file...")
+        }
+        reader.readAsText(file)
+    }
+    const handleSave = () => {
+        FileSaver.saveAs(
+            new Blob([workbench.state.code.value], {
+                type: "text/plain;charset=utf-8",
+            }),
+            "tlk74.basik"
+        )
+    }
 
     return (
         <ViewPanel
@@ -71,6 +94,16 @@ export function CompMenu(props: CompMenuProps) {
                         }}
                     >
                         <IconSpaceInvader /> Share
+                    </ViewButton>
+                    <ViewInputFile
+                        onLoad={handleLoad}
+                        icon={IconImport}
+                        accept=".basik"
+                    >
+                        Load
+                    </ViewInputFile>
+                    <ViewButton icon={IconExport} onClick={handleSave}>
+                        Save
                     </ViewButton>
                 </>
             )}

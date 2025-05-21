@@ -1,11 +1,10 @@
 import {
-    tgdCalcDegToRad,
     TgdContext,
-    TgdMat2,
-    TgdMat3,
+    TgdDataset,
     TgdProgram,
     TgdShaderFragment,
     TgdShaderVertex,
+    TgdVertexArray,
 } from "@tolokoban/tgd"
 
 /**
@@ -15,24 +14,19 @@ export class PainterDisk {
     private readonly STEPS = 128
 
     private readonly prg: TgdProgram
+    private readonly vao: TgdVertexArray
 
     constructor(private readonly context: TgdContext) {
         const vert = new TgdShaderVertex({
             uniforms: {
                 uniCenter: "vec2",
                 uniRadius: "vec2",
-                uniRotation: "mat2",
-                uniStepsInRadians: "float",
+            },
+            attributes: {
+                attPos: "vec2",
             },
             mainCode: [
-                "if (gl_VertexID == 0) gl_Position = vec4(uniCenter, 0.0, 1.0);",
-                "else {",
-                "  float angle = uniStepsInRadians * float(gl_VertexID);",
-                "  vec2 pos = vec2(",
-                "    cos(angle), sin(angle)",
-                "  ) * uniRadius;",
-                "  gl_Position = vec4(uniCenter + uniRotation * pos, 0.0, 1.0);",
-                "}",
+                "gl_Position = vec4(uniCenter + attPos * uniRadius, 0.0, 1.0);",
             ],
         }).code
         const frag = new TgdShaderFragment({
@@ -42,10 +36,24 @@ export class PainterDisk {
         }).code
         const prg = new TgdProgram(context.gl, { vert, frag })
         this.prg = prg
+        const points: number[] = [0, 0]
+        const step = (2 * Math.PI) / this.STEPS
+        for (let i = 0; i < this.STEPS; i++) {
+            const ang = step * i
+            const x = Math.cos(ang)
+            const y = Math.sin(ang)
+            points.push(x, y)
+        }
+        points.push(1, 0)
+        const dataset = new TgdDataset({ attPos: "vec2" })
+        dataset.set("attPos", new Float32Array(points))
+        const vao = new TgdVertexArray(context.gl, prg, [dataset])
+        this.vao = vao
     }
 
     delete(): void {
         this.prg.delete()
+        this.vao.delete()
     }
 
     /**
@@ -61,23 +69,16 @@ export class PainterDisk {
         centerY: number,
         radiusX: number,
         radiusY: number,
-        colorIndex: number,
-        rotation: number
+        colorIndex: number
     ): void {
-        const { context, prg } = this
+        const { context, prg, vao } = this
         const { gl } = context
-        const angle = tgdCalcDegToRad(rotation)
-        const C = Math.cos(angle)
-        const S = Math.sin(angle)
-        const mat = new TgdMat2(C, S, -S, C)
-        const steps =
-            Math.max(Math.abs(radiusX) * 320, Math.abs(radiusY) * 240) * 2
         prg.use()
         prg.uniform2f("uniCenter", centerX, centerY)
         prg.uniform2f("uniRadius", radiusX, radiusY)
-        prg.uniform1f("uniStepsInRadians", (2 * Math.PI) / steps)
-        prg.uniformMatrix2fv("uniRotation", mat)
         prg.uniform1f("uniColor", colorIndex / 255)
-        gl.drawArrays(gl.TRIANGLE_FAN, 0, steps + 2)
+        vao.bind()
+        gl.drawArrays(gl.TRIANGLE_FAN, 0, this.STEPS + 2)
+        vao.unbind()
     }
 }

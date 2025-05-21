@@ -44,13 +44,14 @@ export const makeDraw = (kernel: KernelInterface) =>
                         break
                     }
                     case "D": {
-                        const [rx, ry] = args
+                        const [rx, ry, angle] = args
                         kernel.painterDisk.paint(
                             kernel.screenSpaceX(kernel.x),
                             kernel.screenSpaceY(kernel.y),
                             kernel.screenSpaceX(rx),
                             kernel.screenSpaceY(ry ?? rx),
-                            kernel.colorIndex
+                            kernel.colorIndex,
+                            angle ?? 0
                         )
                         break
                     }
