@@ -14,8 +14,14 @@ Voici un tableau des commandes existantes :
 | `C x` | `COLOR(x)` |
 | `M x,y` | `MOVE(x,y)` |
 | `m x,y` | `MOVER(x,y)` |
+| `D rayon` | `DISK(rayon)` |
 | `D rx,ry` | `DISK(rx,ry)` |
-| `R rx,ry` | `RECT(rx,ry)` |
+| `D rx,ry,ang` | `DISK(rx,ry,ang)` |
+| `D rx,ry,ang,couv` | `DISK(rx,ry,ang,couv)` |
+| `D rx,ry,ang,couv,dec` | `DISK(rx,ry,ang,couv,dec)` |
+| `R taille` | `RECT(taille)` |
+| `R largeur,hauteur` | `RECT(largeur,hauteur)` |
+| `R largeur,hauteur,angle` | `RECT(largeur,hauteur,angle)` |
 | `(` | sauvegarder la positon courante du curseur |
 | `)` | Remettre le curseur à la position sauvegardée |
 
