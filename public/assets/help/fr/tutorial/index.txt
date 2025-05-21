@@ -2,7 +2,9 @@ main:Introduction
 dis-bonjour:Dis bonjour !
 sound:Qui c'est le chef... d'orchestre ?
 couleurs:Un peu de couleur
+vars:Une mémoire d'éléphant
 ask:Je t'en pose des questions ?
+list:La liste des courses
 if:Conditions et boucles
 coords:Les coordonnées
 draw:Faisons un beau dessin

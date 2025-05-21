@@ -3,14 +3,15 @@ import { make } from "./_common";
 import { argsAreNumbers } from "@/basik/guards";
 
 export const makeRect = (kernel: KernelInterface) =>
-  make("rect", argsAreNumbers(1, 2), ([width, height]) => {
+  make("rect", argsAreNumbers(1, 3), ([width, height, angle]) => {
     kernel.paintFB(() => {
       kernel.painterRect.paint(
         kernel.screenSpaceX(kernel.x),
         kernel.screenSpaceY(kernel.y),
-        kernel.screenSpaceX(width),
-        kernel.screenSpaceY(height ?? width),
+        width,
+        height ?? width,
         kernel.colorIndex,
+        angle ?? 0,
       );
     });
   });

@@ -11,9 +11,10 @@ export const makeCls = (kernel: KernelInterface) =>
         kernel.painterRect.paint(
           0,
           0,
-          2,
-          2,
+          kernel.WIDTH,
+          kernel.HEIGHT,
           tgdCalcModulo(Math.round(color), 0, 255),
+          0,
         );
         return;
       }
