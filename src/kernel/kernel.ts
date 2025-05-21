@@ -322,10 +322,12 @@ export class Kernel extends TgdPainter implements KernelInterface {
   }
 
   getVar(name: string) {
+    const isGlobal = name.trim().charAt(0) === "@";
+    const variables = isGlobal ? this.globalVariables : this.variables;
     name = sanitizeVarName(name);
-    if (!this.variables.has(name)) {
+    if (!variables.has(name)) {
       const output = [`La variable $${name.toLocaleLowerCase()} n'existe pas.`];
-      const names = Array.from(this.variables.keys()).map(
+      const names = Array.from(variables.keys()).map(
         (name) => `$${name.toLocaleLowerCase()}`,
       );
       if (names.length === 0) {
@@ -335,9 +337,20 @@ export class Kernel extends TgdPainter implements KernelInterface {
       } else {
         output.push(`Les variables disponibles sont : ${names.join("\n")}`);
       }
+      if (this.variables !== this.globalVariables) {
+        output.push(
+          "N'oublie pas que les fonctions ont leurs propres variables.",
+        );
+      }
+      if (this.globalVariables.has(name)) {
+        output.push(
+          `Si tu veux lire la variable globale $${name.toLowerCase()},`,
+          `tu peux utiliser la syntaxe @${name.toLowerCase()}.`,
+        );
+      }
       throw new Error(output.join("\n"));
     }
-    return this.variables.get(name) ?? 0;
+    return variables.get(name) ?? 0;
   }
 
   setVar(name: string, value: BasikValue) {
@@ -390,6 +403,10 @@ export class Kernel extends TgdPainter implements KernelInterface {
     return v;
   }
 
+  private get globalVariables(): Map<string, BasikValue> {
+    return this.variablesStack[0];
+  }
+
   private handleMouseMove = (evt: TgdInputPointerEventMove) => {
     this._mouseX = (evt.current.x * this.WIDTH) / 2;
     this._mouseY = (-evt.current.y * this.HEIGHT) / 2;
@@ -397,6 +414,8 @@ export class Kernel extends TgdPainter implements KernelInterface {
 }
 
 function sanitizeVarName(name: string) {
-  const varName = (name.startsWith("$") ? name.slice(1) : name).toUpperCase();
+  const varName = (
+    name.startsWith("$") || name.startsWith("@") ? name.slice(1) : name
+  ).toUpperCase();
   return varName;
 }

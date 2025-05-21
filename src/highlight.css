@@ -8,6 +8,17 @@ pre span.Basik-COM {
   font-style: italic;
 }
 
+pre span.Basik-DEF,
+pre span.Basik-RETURN,
+pre span.Basik-IF,
+pre span.Basik-ELSE,
+pre span.Basik-WHILE,
+pre span.Basik-FOR,
+pre span.Basik-IN {
+  font-weight: bold;
+  color: #fdd;
+}
+
 pre span.Basik-FUNC,
 pre span.Basik-PAR_OPEN,
 pre span.Basik-PAR_CLOSE {
@@ -20,6 +31,10 @@ pre span.Basik-STR {
 
 pre span.Basik-VAR {
   color: #ee0;
+}
+
+pre span.Basik-GLOBAL_VAR {
+  color: #fc0;
 }
 
 pre span.Basik-NUM {

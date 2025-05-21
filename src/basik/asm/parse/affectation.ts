@@ -1,7 +1,7 @@
 import { BasikAssembly } from "@/basik/asm/asm";
 
 export function parseAffectation(this: BasikAssembly) {
-  const tokenVar = this.lexer.get("VAR");
+  const tokenVar = this.lexer.get("VAR") ?? this.lexer.get("GLOBAL_VAR");
   if (tokenVar) {
     const varName = tokenVar.val;
     this.pushBytecode(varName);
@@ -10,6 +10,16 @@ export function parseAffectation(this: BasikAssembly) {
       "EQUAL",
       `Je m'attendais à voir le signe "=" pour l'affectation de la variable ${varName} !`,
     );
+    if (tokenVar.id === "GLOBAL_VAR") {
+      this.lexer.fatal(
+        [
+          `Il est interdit d'assigner des valeurs à une variable globale.`,
+          `Est-ce que tu voulais écrire`,
+          `$${varName.slice(1)} = ... ?`,
+        ].join("\n"),
+        tokenVar,
+      );
+    }
     this.parseExpression();
     this.pushBytecode(hasSlicer ? this.$setElem : this.$setVar);
     return true;

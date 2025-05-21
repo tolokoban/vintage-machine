@@ -73,6 +73,13 @@ export class PainterRect {
     const C = Math.cos(angle);
     const S = Math.sin(angle);
     const mat = new TgdMat2(C, S, -S, C);
+    console.log(
+      "🚀 [rect] centerX, centerY, width, height =",
+      centerX,
+      centerY,
+      width,
+      height,
+    ); // @FIXME: Remove this line written on 2025-05-21 at 21:00
     prg.uniformMatrix2fv("uniRotation", mat);
     prg.uniform2f("uniCenter", centerX, centerY);
     prg.uniform2f("uniRadius", width / 2, height / 2);

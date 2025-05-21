@@ -155,3 +155,80 @@ WHILE 1 {
   }
 }
 ```
+
+## Variables globales et variables locales
+
+Regarde cet exemple :
+
+```ts
+RESET()
+$nombre = 27
+DEF TEST() {
+    $nombre = 11
+    PRINTLN("Local: ", $nombre)
+}
+
+PRINTLN("Global: ", $nombre)
+TEST()
+PRINTLN("Global: ", $nombre)
+```
+
+La fonction `TEST()` assigne __11__ à la variable `$nombre`.
+Pourtant, quand on l'affiche àprès avoir appelé `TEST()`,
+elle est toujours à __27__. Pourquoi ?
+
+> C'est le TLK-74 qui est tout buggué, oui !
+
+On pourrait le croire, mais en fait, ce comportement est volontaire.
+
+Toutes les variables assignées en dehors d'une fonction sont appelées
+__variables globales__. Et celles assignées dans une fonction sont appelées
+__variables locales__.
+
+Pour éviter qu'une fonction ne modifie par erreur une variable globales,
+TLK-74 crée un espace mémoire local dans chaque fonction.
+
+Et quand tu assignes __11__ à `$nombre` dans la fonction `TEST()`,
+c'est une variable qui n'est connue que de cette fonction, et qui disparaît
+quand tu sors de la fonction.
+
+Ça explique aussi pourquoi le programme suivant produit une erreur :
+
+```ts
+RESET()
+DEF TEST() {
+    $nombre = 1974
+    PRINTLN("nombre = ", $nombre)
+}
+
+TEST()
+PRINTLN("nombre = ", $nombre)
+```
+
+Si tu veux passer des valeurs à une fonction, il faut utiliser les arguments.
+Car chaque argument est transformé en variable locale.
+
+> Mais pourquoi cette limitation ?
+
+C'est pour t'éviter de faire des bugs qui sont très compliqués à repérer et corriger.
+Écrire dans une variable utilisée ailleurs peut être embêtant.
+
+> OK, mais si je ne fais que lire une variable globale,
+> quel est le problème ?
+
+Tu as raison : il n'y a pas de problème si tu ne fais que lire.
+Et tu as donc le droit de faire ça, mais il faut utiliser une syntaxe différente.
+
+```ts
+RESET()
+$bonus = 1000
+DEF AJOUTER_BONUS($attaque) {
+    $bonus = 2000
+    RETURN $attaque + $bonus + @bonus
+}
+PRINTLN("Attaque avec bonus : ", AJOUTER_BONUS(55))
+```
+
+Remarque qu'on a utilisé `@bonus` et pas `$bonus`.
+
+Cet arobase (`@`) signifie qu'on veut lire la valeur de la variable __globale__.

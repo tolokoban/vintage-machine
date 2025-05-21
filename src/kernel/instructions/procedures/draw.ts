@@ -58,14 +58,14 @@ export const makeDraw = (kernel: KernelInterface) =>
             break;
           }
           case "R": {
-            const [rx, ry, angle] = args;
+            const [width, height, angle] = args;
             kernel.painterRect.paint(
               kernel.screenSpaceX(kernel.x),
               kernel.screenSpaceY(kernel.y),
-              rx,
-              ry ?? rx,
+              width,
+              height ?? width,
               kernel.colorIndex,
-              angle,
+              angle ?? 0,
             );
             break;
           }
