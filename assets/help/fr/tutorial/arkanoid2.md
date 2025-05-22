@@ -10,6 +10,29 @@ $tableau = [
     "  ()[]()    ()[]()  ",
     "   ()()      ()()  ",
 ]
+REM BEGIN Code pour dessiner rapidement le tableau
+CLS()
+FOR $line IN $tableau {
+  FOr $c in $line {
+    IF ($c == "(") OR ($c == ")") {
+      COLOR(24)
+    } ELSE {
+      COLOR(6)
+    }    
+    if ($c == "(") OR ($c == "[") {
+      PRINT(CHR(#92))
+    }
+    if ($c == ")") OR ($c == "]") {
+      PRINT(CHR(#98))
+    }
+    IF $c == " " {
+      PRINT(" ")
+    }
+  }
+  PRINTLN()
+}
+
+
 ```
 
 On dira que les parenthèses représentent les briques normales,
@@ -18,6 +41,7 @@ et les crochets les briques incassables.
 On va donc écrire une procédure comme celle-ci :
 
 ```ts
+REM BEGIN Fonctions d'affichage des briques
 DEF BRIQUE($x, $y, $color) {
   MOVE($x, $y + 8)
   DRAW("C", $color, "R14,30")
@@ -38,8 +62,7 @@ DEF COULEUR_BRIQUE2($r, $v, $b) { COULEUR_BRIQUE($r, $v, $b, 103) }
 
 COULEUR_BRIQUE1(15, 10, 0)
 COULEUR_BRIQUE2(10, 10, 10)
-
-REM ===================================
+REM END
 
 DEF DESSINER_TABLEAU($tableau) {
   $x0 = 0
@@ -77,6 +100,7 @@ comme il faut.
 <summary>Solution...</summary>
 
 ```ts
+REM BEGIN Fonctions d'affichage des briques
 DEF BRIQUE($x, $y, $color) {
   MOVE($x, $y + 8)
   DRAW("C", $color, "R14,30")
@@ -97,8 +121,7 @@ DEF COULEUR_BRIQUE2($r, $v, $b) { COULEUR_BRIQUE($r, $v, $b, 103) }
 
 COULEUR_BRIQUE1(15, 10, 0)
 COULEUR_BRIQUE2(10, 10, 10)
-
-REM ===================================
+REM END
 
 DEF DESSINER_TABLEAU($tableau) {
   $x0 = 296
@@ -119,6 +142,7 @@ DEF DESSINER_TABLEAU($tableau) {
   }
 }
 
+REM BEGIN Appel de la fonction DESSINER_TABLEAU()
 CLS()
 $tableau = [
     "()()()()()()()()()()",

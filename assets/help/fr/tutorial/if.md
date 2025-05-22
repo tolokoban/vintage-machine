@@ -1,3 +1,84 @@
+## FOR $value IN $liste { ... }
+
+Il existe aussi une façon de faire des boucles, sans utiliser de condition.
+L'instruction `FOR...IN` permet de boucler sur les éléments d'une __liste__.
+
+Comme on l'a vu, en Basik, les textes sont en fait des listes de symboles.
+
+```ts
+CLS()
+FOR $lettre IN "Anselm et Alois"
+println($lettre)
+```
+
+Mais tu peux aussi utiliser des variables :
+
+```ts
+CLS()
+$nom = ASK("C'est quoi ton petit nom ? ")
+println()
+println(CHR(#96, #9A, #9C))
+FOR $lettre IN $nom 
+println(CHR(#95), $lettre, CHR(#95))
+println(CHR(#93, #9A, #99))
+```
+
+On sait qu'une façon de faire une liste est d'utiliser les crochets (__[__ et __]__).
+
+```ts
+cls()
+for $couleur in [1, 2, 3, 4, 5, 6] {
+    color(24)
+    print("Couleur ", $couleur, " : ")
+    color($couleur)
+    println(CHR(#8F) * 20)
+}
+```
+
+> Pas si vite, l'ami !
+> C'est quoi ces accolades ?
+
+Bien vu ! En fait l'instruction `FOR...IN` va boucler sur l'instruction immédiatement après.
+C'est pourquoi le programme suivant va afficher chaque lettre du texte, puis un . final.
+
+```ts
+RESET()
+FOR $c In "TLK-74"
+PRINTLN($c)
+PRINTLN(".")
+PRINTLN("Final")
+```
+
+Les acoolades permettent de grouper des instructions ensemble pour qu'elles soient
+vue comme une seule.
+Regarde la différence :
+
+```ts
+RESET()
+FOR $c In "TLK-74" {
+  PRINTLN($c)
+  PRINTLN(".")
+}
+PRINTLN("Final")
+```
+
+Ok. Revenons à nos listes.
+
+Si on veut afficher les 30 premières couleurs de la palettre de TLK-74,
+il faudrait écrire `[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30]`.
+
+Mais comme c'est super long, on peut utiliser la fonction `RANGE()` qui crée une liste de nombres qui se suivent.
+
+```ts
+cls()
+for $couleur in RANGE(1, 30) {
+    color(24)
+    print("Couleur ", $couleur, " : ")
+    color($couleur)
+    println(CHR(#8F) * 20)
+}
+```
+
 ## IF $condition { ... } ELSE { ... }
 
 Voici un petit jeu très simple.
@@ -8,16 +89,12 @@ Puis il te demande de le deviner.
 Si tu as trouvé, il te dit bravo.
 
 ```ts
-CLS()
+RESET()
 $de = RANDOM(1, 6)
 println("J'ai lance un de a 6 faces.")
 $prop = askint("Devine sa valeur : ")
-if $prop == $de {
-    println("Tu as gagne. Bravo !")
-}
-else {
-    println("Non. C'etait ", $de)
-}
+if $prop==$de println("Tu as gagne. Bravo !")
+else println("Non. C'etait ", $de)
 ```
 
 > Mais ça veut dire quoi __IF__ et __ELSE__ ?
@@ -27,12 +104,33 @@ __IF__ veut dire __si__ et __ELSE__ veut dire __sinon__.
 
 Du coup, ce programme dit : __si__ `$prop` est égal à `$de` alors afficher "Tu as gagne. Bravo", __sinon__ afficher "Non. C'etait ...".
 
-Les accolades servent à grouper plusieurs instructions ensemble.
+> Et si j'ai plus que deux conditions ?
+
+Tu peux aussi utiliser l'instruction `ELIF` autant de fois que tu veux entre `IF` et `ELSE`.
+
+Voici un programme qui te demande ce que tu veux manger et te conseille quoi boire avec :
+
+```ts
+RESET()
+PRINTLN("Choisissez ce que vous voulez manger.")
+PRINTLN()
+PRINTLN("1) Des anchois farcies")
+PRINTLN("2) De la spirule sechee")
+PRINTLN("3) Une tarte aux pieds de porc")
+PRINTLN()
+$choix = ASKINT("Votre choix : ")
+PRINTLN()
+IF $choix==1 PRINTLN("Avec les anchois, il faut du Pepsi au piment")
+ELIF $choix==2 PRINTLN("Je conseille beaucoup d'eau")
+ELIF $choix==3 PRINLNT("Un bon jus de chaussettes sera parfait")
+ELSE PRINTLN("Votre choix n'est pas au menu")
+```
 
 ### Exercice
 
 Écris un programme qui demande l'age du joueur.
 Si c'est moins de 18 ans, affiche "Tu n'es pas encore majeur".
+Si c'est plus de 65 ans, affiche "Vive la retraite".
 Sinon, affiche "Bonjour Monsieur".
 
 <details>
@@ -41,11 +139,9 @@ Sinon, affiche "Bonjour Monsieur".
 ```ts
 CLS()
 $age = ASKINT("Quel est ton age ? ")
-if ($age < 18) {
-    PRINTLN("Tu n'es pas encore majeur")
-} ELSE {
-    PRINTLN("Bonjour Monieur")
-}
+IF $age < 18 PRINTLN("Tu n'es pas encore majeur")
+ELIF $age > 65 PRINTLN("Vide la retraite")
+ELSE PRINTLN("Bonjour Monsieur")
 ```
 
 </details>
@@ -111,64 +207,5 @@ if $coups < 10 {
     COLOR(6)
     PRINTLN("Perdu !")
     PRINTLn("Il fallait trouver en moins de 10 coups.")
-}
-```
-
-## FOR $value IN $liste { ... }
-
-Il existe aussi une façon de faire des boucles, sans utiliser de condition.
-L'instruction `FOR...IN` permet de boucler sur les éléments d'une __liste__.
-
-> C'est quoi ça, une liste ?
-
-Une liste, c'est un ensemble de valeurs qui se suivent dans un certain ordre.
-On peut dire qu'un mot est une liste de lettres, par exemple.
-
-D'ailleurs, en Basik, les textes sont en fait des listes de symboles.
-
-```ts
-CLS()
-FOR $lettre IN "Anselm et Alois" {
-    println($lettre)
-}
-```
-
-Mais tu peux aussi utiliser des variables :
-
-```ts
-CLS()
-$nom = ASK("C'est quoi ton petit nom ? ")
-println()
-println(CHR(#96, #9A, #9C))
-FOR $lettre IN $nom {
-    println(CHR(#95), $lettre, CHR(#95))
-}
-println(CHR(#93, #9A, #99))
-```
-
-Une autre façon de faire une liste est d'utiliser les crochets (__[__ et __]__).
-
-```ts
-cls()
-for $couleur in [1, 2, 3, 4, 5, 6] {
-    color(24)
-    print("Couleur ", $couleur, " : ")
-    color($couleur)
-    println(CHR(#8F) * 20)
-}
-```
-
-Si on veut afficher les 30 premières couleurs de la palettre de TLK-74,
-il faudrait écrire `[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30]`.
-
-Mais comme c'est super long, on peut utiliser la fonction `RANGE()` qui crée une liste de nombres qui se suivent.
-
-```ts
-cls()
-for $couleur in RANGE(1, 30) {
-    color(24)
-    print("Couleur ", $couleur, " : ")
-    color($couleur)
-    println(CHR(#8F) * 20)
 }
 ```
