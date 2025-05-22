@@ -127,7 +127,7 @@ export class BasikLexer {
   }
 
   hasMoreCode() {
-    return this._cursor < this._code.length - 1;
+    return this._cursor < this._code.length - 1 && this.token.id !== "EOF";
   }
 
   fatal(msg: string, token?: Token): never {
@@ -136,7 +136,8 @@ export class BasikLexer {
       code: this._code,
       msg: msg,
     };
-    console.error(e, token ?? this.token);
+    console.error("Error:", e);
+    console.error("Token:", token ?? this.token);
     throw e;
   }
 

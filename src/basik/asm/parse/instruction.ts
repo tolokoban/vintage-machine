@@ -1,8 +1,13 @@
 import { BasikAssembly } from "@/basik/asm/asm";
 
-export function parseBloc(this: BasikAssembly) {
+export function parseInstruction(this: BasikAssembly) {
+  const token = this.lexer.get("BRA_OPEN");
+  if (token) {
+    while (this.parseInstruction()) {}
+    this.lexer.expect("BRA_CLOSE", "Il manque une accolade fermante.");
+  }
   const parsers: Array<() => boolean> = [
-    this.parseInstruction,
+    this.parseProcedure,
     this.parseAffectation,
     this.parseIf,
     this.parseForIn,
@@ -13,6 +18,5 @@ export function parseBloc(this: BasikAssembly) {
   if (!this.parseAny(...parsers)) {
     return false;
   }
-  while (this.parseAny(...parsers)) {}
   return true;
 }

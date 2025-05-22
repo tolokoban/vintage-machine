@@ -15,7 +15,7 @@ import { workbench } from "@/workbench";
 
 import { parseReturn } from "./parse/return";
 import { parseProcedure } from "./parse/procedure";
-import { parseBloc } from "./parse/bloc";
+import { parseInstruction } from "./parse/instruction";
 import { parseIf } from "./parse/if";
 import { parseWhile } from "./parse/while";
 import { parseForIn } from "./parse/forIn";
@@ -68,8 +68,7 @@ export class BasikAssembly {
 
   async execute(code: string) {
     try {
-      this.code = code;
-      console.log(code);
+      this.code = `${code}\n`;
       this.compile();
       this.link();
     } catch (ex) {
@@ -126,9 +125,11 @@ export class BasikAssembly {
     lexer.next();
     this.lexer = lexer;
     while (lexer.hasMoreCode()) {
-      if (this.parseBloc()) continue;
+      if (this.parseInstruction()) continue;
 
-      lexer.fatal("Caractère inattendu ! Je suis perdu...");
+      if (lexer.token.id === "EOF") break;
+
+      lexer.fatal("J'attendais une instruction ici. Je suis perdu...");
     }
     this.pushBytecode("<<EOF>>");
     console.log("Compiled!", this.bytecode);
@@ -205,14 +206,14 @@ export class BasikAssembly {
 
   readonly parseAffectation = parseAffectation.bind(this);
   readonly parseBinaryOperator = parseBinaryOperator.bind(this);
-  readonly parseBloc = parseBloc.bind(this);
+  readonly parseInstruction = parseInstruction.bind(this);
   readonly parseDef = parseDef.bind(this);
   readonly parseExpression = parseExpression.bind(this);
   readonly parseExpressionBlock = parseExpressionBlock.bind(this);
   readonly parseForIn = parseForIn.bind(this);
   readonly parseFunction = parseFunction.bind(this);
   readonly parseIf = parseIf.bind(this);
-  readonly parseInstruction = parseProcedure.bind(this);
+  readonly parseProcedure = parseProcedure.bind(this);
   readonly parseList = parseList.bind(this);
   readonly parseReturn = parseReturn.bind(this);
   readonly parseWhile = parseWhile.bind(this);

@@ -20,7 +20,7 @@ export function parseWhile(this: BasikAssembly) {
       "}",
     ].join("\n"),
   );
-  this.parseBloc();
+  this.parseInstruction();
   lexer.expect(
     "BRA_CLOSE",
     [

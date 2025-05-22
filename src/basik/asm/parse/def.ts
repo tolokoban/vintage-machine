@@ -42,7 +42,7 @@ DEF COMMENCER()`);
     ].join("\n"),
   );
   this.labelStickHere(labelBegin);
-  this.parseBloc();
+  this.parseInstruction();
   lexer.expect(
     "BRA_CLOSE",
     [

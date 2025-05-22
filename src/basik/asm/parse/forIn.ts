@@ -32,7 +32,7 @@ export function parseForIn(this: BasikAssembly) {
     ].join("\n"),
   );
   this.pushBytecode(this.$forIn);
-  this.parseBloc();
+  this.parseInstruction();
   lexer.expect(
     "BRA_CLOSE",
     [

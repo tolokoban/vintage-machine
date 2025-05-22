@@ -20,7 +20,7 @@ export function parseIf(this: BasikAssembly) {
     ].join("\n"),
   );
   this.pushBytecode(this.$if);
-  this.parseBloc();
+  this.parseInstruction();
   lexer.expect(
     "BRA_CLOSE",
     [
@@ -42,7 +42,7 @@ export function parseIf(this: BasikAssembly) {
         "}",
       ].join("\n"),
     );
-    this.parseBloc();
+    this.parseInstruction();
     lexer.expect(
       "BRA_CLOSE",
       [

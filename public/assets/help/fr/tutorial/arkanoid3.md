@@ -20,9 +20,10 @@ WHILE 1 {
 }
 ```
 
-La ligne la plus importante (et qu'il faut expliquer un peu) est la suivante :
+La partie la plus importante (et qu'il faut expliquer un peu) est la suivante :
 
 ```ts
+$r = 32
 $y = CLAMP(MOUSEY(), -84 + $r, 224 - $r)
 ```
 
@@ -38,5 +39,13 @@ DEF MA_FONCTION_CLAMP($val, $min, $max) {
   IF $val < $min { RETURN $min }
   IF $val > $max { RETURN $max }
   RETURN $val
+}
+REM BEGIN Afficher la valeur Y de la souris
+WHILE 1 {
+    CLS()
+    MOVE(0,0)
+    $r = 32
+    LABEL(INT(MA_FONCTION_CLAMP(MOUSEY(), -84 + $r, 224 - $r)), 5)
+    PAUSE()
 }
 ```

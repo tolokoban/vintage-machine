@@ -51,9 +51,9 @@ export const BINOPS: Record<
   "/": numOpe("/", (a, b) => a / b),
   "^": numOpe("^", (a, b) => Math.pow(a, b)),
   "%": numOpe("^", (a, b) => a % b),
-  AND: numOpe("^", (a, b) => a & b),
-  OR: numOpe("^", (a, b) => a | b),
-  XOR: numOpe("^", (a, b) => a ^ b),
+  AND: numOpe("AND", (a, b) => a & b),
+  OR: numOpe("OR", (a, b) => a | b),
+  XOR: numOpe("XOR", (a, b) => a ^ b),
   "*": (a: BasikValue, b: BasikValue): BasikValue => {
     if (isNumber(a) && isNumber(b)) return a * b;
     if (Array.isArray(a) || Array.isArray(b)) {
@@ -81,7 +81,10 @@ function numOpe(name: string, ope: (a: number, b: number) => BasikValue) {
   return (a: BasikValue, b: BasikValue): BasikValue => {
     if (!isNumber(a) || !isNumber(b))
       throw new Error(
-        `L'opérateur "${name}" ne fonctionne qu'avec des nombres.`,
+        [
+          `L'opérateur "${name}" ne fonctionne qu'avec des nombres.`,
+          `Mais je l'ai trouvé entre ${JSON.stringify(a)} et ${JSON.stringify(b)}.`,
+        ].join("\n"),
       );
 
     return ope(a, b);
