@@ -10,48 +10,23 @@ export function parseIf(this: BasikAssembly) {
   const lblElse = this.labelCreate("Else");
   const lblEndIf = this.labelCreate("EndIf");
   this.labelPushItsValue(lblElse);
-  lexer.expect(
-    "BRA_OPEN",
-    [
-      "Il faut une accolade ouvrante pour définir un bloc, comme dans cet exemple :",
-      "IF $condition {",
-      `  PRINTLN("Perdu")`,
-      "}",
-    ].join("\n"),
-  );
   this.pushBytecode(this.$if);
   this.parseInstruction();
-  lexer.expect(
-    "BRA_CLOSE",
-    [
-      "Il faut une accolade fermante à la fin d'un bloc, comme dans cet exemple :",
-      "IF $condition {",
-      `  PRINTLN("Perdu")`,
-      "}",
-    ].join("\n"),
-  );
   this.pushJump(lblEndIf);
   this.labelStickHere(lblElse);
-  if (lexer.get("ELSE")) {
-    lexer.expect(
-      "BRA_OPEN",
-      [
-        "Il faut une accolade ouvrante pour définir un bloc, comme dans cet exemple :",
-        "ELSE {",
-        `  PRINTLN("Perdu")`,
-        "}",
-      ].join("\n"),
-    );
+  while (lexer.get("ELIF")) {
+    if (!this.parseExpression()) {
+      this.fatal("Après un ELIF il faut une expression.");
+    }
+    const lblElseIf = this.labelCreate("ElseIf");
+    this.labelPushItsValue(lblElseIf);
+    this.pushBytecode(this.$if);
     this.parseInstruction();
-    lexer.expect(
-      "BRA_CLOSE",
-      [
-        "Il faut une accolade fermante à la fin d'un bloc, comme dans cet exemple :",
-        "ELSE {",
-        `  PRINTLN("Perdu")`,
-        "}",
-      ].join("\n"),
-    );
+    this.pushJump(lblEndIf);
+    this.labelStickHere(lblElseIf);
+  }
+  if (lexer.get("ELSE")) {
+    this.parseInstruction();
   }
   this.labelStickHere(lblEndIf);
   return true;

@@ -5,6 +5,7 @@ export function parseInstruction(this: BasikAssembly) {
   if (token) {
     while (this.parseInstruction()) {}
     this.lexer.expect("BRA_CLOSE", "Il manque une accolade fermante.");
+    return true;
   }
   const parsers: Array<() => boolean> = [
     this.parseProcedure,

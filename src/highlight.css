@@ -11,12 +11,13 @@ pre span.Basik-COM {
 pre span.Basik-DEF,
 pre span.Basik-RETURN,
 pre span.Basik-IF,
+pre span.Basik-ELIF,
 pre span.Basik-ELSE,
 pre span.Basik-WHILE,
 pre span.Basik-FOR,
 pre span.Basik-IN {
   font-weight: bold;
-  color: #fdd;
+  color: #88f;
 }
 
 pre span.Basik-FUNC,

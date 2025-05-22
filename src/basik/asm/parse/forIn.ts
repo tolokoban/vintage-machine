@@ -18,30 +18,16 @@ export function parseForIn(this: BasikAssembly) {
   }
   // Index of the current element of the list.
   this.pushBytecode(0);
-  const labelBegin = this.labelCreate();
-  const labelEnd = this.labelCreate();
+  const labelBegin = this.labelCreate("begin");
+  const labelEnd = this.labelCreate("end");
   this.labelPushItsValue(labelEnd);
   this.labelStickHere(labelBegin);
-  lexer.expect(
-    "BRA_OPEN",
-    [
-      "Il faut une accolade ouvrante pour définir un bloc, comme dans cet exemple :",
-      "FOR $i IN RANGE(9) {",
-      "  PRINTLN($i)",
-      "}",
-    ].join("\n"),
-  );
   this.pushBytecode(this.$forIn);
-  this.parseInstruction();
-  lexer.expect(
-    "BRA_CLOSE",
-    [
-      "Il faut une accolade fermante à la fin d'un bloc, comme dans cet exemple :",
-      "FOR $i IN RANGE(9) {",
-      "  PRINTLN($i)",
-      "}",
-    ].join("\n"),
-  );
+  if (!this.parseInstruction()) {
+    this.lexer.fatal(
+      "Après un FOR...IN, il me faut une instruction ou un bloc d'instructions.",
+    );
+  }
   this.pushJump(labelBegin);
   this.labelStickHere(labelEnd);
   return true;

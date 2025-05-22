@@ -32,26 +32,8 @@ DEF COMMENCER()`);
   this.labelPushItsValue(labelBegin);
   this.pushBytecode(this.$def);
   this.pushJump(labelEnd);
-  lexer.expect(
-    "BRA_OPEN",
-    [
-      "Il faut une accolade ouvrante pour définir un bloc, comme dans cet exemple :",
-      "DEF DESSINER() {",
-      `  DISK(200)`,
-      "}",
-    ].join("\n"),
-  );
   this.labelStickHere(labelBegin);
   this.parseInstruction();
-  lexer.expect(
-    "BRA_CLOSE",
-    [
-      "Il faut une accolade fermante à la fin d'un bloc, comme dans cet exemple :",
-      "DEF DESSINER() {",
-      `  DISK(200)`,
-      "}",
-    ].join("\n"),
-  );
   // If no RETURN has been found, we still return 0 before exit.
   this.pushBytecode(0, this.$return);
   this.labelStickHere(labelEnd);

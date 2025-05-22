@@ -13,7 +13,7 @@ import { PainterLayer } from "./painters/layer";
 import { PainterColorizer } from "./painters/colorizer";
 import { BasikPalette } from "./palette/main";
 import { KernelInterface } from "./types";
-import { makeKernelInstructions } from "./instructions/procedures";
+import { makeKernelProcedures } from "./instructions/procedures";
 import { makeKernelFunctions } from "./instructions/functions";
 import { PainterDisk } from "./painters/disk";
 import { PainterRect } from "./painters/rect";
@@ -105,7 +105,7 @@ export class Kernel extends TgdPainter implements KernelInterface {
       screenWidth: this.WIDTH,
       screenHeight: this.HEIGHT,
     });
-    this.procedures = makeKernelInstructions(this);
+    this.procedures = makeKernelProcedures(this);
     this.functions = makeKernelFunctions(this);
     this.reset();
     context.inputs.pointer.eventMove.addListener(this.handleMouseMove);
@@ -117,6 +117,17 @@ export class Kernel extends TgdPainter implements KernelInterface {
 
   get mouseY() {
     return this._mouseY;
+  }
+
+  inputDir(): [dirX: number, dirY: number] {
+    const { context } = this;
+    let dirX = 0;
+    let dirY = 0;
+    if (context.inputs.keyboard.isDown("ArrowUp")) dirY = -1;
+    else if (context.inputs.keyboard.isDown("ArrowDown")) dirY = +1;
+    if (context.inputs.keyboard.isDown("ArrowLeft")) dirX = -1;
+    else if (context.inputs.keyboard.isDown("ArrowRight")) dirX = +1;
+    return [dirX, dirY];
   }
 
   get allVarNames() {
@@ -396,14 +407,14 @@ export class Kernel extends TgdPainter implements KernelInterface {
     });
   }
 
-  private get variables(): Map<string, BasikValue> {
+  get variables(): Map<string, BasikValue> {
     const v = this.variablesStack.at(-1);
     if (!v) throw Error("Nothing left on the variables stack!");
 
     return v;
   }
 
-  private get globalVariables(): Map<string, BasikValue> {
+  get globalVariables(): Map<string, BasikValue> {
     return this.variablesStack[0];
   }
 

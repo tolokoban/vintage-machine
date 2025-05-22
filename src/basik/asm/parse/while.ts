@@ -11,25 +11,7 @@ export function parseWhile(this: BasikAssembly) {
     this.fatal("Après un WHILE il faut une expression.");
   }
   this.pushJumpIfZero(lblEnd);
-  lexer.expect(
-    "BRA_OPEN",
-    [
-      "Il faut une accolade ouvrante pour définir un bloc, comme dans cet exemple :",
-      "WHILE $condition {",
-      `  PRINTLN("Perdu")`,
-      "}",
-    ].join("\n"),
-  );
   this.parseInstruction();
-  lexer.expect(
-    "BRA_CLOSE",
-    [
-      "Il faut une accolade fermante à la fin d'un bloc, comme dans cet exemple :",
-      "WHILE $condition {",
-      `  PRINTLN("Perdu")`,
-      "}",
-    ].join("\n"),
-  );
   this.pushJump(lblBegin);
   this.labelStickHere(lblEnd);
   return true;

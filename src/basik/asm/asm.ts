@@ -482,7 +482,7 @@ Mais j'ai reçu ${JSON.stringify(varArray)}.`);
   });
 
   readonly $forIn = makeAsync("FOR ... IN", () => {
-    const [varName, list, index, jumpOut] = this.stack.slice(-4);
+    const [varName, list, index, jumpEnd] = this.stack.slice(-4);
     const arr = isString(list) ? list.split("") : list;
     if (!Array.isArray(arr)) {
       throw new Error(
@@ -496,12 +496,12 @@ Mais j'ai reçu ${JSON.stringify(varArray)}.`);
       throw new Error("Internal error! VarName must be a number.");
     if (!isNumber(index))
       throw new Error("Internal error! Index must be a number.");
-    if (!isNumber(jumpOut))
-      throw new Error("Internal error! JumpOut must be a number.");
+    if (!isNumber(jumpEnd))
+      throw new Error("Internal error! JumpEnd must be a number.");
     if (index >= arr.length) {
       // End of the loop. We cleanup.
       this.stack.splice(-4, 4);
-      this.cursor = jumpOut;
+      this.cursor = jumpEnd;
       return;
     }
     this.kernel.setVar(varName, arr[index]);
@@ -527,7 +527,7 @@ Mais j'ai reçu ${JSON.stringify(varArray)}.`);
       .map(({ val }, cursor) => {
         if (isFunction(val)) return `CALL ${val.name}`;
         const label = this.labels.getLinkAtCursor(cursor);
-        if (label) return `LINK ${label}  ->  ${JSON.stringify(val)}`;
+        if (label) return `${JSON.stringify(val)}  <-- ${label}`;
         return `PUSH ${JSON.stringify(val)}`;
       })
       .map(

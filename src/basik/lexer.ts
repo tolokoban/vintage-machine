@@ -27,6 +27,7 @@ const RX = {
   FOR: /^for(?![a-z0-9])/i,
   IN: /^in(?![a-z0-9])/i,
   IF: /^if(?![a-z0-9])/i,
+  ELIF: /^elif(?![a-z0-9])/i,
   ELSE: /^else(?![a-z0-9])/i,
   FUNC: /^[a-z_][a-z_0-9]*\(/i,
   INST: /^[a-z_][a-z_0-9]*/gi,
