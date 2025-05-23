@@ -133,6 +133,7 @@
 
 .panelManual table {
   border-collapse: collapse;
+  color: #000;
 }
 
 .panelManual table th {
@@ -147,7 +148,7 @@
 }
 
 .panelManual table td {
-  background-color: #fff;
+  background-color: #bbb;
   border: 1px solid #0004;
   padding: 2px 4px;
 }
