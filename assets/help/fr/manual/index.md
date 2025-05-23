@@ -35,6 +35,8 @@ Les fonctions retournent une valeur. Les procédures pas.
 * [CLAMP](CLAMP) : forcer un nombre à rester entre deux valeurs
 * [COLOR](COLOR) : retourne le numéro du crayon courant
 * [COS](COS) : retourne le cosinus d'un angle en degrés
+* [FLOOR](FLOOR) : retourne le plus grand nombre entier qui ne dépasse pas le nombre passé en argument
+* [FRACT](FRACT) : retourne la partie décimale du nombre passé en argument
 * [HEX](HEX) : retourne la représentation hexadécimale d'un nombre
 * [HOUR](HMS) : retourne l'heure courante
 * [INK](INK) : retourne une liste des composantes de la couleur d'un crayon
