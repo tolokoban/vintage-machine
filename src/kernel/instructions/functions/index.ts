@@ -34,6 +34,12 @@ export const makeKernelFunctions = (kernel: KernelInterface) => ({
   COS: make("COS", argsAreNumbers(1, 1), ([deg]) =>
     Math.cos(deg * RAD_PER_DEG),
   ),
+  FLOOR: make("FLOOR", argsAreNumbers(1, 1), ([value]) => {
+    return Math.floor(Number(value));
+  }),
+  FRACT: make("FRACT", argsAreNumbers(1, 1), ([value]) => {
+    return Math.abs(value - Math.floor(Number(value)));
+  }),
   HEX: make("HEX", argsAreNumbers(1, 1), ([a]) => a.toString(16).toUpperCase()),
   HOUR: make("HOUR", argsAreAnys(0, 0), () => new Date().getHours()),
   INK: makeInk(kernel),

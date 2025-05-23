@@ -7,7 +7,6 @@ import { tgdLoadText } from "@tolokoban/tgd";
 import { BasikLexer } from "@/basik/lexer";
 import { translations } from "@/translate";
 import { isString } from "@tolokoban/type-guards";
-import { IconCode, IconPlay, ViewButton, ViewPanel } from "@tolokoban/ui";
 import { CompCodeControl } from "./CodeControl";
 
 marked.use({

@@ -1,2 +1,4 @@
 .menu {
+  border-bottom: 2px solid #000;
+  z-index: 1;
 }

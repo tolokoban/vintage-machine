@@ -5,6 +5,8 @@
   grid-template-rows: var(--custom-ratio1) var(--custom-ratio2);
   width: 100%;
   height: 100%;
+  gap: 2px;
+  background: #000;
 }
 
 .splitVertical > div.container {

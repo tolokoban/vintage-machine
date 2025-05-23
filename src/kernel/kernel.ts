@@ -149,6 +149,7 @@ export class Kernel extends TgdPainter implements KernelInterface {
   async reset() {
     this.music.stop();
     this.variables.clear();
+    this.globalVariables.clear();
     this.palette.reset();
     this.colorIndex = 24;
     for (

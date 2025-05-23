@@ -30,6 +30,15 @@
   margin: 0;
 }
 
+.panelManual a,
+.panelManual a:visited {
+  color: #0f0;
+}
+
+.panelManual a:visited {
+  text-decoration-color: #0f07;
+}
+
 .panelManual img {
   max-width: 100%;
 }
@@ -152,4 +161,8 @@ div.error pre {
   white-space: pre-wrap;
   background: transparent;
   color: #fff;
+}
+
+.manual {
+  background: #000;
 }

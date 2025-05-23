@@ -1,0 +1,80 @@
+.button {
+  perspective: 200px;
+}
+
+.button > button {
+  all: unset;
+  position: relative;
+  margin: 0;
+  display: inline-block;
+  font: inherit;
+  font-family: monospace;
+  width: auto;
+  padding: 0 1em;
+  height: 2em;
+  border-radius: 0.25em;
+  border: 0.1em solid #000;
+  box-shadow: 0 0.25em 0 0.1em #000;
+  transform: rotate3d(1, 0, 0, 30deg);
+  background: #004;
+  color: #fff;
+  font-variant: small-caps;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s;
+  margin: 0.25em 0.5em;
+  display: flex;
+  flex-wrap: nowrap;
+  flex-direction: row;
+  justify-content: space-around;
+  align-items: center;
+  gap: 0.5em;
+}
+
+.button.start > button {
+  background: #060;
+  color: #fff;
+}
+
+.button.stop > button {
+  background: #600;
+  color: #fff;
+}
+
+.button.float > button {
+  border: 50%;
+  padding: 0;
+  width: 2em;
+}
+
+.button > button::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(30deg, #fff4, #fff0, #0004);
+}
+
+.button > button > * {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.button > button:hover {
+  filter: brightness(120%);
+}
+
+.button > button:active {
+  transform: rotate3d(1, 0, 0, 30deg) translateY(0.125em);
+  box-shadow: 0 0.125em 0 0.1em #000;
+}
+
+.button > button[disabled] {
+  pointer-events: none;
+  cursor: default;
+  filter: grayscale(100%);
+  opacity: 0.5;
+}

@@ -1,29 +1,42 @@
 .panelMonitor {
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    background-image: url(./amiga.webp);
-    background-size: cover;
-    overflow: hidden;
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: #333;
+  padding: 1em;
 }
 
 .panelMonitor > div {
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    background-color: var(--custom-monitor-color);
-    display: grid;
-    place-items: center;
-    padding: 0;
+  position: absolute;
+  left: 0.5em;
+  top: 0.5em;
+  width: calc(100% - 1em);
+  height: calc(100% - 1em);
+  background-image: url(./amiga.webp);
+  background-size: cover;
+  overflow: hidden;
+  border-radius: 1em;
+  border: 2px solid #000;
+  box-shadow: 0 0.125em 0.25em #000;
 }
 
-.panelMonitor > div > canvas {
-    border: none;
-    box-shadow: none;
-    background: transparent;
-    height: 100%;
+.panelMonitor > div > div {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: var(--custom-monitor-color);
+  display: grid;
+  place-items: center;
+  padding: 0;
+}
+
+.panelMonitor > div > div > canvas {
+  border: none;
+  box-shadow: none;
+  background: transparent;
+  height: 100%;
 }

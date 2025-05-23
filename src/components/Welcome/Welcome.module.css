@@ -1,2 +1,28 @@
 .welcome {
+  font-size: 4vmin;
+  padding: 0.25em;
+}
+
+.welcome h1 {
+  font-size: 20vmin;
+  font-weight: bolder;
+  -webkit-text-stroke: 1px #ff0;
+  color: #ff01;
+  margin: 0;
+  text-shadow: 0 0 0.2em #fa0;
+}
+
+.welcome h2 {
+  text-align: center;
+  -webkit-text-stroke: 1px #000;
+}
+
+.welcome > canvas {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: transparent;
+  opacity: 1;
 }

@@ -15,8 +15,8 @@ export const makeLabel = (kernel: KernelInterface) =>
     let xx = kernel.x - scale * (text.length / 2) * kernel.CHAR_SIZE;
     const yy = kernel.y - (scale * kernel.CHAR_SIZE) / 2;
     for (const char of text.split("")) {
-      kernel.x = xx + kernel.CHAR_SIZE / 2;
-      kernel.y = yy + kernel.CHAR_SIZE / 2;
+      kernel.x = xx + (scale * kernel.CHAR_SIZE) / 2;
+      kernel.y = yy + (scale * kernel.CHAR_SIZE) / 2;
       kernel.print(char, scale);
       xx += kernel.CHAR_SIZE * scale;
     }
