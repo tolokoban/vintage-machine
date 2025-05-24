@@ -24,3 +24,7 @@ WHILE 1 {
     PAUSE()
 }
 ```
+
+----
+
+Voir aussi [KEY](KEY), [WAIT](WAIT).

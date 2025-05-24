@@ -1,8 +1,11 @@
 # Exemples
 
+- [Éclosion d'une fleur digitale](rose)
 - [Lettre à Élise](elise)
 - [Afficher la palette courante](palette)
 - [Afficher la table ASCII (table des 256 symboles)](ascii)
 - [Mickey Mouse](mickey)
+- [Ardoise magique](ardoise-magique)
 - [Les couleurs principales](colors)
+- [Mélange les couleurs](color-guess)
 - [Arkanoïd](arkanoid)
