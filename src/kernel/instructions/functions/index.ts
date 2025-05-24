@@ -17,6 +17,7 @@ import { tgdCalcClamp } from "@tolokoban/tgd";
 import { makeMouseX, makeMouseY } from "./mouse";
 import { makePlay } from "./play";
 import { makeInputDir } from "./input";
+import { makeWait } from "./wait";
 
 const RAD_PER_DEG = Math.PI / 180;
 
@@ -81,4 +82,5 @@ export const makeKernelFunctions = (kernel: Kernel) => ({
   UPPERCASE: make("UPPERCASE", argsAreStrings(1), (parts) =>
     parts.join("").toUpperCase(),
   ),
+  WAIT: makeWait(kernel),
 });

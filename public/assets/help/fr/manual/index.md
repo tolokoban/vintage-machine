@@ -63,3 +63,4 @@ Les fonctions retournent une valeur. Les procédures pas.
 * [SIN](COS) : retourne le sinus d'un angle en degrés
 * [TIME](TIME) : retourne le temps actuel en millisecondes depuis le 1er janvier 1970
 * [UPPERCASE](UPPERCASE) : retourne un texte en majuscules
+* [WAIT](WAIT) : attend que le joueur tape une touche et retourne sa valeur

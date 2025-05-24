@@ -42,6 +42,8 @@ export function CompWelcome() {
           ton ordinateur personnel et rétro-futuriste
           <br />
           pour coder les jeux les plus fous
+          <br />
+          avec des gros pixels
         </h2>
         <CompButton onClick="#/workbench" type="start">
           <IconSpaceInvader />

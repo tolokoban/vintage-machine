@@ -132,6 +132,26 @@ export class Kernel extends TgdPainter {
     return [dirX, dirY];
   }
 
+  isKeyPressed(keys: string[]) {
+    for (const key of keys) {
+      if (this.context.inputs.keyboard.isDown(key)) return true;
+    }
+    return false;
+  }
+
+  async waitKey(): Promise<string> {
+    return new Promise((resolve) => {
+      const { keyboard } = this.context.inputs;
+      const handleKey = (evt: KeyboardEvent) => {
+        evt.preventDefault();
+        evt.stopPropagation();
+        keyboard.eventKeyPress.removeListener(handleKey);
+        resolve(evt.key);
+      };
+      keyboard.eventKeyPress.addListener(handleKey);
+    });
+  }
+
   get allVarNames() {
     return Array.from(this.variables.keys());
   }
