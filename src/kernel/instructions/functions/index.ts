@@ -18,6 +18,7 @@ import { makeMouseX, makeMouseY } from "./mouse";
 import { makePlay } from "./play";
 import { makeInputDir } from "./input";
 import { makeWait } from "./wait";
+import { makeKey } from "./key";
 
 const RAD_PER_DEG = Math.PI / 180;
 
@@ -49,6 +50,7 @@ export const makeKernelFunctions = (kernel: Kernel) => ({
     if (Array.isArray(value)) return value.length;
     return Math.round(Number(value));
   }),
+  KEY: makeKey(kernel),
   LAYER: make("LAYER", argsAreNumbers(0, 0), () => kernel.currentLayerIndex),
   LEN: makeLen(),
   LIST: make("LIST", argsAreNumberAny(), ([count, value]) =>

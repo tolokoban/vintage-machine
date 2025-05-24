@@ -8,6 +8,19 @@ Attend que le joueur tape une touche et retourne la valeur de cette touche.
 
 ```ts
 RESET()
+PRINTLN("Tape des touches, puis ENTER pour finir")
+$touche = ""
+COLOR(11)
+WHILE $touche<>"Enter" {
+  $touche=WAIT()
+  PRINT($touche, " ")
+  REM Si tu ne mets pas de pause,
+  REM tu ne verras rien à l'écran.
+  PAUSE()
+}
+PRINTLN()
+COLOR(24)
+PRINTLN("C'est fini.")
 ```
 
 ### Exemple 2

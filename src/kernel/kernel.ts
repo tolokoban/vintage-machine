@@ -134,9 +134,9 @@ export class Kernel extends TgdPainter {
 
   isKeyPressed(keys: string[]) {
     for (const key of keys) {
-      if (this.context.inputs.keyboard.isDown(key)) return true;
+      if (!this.context.inputs.keyboard.isDown(key)) return false;
     }
-    return false;
+    return true;
   }
 
   async waitKey(): Promise<string> {
