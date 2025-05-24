@@ -1,22 +1,22 @@
 import { BasikValue } from "@/types";
-import { KernelInterface } from "../../types";
 import { make } from "./_common";
 import { argsAreAnys } from "@/basik/guards";
 import { isString } from "@tolokoban/type-guards";
+import { Kernel } from "@/kernel";
 
-export const makeAsk = (kernel: KernelInterface) =>
+export const makeAsk = (kernel: Kernel) =>
   make(
     "ASK",
     argsAreAnys(0),
     async (args: BasikValue[]) => await ask(args, kernel),
   );
 
-export const makeAskNum = (kernel: KernelInterface) =>
+export const makeAskNum = (kernel: Kernel) =>
   make("ASK", argsAreAnys(0), async (args: BasikValue[]) =>
     toNumber(await ask(args, kernel)),
   );
 
-export const makeAskInt = (kernel: KernelInterface) =>
+export const makeAskInt = (kernel: Kernel) =>
   make("ASK", argsAreAnys(0), async (args: BasikValue[]) =>
     Math.round(toNumber(await ask(args, kernel))),
   );
@@ -26,55 +26,47 @@ function toNumber(str: string): number {
   return Number.isNaN(num) ? 0 : num;
 }
 
-function ask(args: BasikValue[], kernel: KernelInterface) {
+function ask(args: BasikValue[], kernel: Kernel) {
   return new Promise<string>((resolve) => {
     const text = args
       .map((arg) => (isString(arg) ? arg : JSON.stringify(arg)))
       .join("");
     kernel.print(text);
     kernel.paint();
-    let isCursorVisible = true;
-    const cursorShow = () => {
-      kernel.printChar(0x8f);
-      kernel.paint();
-    };
-    const cursorHide = () => {
-      const colorIndex = kernel.colorIndex;
-      kernel.colorIndex = 0;
-      kernel.printChar(0x8f);
-      kernel.colorIndex = colorIndex;
-      kernel.paint();
-    };
-    const cursorBlink = globalThis.setInterval(() => {
-      if (isCursorVisible) cursorShow();
-      else cursorHide();
-      isCursorVisible = !isCursorVisible;
-    }, 500);
+    kernel.cursor.show();
     let value = "";
-    cursorShow();
     const handleKey = (evt: KeyboardEvent) => {
       if (evt.ctrlKey || evt.altKey || evt.metaKey) return;
 
-      try {
-        const { key } = evt;
-        if (key.length === 1) {
-          value += key;
-          cursorHide();
-          kernel.print(key);
-          return;
-        }
-        if (key === "Enter") {
-          globalThis.document.removeEventListener("keydown", handleKey);
-          cursorHide();
-          kernel.x = kernel.TEXT_ORIGIN_X;
-          kernel.y += kernel.CHAR_SIZE;
-          globalThis.clearInterval(cursorBlink);
-          resolve(value);
-          return;
-        }
-      } finally {
-        kernel.paint();
+      evt.preventDefault();
+      evt.stopPropagation();
+      const { key } = evt;
+      if (key.length === 1) {
+        value += key;
+        kernel.cursor.hide();
+        kernel.print(key);
+        kernel.cursor.show();
+        return;
       }
+      if (key === "Enter") {
+        globalThis.document.removeEventListener("keydown", handleKey);
+        kernel.cursor.hide();
+        kernel.x = kernel.TEXT_ORIGIN_X;
+        kernel.y += kernel.CHAR_SIZE;
+        resolve(value);
+        return;
+      }
+      if (key === "Backspace" && value.length > 0) {
+        kernel.cursor.hide();
+        kernel.x -= kernel.CHAR_SIZE;
+        if (kernel.x < -kernel.WIDTH / 2) {
+          kernel.x += kernel.WIDTH;
+          kernel.y -= kernel.CHAR_SIZE;
+        }
+        kernel.cursor.show();
+        value = value.slice(0, -1);
+      }
+      console.log("🚀 [ask] key =", key); // @FIXME: Remove this line written on 2025-05-24 at 09:38
     };
     globalThis.document.addEventListener("keydown", handleKey);
   });

@@ -1,10 +1,10 @@
 import { tgdCalcModulo } from "@tolokoban/tgd";
 import { isNumber } from "@tolokoban/type-guards";
-import { KernelInterface } from "../../types";
+import { Kernel } from "@/kernel";
 import { make } from "./_common";
 import { argsAreNumbers } from "@/basik/guards";
 
-export const makeCls = (kernel: KernelInterface) =>
+export const makeCls = (kernel: Kernel) =>
   make("cls", argsAreNumbers(0, 1), ([color]) => {
     kernel.paintFB(() => {
       if (isNumber(color)) {

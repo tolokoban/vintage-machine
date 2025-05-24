@@ -1,8 +1,8 @@
-import { KernelInterface } from "../../types";
+import { Kernel } from "@/kernel";
 import { make } from "./_common";
 import { argsAreNumbers } from "@/basik/guards";
 
-export const makeRect = (kernel: KernelInterface) =>
+export const makeRect = (kernel: Kernel) =>
   make("rect", argsAreNumbers(1, 3), ([width, height, angle]) => {
     kernel.paintFB(() => {
       kernel.painterRect.paint(

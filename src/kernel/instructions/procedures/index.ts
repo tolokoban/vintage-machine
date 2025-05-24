@@ -1,4 +1,4 @@
-import { KernelInterface } from "../../types";
+import { Kernel } from "@/kernel";
 import { makeBreakpoint } from "./breakpoint";
 import { makeCls } from "./cls";
 import { makeColor } from "./color";
@@ -19,7 +19,7 @@ import { makeReset } from "./reset";
 import { makeSound } from "./sound";
 import { makeStop } from "./stop";
 
-export const makeKernelProcedures = (kernel: KernelInterface) => ({
+export const makeKernelProcedures = (kernel: Kernel) => ({
   BREAKPOINT: makeBreakpoint(kernel),
   CLS: makeCls(kernel),
   COLOR: makeColor(kernel),

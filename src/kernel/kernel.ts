@@ -12,15 +12,15 @@ import { Symbols } from "./painters/symbols/symbols";
 import { PainterLayer } from "./painters/layer";
 import { PainterColorizer } from "./painters/colorizer";
 import { BasikPalette } from "./palette/main";
-import { KernelInterface } from "./types";
 import { makeKernelProcedures } from "./instructions/procedures";
 import { makeKernelFunctions } from "./instructions/functions";
 import { PainterDisk } from "./painters/disk";
 import { PainterRect } from "./painters/rect";
 import { Music } from "./music";
+import { Cursor } from "./cursor";
 
 const EMPTY_FUNCTION = () => {};
-export class Kernel extends TgdPainter implements KernelInterface {
+export class Kernel extends TgdPainter {
   private static ID = 0;
 
   public readonly id = `Kernel#${Kernel.ID++}`;
@@ -33,6 +33,7 @@ export class Kernel extends TgdPainter implements KernelInterface {
   public readonly TEXT_ORIGIN_X = (this.CHAR_SIZE - this.WIDTH) / 2;
   public readonly TEXT_ORIGIN_Y = (this.CHAR_SIZE - this.HEIGHT) / 2;
 
+  public readonly cursor: Cursor;
   public readonly music = new Music();
   public readonly palette: BasikPalette;
   public readonly painterSymbols: Symbols;
@@ -109,6 +110,7 @@ export class Kernel extends TgdPainter implements KernelInterface {
     this.functions = makeKernelFunctions(this);
     this.reset();
     context.inputs.pointer.eventMove.addListener(this.handleMouseMove);
+    this.cursor = new Cursor(this);
   }
 
   get mouseX() {

@@ -1,9 +1,9 @@
 import { tgdCalcModulo } from "@tolokoban/tgd";
-import { KernelInterface } from "../../types";
+import { Kernel } from "@/kernel";
 import { make } from "./_common";
 import { argsAreNumbers } from "@/basik/guards";
 
-export const makeLocate = (kernel: KernelInterface) =>
+export const makeLocate = (kernel: Kernel) =>
   make("locate", argsAreNumbers(2, 2), ([col, row]) => {
     const c = tgdCalcModulo(Math.floor(col), 0, kernel.TEXT_COLS - 1);
     const r = tgdCalcModulo(Math.floor(row), 0, kernel.TEXT_ROWS - 1);

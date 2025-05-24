@@ -1,9 +1,9 @@
 import { BlendMode } from "../../painters/layer";
-import { KernelInterface } from "../../types";
+import { Kernel } from "@/kernel";
 import { make } from "./_common";
 import { argsAreStrings } from "@/basik/guards";
 
-export const makeMode = (kernel: KernelInterface) =>
+export const makeMode = (kernel: Kernel) =>
   make("MODE", argsAreStrings(1, 1), ([mode]) => {
     const ALLOWED_MODES = ["add", "alpha", "replace"];
     mode = mode.toLowerCase();

@@ -40,6 +40,7 @@ Les fonctions retournent une valeur. Les procédures pas.
 * [HEX](HEX) : retourne la représentation hexadécimale d'un nombre
 * [HOUR](HMS) : retourne l'heure courante
 * [INK](INK) : retourne une liste des composantes de la couleur d'un crayon
+* [NPUTDIR](INPUTDIR) : regarde quelles touches fléchées sont enfoncées
 * [INT](INT) : retourne la valeur entière la plus proche d'un nombre
 * [LAYER](LAYER) : retourne le numéro du calque courant
 * [LEN](LEN) : retourne la longueur d'un texte ou d'une liste

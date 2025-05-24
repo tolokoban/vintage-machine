@@ -1,8 +1,8 @@
-import { KernelInterface } from "../../types";
+import { Kernel } from "@/kernel";
 import { make } from "./_common";
 import { argsAreNumbers } from "@/basik/guards";
 
-export const makeDisk = (kernel: KernelInterface) =>
+export const makeDisk = (kernel: Kernel) =>
   make(
     "disk",
     argsAreNumbers(1, 5),

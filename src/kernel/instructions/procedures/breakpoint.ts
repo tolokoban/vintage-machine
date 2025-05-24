@@ -1,8 +1,8 @@
 import { argsAreNumbers } from "@/basik/guards";
 import { make } from "./_common";
-import { KernelInterface } from "../../types";
+import { Kernel } from "@/kernel";
 
-export const makeBreakpoint = (kernel: KernelInterface) =>
+export const makeBreakpoint = (kernel: Kernel) =>
   make("BREAKPOINT", argsAreNumbers(0, 0), () => {
     console.log("Breakpoint!");
     for (const name of kernel.variables.keys()) {

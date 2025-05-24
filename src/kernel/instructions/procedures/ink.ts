@@ -1,8 +1,8 @@
 import { argsAreNumbers } from "@/basik/guards";
 import { make } from "./_common";
-import { KernelInterface } from "../../types";
+import { Kernel } from "@/kernel";
 
-export const makeInk = (kernel: KernelInterface) =>
+export const makeInk = (kernel: Kernel) =>
   make("INK", argsAreNumbers(4, 5), ([index, red, green, blue, alpha]) => {
     kernel.palette.set(index, red, green, blue, alpha);
     kernel.palette.updateCanvas();

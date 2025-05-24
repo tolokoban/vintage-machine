@@ -1,4 +1,4 @@
-import { KernelInterface } from "../../types";
+import { Kernel } from "@/kernel";
 import { make } from "./_common";
 import {
   argsAreAnys,
@@ -20,7 +20,7 @@ import { makeInputDir } from "./input";
 
 const RAD_PER_DEG = Math.PI / 180;
 
-export const makeKernelFunctions = (kernel: KernelInterface) => ({
+export const makeKernelFunctions = (kernel: Kernel) => ({
   ABS: make("ABS", argsAreNumbers(1, 1), ([a]) => Math.abs(a)),
   ASC: make("ASC", argsAreStrings(1, 1), ([s]) => s.charCodeAt(0)),
   ASK: makeAsk(kernel),

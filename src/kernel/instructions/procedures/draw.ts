@@ -1,9 +1,9 @@
 import { isString } from "@tolokoban/type-guards";
-import { KernelInterface } from "../../types";
+import { Kernel } from "@/kernel";
 import { make } from "./_common";
 import { argsAreAnys } from "@/basik/guards";
 
-export const makeDraw = (kernel: KernelInterface) =>
+export const makeDraw = (kernel: Kernel) =>
   make("draw", argsAreAnys(1), (args) => {
     const code = args
       .map((item) => (isString(item) ? item : JSON.stringify(item)))

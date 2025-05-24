@@ -1,10 +1,10 @@
 import { isNumber, isString } from "@tolokoban/type-guards";
-import { KernelInterface } from "../../types";
+import { Kernel } from "@/kernel";
 import { make } from "./_common";
 import { argsAreAnys } from "@/basik/guards";
 import { BasikValue } from "@/types";
 
-export const makeLabel = (kernel: KernelInterface) =>
+export const makeLabel = (kernel: Kernel) =>
   make("label", argsAreAnys(1, 2), ([arg, scale = 1]: BasikValue[]) => {
     if (!isNumber(scale))
       throw new Error(

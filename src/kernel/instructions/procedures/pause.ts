@@ -1,9 +1,9 @@
 import { ensureNumber } from "@tolokoban/type-guards";
-import { KernelInterface } from "../../types";
+import { Kernel } from "@/kernel";
 import { make } from "./_common";
 import { argsAreNumbers } from "@/basik/guards";
 
-export const makePause = (kernel: KernelInterface) =>
+export const makePause = (kernel: Kernel) =>
   make(
     "pause",
     argsAreNumbers(0, 1),
