@@ -21,6 +21,7 @@ Les fonctions retournent une valeur. Les procédures pas.
 * [PRINTLN](PRINT) : afficher du texte et sauter une ligne
 * [RECT](RECT) : dessiner un rectangle
 * [RESET](RESET) : réinitialiser TLK-74
+* [SCROLL](SCROLL) : décale le calque courant
 * [SOUND](SOUND) : émettre un son
 * [STOP](STOP) : Arrete une partition de musique en train de se jouer
 
