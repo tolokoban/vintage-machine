@@ -18,6 +18,7 @@ import { PainterDisk } from "./painters/disk";
 import { PainterRect } from "./painters/rect";
 import { Music } from "./music";
 import { Cursor } from "./cursor";
+import { PainterTri } from "./painters/tri";
 
 const EMPTY_FUNCTION = () => {};
 export class Kernel extends TgdPainter {
@@ -39,6 +40,7 @@ export class Kernel extends TgdPainter {
   public readonly painterSymbols: Symbols;
   public readonly painterDisk: PainterDisk;
   public readonly painterRect: PainterRect;
+  public readonly painterTri: PainterTri;
   public x = (this.CHAR_SIZE - this.WIDTH) / 2;
   public y = (this.CHAR_SIZE - this.HEIGHT) / 2;
   public colorIndex = 24;
@@ -85,6 +87,7 @@ export class Kernel extends TgdPainter {
     this.context = context;
     this.painterDisk = new PainterDisk(context);
     this.painterRect = new PainterRect(context);
+    this.painterTri = new PainterTri(context);
     this.texturePalette = new TgdTexture2D(context);
     this.palette = new BasikPalette(this.texturePalette);
     this.colorizer = new PainterColorizer(context, this.texturePalette);
@@ -291,7 +294,9 @@ export class Kernel extends TgdPainter {
     for (const layer of this.layers) {
       layer.delete();
     }
+    this.painterTri.delete();
     this.painterDisk.delete();
+    this.painterRect.delete();
     this.painterSymbols.delete();
     this.textureSymbols.delete();
     this.music.stop();

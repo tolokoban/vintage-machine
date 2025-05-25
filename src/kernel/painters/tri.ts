@@ -1,8 +1,6 @@
 import {
-  tgdCalcDegToRad,
   TgdContext,
   TgdDataset,
-  TgdMat2,
   TgdProgram,
   TgdShaderFragment,
   TgdShaderVertex,
@@ -12,7 +10,7 @@ import {
 /**
  * A surface painter will just display `textureRead` and call `action()`.
  */
-export class PainterRect {
+export class PainterTri {
   private readonly prg: TgdProgram;
   private readonly vao: TgdVertexArray;
   private readonly dataset: TgdDataset;
@@ -20,14 +18,15 @@ export class PainterRect {
   constructor(private readonly context: TgdContext) {
     const vert = new TgdShaderVertex({
       uniforms: {
+        uniOrigin: "vec2",
         uniScreenSize: "vec2",
       },
       attributes: {
         attPos: "vec2",
       },
       mainCode: [
-        "vec2 pos = attPos * uniScreenSize;",
-        "gl_Position = vec4(uniCenter + pos, 0.0, 1.0);",
+        "vec2 pos = (attPos + uniOrigin) * uniScreenSize;",
+        "gl_Position = vec4(pos, 0.0, 1.0);",
       ],
     }).code;
     const frag = new TgdShaderFragment({
@@ -44,6 +43,7 @@ export class PainterRect {
       },
     );
     this.dataset = dataset;
+    dataset.set("attPos", new Float32Array([0, 60, 50, -30, -50, -30]));
     const vao = new TgdVertexArray(context.gl, prg, [dataset]);
     this.vao = vao;
   }
@@ -58,15 +58,19 @@ export class PainterRect {
   paint(
     coords: number[],
     colorIndex: number,
+    originX: number,
+    originY: number,
     mode: "TRIANGLES" | "TRIANGLE_STRIP" | "TRIANGLE_FAN",
   ): void {
     const { context, prg, vao, dataset } = this;
     const { gl } = context;
     prg.use();
+    prg.uniform2f("uniOrigin", originX, originY);
     prg.uniform2f("uniScreenSize", 2 / context.width, 2 / context.height);
     prg.uniform1f("uniColor", colorIndex / 255);
-    dataset.set("attPos", new Float32Array(coords));
     vao.bind();
+    dataset.set("attPos", new Float32Array(coords));
+    vao.updateDataset(dataset);
     gl.drawArrays(gl[mode], 0, coords.length / 2);
     vao.unbind();
   }

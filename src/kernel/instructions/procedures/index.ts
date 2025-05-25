@@ -19,6 +19,7 @@ import { makeReset } from "./reset";
 import { makeSound } from "./sound";
 import { makeStop } from "./stop";
 import { makeScroll } from "./scroll";
+import { makeTri } from "./tri";
 
 export const makeKernelProcedures = (kernel: Kernel) => ({
   BREAKPOINT: makeBreakpoint(kernel),
@@ -43,4 +44,5 @@ export const makeKernelProcedures = (kernel: Kernel) => ({
   SCROLL: makeScroll(kernel),
   SOUND: makeSound(kernel),
   STOP: makeStop(kernel),
+  TRI: makeTri(kernel),
 });

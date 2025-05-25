@@ -23,7 +23,8 @@ Les fonctions retournent une valeur. Les procédures pas.
 * [RESET](RESET) : réinitialiser TLK-74
 * [SCROLL](SCROLL) : décale le calque courant
 * [SOUND](SOUND) : émettre un son
-* [STOP](STOP) : Arrete une partition de musique en train de se jouer
+* [STOP](STOP) : arrête une partition de musique en train de se jouer
+* [TRI](TRI) : dessine un ou plusieurs triangles
 
 ## Fonctions
 
