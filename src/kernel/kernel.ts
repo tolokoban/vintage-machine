@@ -315,6 +315,10 @@ export class Kernel extends TgdPainter {
     this.layer.paint(action);
   }
 
+  scroll(scrollX: number, scrollY: number) {
+    this.layer.scroll(scrollX, scrollY);
+  }
+
   print(text: string, scale = 1) {
     this.paintFB(() => {
       for (const char of text.split("")) {
