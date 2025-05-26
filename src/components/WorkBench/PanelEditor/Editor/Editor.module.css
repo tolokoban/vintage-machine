@@ -1,4 +1,21 @@
 .editor {
-  min-height: 0;
-  overflow: auto;
+    min-height: 0;
+    overflow: auto;
+    font-family: "Fira code", "Fira Mono", monospace;
+    background: #000;
+}
+
+.twoColumns {
+    display: flex;
+    flex-wrap: nowrap;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: stretch;
+    gap: 2px;
+}
+
+.lineNumbers {
+    padding: 10px;
+    white-space: pre;
+    color: #fff6;
 }
