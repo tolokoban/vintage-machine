@@ -9,4 +9,5 @@
 - [Les couleurs principales](colors)
 - [Toutes les forets du monde](forest)
 - [Mélange les couleurs](color-guess)
+- [Histoire dont tu es le héro](rpg)
 - [Arkanoïd](arkanoid)
