@@ -7,5 +7,6 @@
 - [Mickey Mouse](mickey)
 - [Ardoise magique](ardoise-magique)
 - [Les couleurs principales](colors)
+- [Toutes les forets du monde](forest)
 - [Mélange les couleurs](color-guess)
 - [Arkanoïd](arkanoid)
