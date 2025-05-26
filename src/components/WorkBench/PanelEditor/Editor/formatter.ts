@@ -1,6 +1,6 @@
 const TOKENS: Record<string, RegExp> = {
     OPEN: /^[ \t]*\{[ \t\r\n`]*/g,
-    CLOSE: /^[ \t\n\r]*\}[ \t\r\n]*/g,
+    CLOSE: /^[ \t\n\r`]*\}[ \t\r\n]*/g,
     NL: /^[ \t]*[\n\r][ \t]*/g,
     REM: /^REM(?![a-z0-9])[^\n\r]*[\n\r]/gi,
     STR: /^"(\\"|[^"])*"/g,

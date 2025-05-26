@@ -21,6 +21,7 @@ import { makeWait } from "./wait"
 import { makeKey } from "./key"
 import { makePick } from "./pick"
 import { makeSeed } from "./seed"
+import { makeCall } from "./call"
 
 const RAD_PER_DEG = Math.PI / 180
 
@@ -30,6 +31,7 @@ export const makeKernelFunctions = (kernel: Kernel) => ({
     ASK: makeAsk(kernel),
     ASKINT: makeAskInt(kernel),
     ASKNUM: makeAskNum(kernel),
+    CALL: makeCall(kernel),
     CHR: makeChr(),
     CLAMP: make("CLAMP", argsAreNumbers(3, 3), ([value, min, max]) =>
         tgdCalcClamp(value, min, max)
