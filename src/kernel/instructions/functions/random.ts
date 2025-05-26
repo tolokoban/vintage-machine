@@ -1,34 +1,36 @@
 import { isNumber } from "@tolokoban/type-guards"
 import { make } from "./_common"
 import { argsAreNumbers } from "@/basik/guards"
+import { Kernel } from "@/kernel"
 
-export const makeRandom = () =>
+export const makeRandom = (kernel: Kernel) =>
     make("RANDOM", argsAreNumbers(0, 2), args => {
-        if (args.length === 0) return Math.random()
+        if (args.length === 0) return kernel.random.value
 
         const [start, end] = args
         if (!isNumber(end)) {
-            return Math.floor(Math.random() * start)
+            return Math.floor(kernel.random.value * start)
         }
 
         if (start === end) return start
         return (
             Math.min(start, end) +
-            Math.floor(Math.random() * (Math.abs(end - start) + 1))
+            Math.floor(kernel.random.value * (Math.abs(end - start) + 1))
         )
     })
 
-export const makeRandomFloat = () =>
+export const makeRandomFloat = (kernel: Kernel) =>
     make("RANDOMF", argsAreNumbers(0, 2), args => {
-        if (args.length === 0) return Math.random()
+        if (args.length === 0) return kernel.random.value
 
         const [start, end] = args
         if (!isNumber(end)) {
-            return Math.random() * start
+            return kernel.random.value * start
         }
 
         if (start === end) return start
         return (
-            Math.min(start, end) + Math.random() * (Math.abs(end - start) + 1)
+            Math.min(start, end) +
+            kernel.random.value * (Math.abs(end - start) + 1)
         )
     })
