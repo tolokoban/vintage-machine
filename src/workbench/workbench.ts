@@ -5,11 +5,14 @@ import { workbench } from "."
 import { isString } from "@tolokoban/type-guards"
 import { createBasikAssembly } from "@/basik/asm"
 
+export type RuntimeOptions = Partial<{ code: string; fullscreen: boolean }>
+
 export class Workbench {
     public readonly state = state
 
     private canvas: HTMLCanvasElement | null = null
     private kernel: Kernel | null = null
+    private options: RuntimeOptions | null = null
 
     setCanvas(canvas: HTMLCanvasElement | null) {
         workbench.state.ready.value = canvas !== null
@@ -20,15 +23,18 @@ export class Workbench {
         if (canvas) {
             this.kernel = new Kernel(canvas, assets.symbols)
         }
+        if (this.options) this.run(this.options)
     }
 
-    async run({
-        fullscreen = false,
-        code,
-    }: Partial<{ code: string; fullscreen: boolean }> = {}) {
-        const { kernel } = this
-        if (!kernel) return
+    async run(options: RuntimeOptions = {}) {
+        const { kernel, canvas } = this
+        if (!canvas || !kernel) {
+            this.options = options
+            return
+        }
 
+        this.options = null
+        const { fullscreen = false, code } = options
         try {
             if (fullscreen) kernel.fullscreenRequest()
             workbench.state.error.value = null

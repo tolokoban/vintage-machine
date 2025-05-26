@@ -172,6 +172,7 @@ export class Kernel extends TgdPainter {
     }
 
     async waitKey(): Promise<string> {
+        this.paint()
         return new Promise(resolve => {
             const { keyboard } = this.context.inputs
             const handleKey = (evt: KeyboardEvent) => {

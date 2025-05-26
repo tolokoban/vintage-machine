@@ -58,6 +58,7 @@ Les fonctions retournent une valeur. Les procédures pas.
 * [NOT](NOT) : retourne la valeur booléenne inverse
 * [PADL](PAD) : retourne un texte avec une taille donnée en remplissant à droite
 * [PADR](PAD) : retourne un texte avec une taille donnée en remplissant à gauche
+* [PICK](PICK) : retourne un élément au hasard d'une liste
 * [PLAY](PLAY) : lance une partition et retourne immédiatement le temps en secondes que le morceau va durer.
 * [RANDOM](RANDOM) : retourne un nombre aléatoire entier
 * [RANDOMF](RANDOM) : retourne un nombre aléatoire à virgule

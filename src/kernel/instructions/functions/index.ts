@@ -20,6 +20,7 @@ import { makeInputDir } from "./input"
 import { makeWait } from "./wait"
 import { makeKey } from "./key"
 import { makePick } from "./pick"
+import { makeSeed } from "./seed"
 
 const RAD_PER_DEG = Math.PI / 180
 
@@ -81,6 +82,7 @@ export const makeKernelFunctions = (kernel: Kernel) => ({
     RANDOMF: makeRandomFloat(kernel),
     RANGE: makeRange(),
     SECOND: make("SECOND", argsAreAnys(0, 0), () => new Date().getSeconds()),
+    SEED: makeSeed(kernel),
     SIN: make("SIN", argsAreNumbers(1, 1), ([deg]) =>
         Math.sin(deg * RAD_PER_DEG)
     ),

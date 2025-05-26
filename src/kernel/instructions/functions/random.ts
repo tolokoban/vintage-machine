@@ -30,7 +30,6 @@ export const makeRandomFloat = (kernel: Kernel) =>
 
         if (start === end) return start
         return (
-            Math.min(start, end) +
-            kernel.random.value * (Math.abs(end - start) + 1)
+            Math.min(start, end) + kernel.random.value * Math.abs(end - start)
         )
     })
