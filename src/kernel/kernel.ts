@@ -212,7 +212,7 @@ export class Kernel extends TgdPainter {
             currentLayerIndex < this.LAYERS_COUNT;
             currentLayerIndex++
         ) {
-            this.paintFB(() => {
+            this.paintCurrentLayer(() => {
                 const { gl } = this
                 this.currentLayerIndex = currentLayerIndex
                 gl.clearColor(0, 0, 0, 1)
@@ -348,7 +348,7 @@ export class Kernel extends TgdPainter {
         }
     }
 
-    paintFB(action: () => void = EMPTY_FUNCTION) {
+    paintCurrentLayer(action: () => void = EMPTY_FUNCTION) {
         this.layer.paint(action)
     }
 
@@ -362,7 +362,7 @@ export class Kernel extends TgdPainter {
             const h = this.CHAR_SIZE * scale
             this.y -= h
             this.scroll(0, -h)
-            this.paintFB(() => {
+            this.paintCurrentLayer(() => {
                 this.painterRect.paint(
                     0,
                     this.screenSpaceY((this.HEIGHT - this.CHAR_SIZE) / 2),
@@ -373,10 +373,11 @@ export class Kernel extends TgdPainter {
                 )
             })
         }
+        this.paint()
     }
 
     print(text: string, scale = 1) {
-        this.paintFB(() => {
+        this.paintCurrentLayer(() => {
             for (const char of text.split("")) {
                 const sym = char.charCodeAt(0)
                 const val = sym & 0xff
@@ -401,7 +402,7 @@ export class Kernel extends TgdPainter {
     }
 
     printChar(sym: number, scale = 1) {
-        this.paintFB(() => {
+        this.paintCurrentLayer(() => {
             const val = sym & 0xff
             const col = val & 0xf
             const row = (val - col) >> 4
@@ -484,7 +485,7 @@ export class Kernel extends TgdPainter {
     }
 
     test() {
-        this.paintFB(() => {
+        this.paintCurrentLayer(() => {
             this.painterSymbols.paint({
                 colorIndex: 4,
                 screenX: 0,

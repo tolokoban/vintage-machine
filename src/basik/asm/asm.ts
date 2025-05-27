@@ -417,8 +417,23 @@ Mais j'ai reçu ${JSON.stringify(varArray)}.`)
 
     readonly $function = async () => {
         const { kernel } = this
-        const name = this.popStr()
+        let name = this.popStr()
         const args = this.popArr()
+        if (name.trim().toUpperCase() === "CALL") {
+            if (args.length < 1) {
+                throw new Error(
+                    `La fonction CALL a besoin du nom de la fonction en premier argument.`
+                )
+            }
+
+            const dynamicName = args.shift()
+            if (!isString(dynamicName)) {
+                throw new Error(
+                    `Le premier argument de CALL doit etre un nom de fonction."`
+                )
+            }
+            name = dynamicName
+        }
         if (kernel.hasFunction(name)) {
             const result = await kernel.executeFunction(name, args)
             this.stack.push(result)
@@ -449,8 +464,23 @@ Mais j'ai reçu ${JSON.stringify(varArray)}.`)
     }
 
     readonly $procedure = async () => {
-        const name = this.popStr()
+        let name = this.popStr()
         const args = this.popArr()
+        if (name.trim().toUpperCase() === "CALL") {
+            if (args.length < 1) {
+                throw new Error(
+                    `La procédure CALL a besoin du nom de la procédure en premier argument.`
+                )
+            }
+
+            const dynamicName = args.shift()
+            if (!isString(dynamicName)) {
+                throw new Error(
+                    `Le premier argument de CALL doit etre un nom de procédure."`
+                )
+            }
+            name = dynamicName
+        }
         const instructionExist = await this.kernel.executeProcedure(name, args)
         if (!instructionExist) {
             const userFunc = this.functionsDefinitions.get(name)

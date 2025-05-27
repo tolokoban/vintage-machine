@@ -10,7 +10,7 @@ export const makeDraw = (kernel: Kernel) =>
             .join(" ")
         const commands = parseCommands(code.split(/[,; \n\r\t]+/).join(" "))
         const coords: Array<[x: number, y: number]> = []
-        kernel.paintFB(() => {
+        kernel.paintCurrentLayer(() => {
             for (const [name, ...args] of commands) {
                 switch (name) {
                     case "(": {
