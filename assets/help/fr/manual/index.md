@@ -8,6 +8,7 @@ Les fonctions retournent une valeur. Les procédures pas.
 * [COLOR](COLOR) : choisir un crayon de couleur
 * [DISK](DISK) : dessiner un disque ou une ellipse
 * [DRAW](DRAW) : dessiner plusieurs formes d'un coup
+* [CALL](CALL) : appelle une procédure dynamiquement
 * [EXIT](EXIT) : terminer le programme
 * [INK](INK) : changer la couleur d'un crayon
 * [LABEL](LABEL) : dessiner un texte centré sur le curseur avec la taille qu'on veut
@@ -33,6 +34,7 @@ Les fonctions retournent une valeur. Les procédures pas.
 * [ASK](ASK) : retourne le texte tapé par l'utilisateur
 * [ASKINT](ASK) : retourne un nombre entier tapé par l'utilisateur
 * [ASKNUM](ASK) : retourne un nombre à virgule tapé par l'utilisateur
+* [CALL](CALL) : appelle une fonction dynamiquement
 * [CHR](CHR) : retourne un symbole dont on passe la valeur
 * [CLAMP](CLAMP) : forcer un nombre à rester entre deux valeurs
 * [COLOR](COLOR) : retourne le numéro du crayon courant
