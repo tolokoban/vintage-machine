@@ -13,7 +13,7 @@ WHILE 1 {
     LAYER(1)
     CLS()
     MOVE($x, $y)
-    COLOR(11)
+    COLOR(15)
     RECT(32,2,$angle)
     IF NOT(KEY(" ")) {
       LAYER(0)
