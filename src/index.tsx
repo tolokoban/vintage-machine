@@ -7,19 +7,18 @@ import { assets } from "./assets"
 import "./index.css"
 import "./highlight.css"
 import "./font/josefin.css"
-import { formatBasik } from "./components/WorkBench/PanelEditor/Editor/formatter"
 
-function testFormat() {
-    const code = `DEF DISP(  $text)  {$colors = [ 
-    4, 7, 12, 33, 0] 
-     IF LEN( $text)>5 { PRINTLN("Prout")
-     IF LEN($text)<3 {
-     PRINTLN("Beurk {") }}} CLS() }
+// function testFormat() {
+//     const code = `DEF DISP(  $text)  {$colors = [
+//     4, 7, 12, 33, 0]
+//      IF LEN( $text)>5 { PRINTLN("Prout")
+//      IF LEN($text)<3 {
+//      PRINTLN("Beurk {") }}} CLS() }
 
-EXIT()`
-    console.log(code)
-    const code1 = formatBasik(code)
-}
+// EXIT()`
+//     console.log(code)
+//     const code1 = formatBasik(code)
+// }
 
 async function start() {
     await assets.initialize()
@@ -57,5 +56,4 @@ function removeSplashScreen() {
     }, SPLASH_VANISHING_DELAY)
 }
 
-// void start()
-testFormat()
+void start()

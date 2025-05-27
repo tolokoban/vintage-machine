@@ -373,7 +373,6 @@ export class Kernel extends TgdPainter {
                 )
             })
         }
-        this.paint()
     }
 
     print(text: string, scale = 1) {

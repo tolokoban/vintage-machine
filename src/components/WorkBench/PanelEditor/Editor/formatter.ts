@@ -15,15 +15,19 @@ const TOKENS: Record<string, RegExp> = {
 type Token = [key: string, txt: string, etc?: boolean]
 
 export function formatBasik(code: string): string {
-    const tokens: Token[] = flagSuccesiveClosings(
-        solidifyShortBlocs(
+    const tokens: Token[] = trimTokens(
+        flagSuccesiveClosings(
             removeSpacesAroundBlocks(
-                removeSpaceAfterNewlines(extractTokens(code))
+                solidifyShortBlocs(
+                    removeSpaceAfterNewlines(extractTokens(code))
+                )
             )
         )
     )
+    debugTokens("Trimed tokens", tokens)
     let out = ""
     let indent = 0
+    let [prevToken] = tokens
     for (const token of tokens) {
         const [key, txt, etc] = token
         switch (key) {
@@ -32,6 +36,12 @@ export function formatBasik(code: string): string {
                 out += "  ".repeat(indent)
                 break
             case "{":
+                out += " "
+                out += key
+                out += "\n"
+                indent++
+                out += "  ".repeat(indent)
+                break
             case "[":
             case "(":
                 out += key
@@ -51,9 +61,14 @@ export function formatBasik(code: string): string {
                     out += "  ".repeat(indent)
                 }
                 break
+            case "BLOCK":
+                if (txt.charAt(0) === "{" && prevToken[0] !== "SPC") out += " "
+                out += txt
+                break
             default:
                 out += txt
         }
+        prevToken = token
     }
     console.log()
     console.log(out)
@@ -89,8 +104,12 @@ function extractTokens(code: string) {
         const token = getToken(current)
         const [key, txt] = token
         cursor += txt.length
-        if (key === "NL") tokens.push(["NL", sanitizeNL(txt)])
-        else if (key === "SPC") tokens.push(["SPC", " "])
+        if (key === "NL") {
+            const nl = sanitizeNL(txt)
+            for (let i = 0; i < nl.length; i++) {
+                tokens.push(["NL", "\n"])
+            }
+        } else if (key === "SPC") tokens.push(["SPC", " "])
         else tokens.push(token)
     }
     console.log("Raw tokens:", tokens)
@@ -99,6 +118,8 @@ function extractTokens(code: string) {
 
 function removeSpacesAroundBlocks(tokens: Token[]): Token[] {
     const output: Token[] = []
+    let hasRemovedSpace = false
+    let hasRemovedNewline = false
     for (const [tokenKey, tokenTxt] of tokens) {
         switch (tokenKey) {
             case "{":
@@ -108,15 +129,35 @@ function removeSpacesAroundBlocks(tokens: Token[]): Token[] {
             case "]":
             case ")":
                 while (lastIs(output, "NL", "SPC")) output.pop()
+
                 output.push([tokenKey, tokenTxt])
                 break
             case "SPC":
-                if (!lastIs(output, "}", "]", ")")) {
-                    output.push(["SPC", " "])
+                if (lastIs(output, "}", "]", ")")) {
+                    if (!hasRemovedSpace) {
+                        // Skip this space.
+                        hasRemovedSpace = true
+                        break
+                    }
                 }
+                output.push(["SPC", " "])
+                hasRemovedSpace = false
+                break
+            case "NL":
+                if (lastIs(output, "{", "[", "(", "}", "]", ")")) {
+                    if (!hasRemovedNewline) {
+                        // Skip this new line.
+                        hasRemovedNewline = true
+                        break
+                    }
+                }
+                output.push(["NL", "\n"])
+                hasRemovedNewline = false
                 break
             default:
                 output.push([tokenKey, tokenTxt])
+                hasRemovedNewline = false
+                hasRemovedSpace = false
                 break
         }
     }
@@ -143,6 +184,13 @@ function lastIs(tokens: Token[], ...keys: string[]) {
     if (!last) return false
 
     return keys.includes(last[0])
+}
+
+function firstIs(tokens: Token[], ...keys: string[]) {
+    const [first] = tokens
+    if (!first) return false
+
+    return keys.includes(first[0])
 }
 
 const MAX_SIZE = 30
@@ -188,7 +236,7 @@ function parseBlock(input: Token[], open: string, close: string): Token[] {
         ? [
               [
                   "BLOCK",
-                  `${open}${output
+                  `${open}${surroundWithSpaces(trimTokens(output))
                       .map(([key, txt]) =>
                           key === "NL" ? ["SPC", " "] : [key, txt]
                       )
@@ -213,6 +261,17 @@ function removeSpaceAfterNewlines(rawTokens: Token[]): Token[] {
     }
     debugTokens("Remove space after new line", tokens)
     return tokens
+}
+
+function trimTokens(tokens: Token[]): Token[] {
+    while (firstIs(tokens, "NL", "SPC", "")) tokens.shift()
+    while (lastIs(tokens, "NL", "SPC", "")) tokens.pop()
+    return tokens
+}
+
+function surroundWithSpaces(tokens: Token[]): Token[] {
+    if (tokens.length === 0) return []
+    return [["SPC", " "], ...tokens, ["SPC", " "]]
 }
 
 function debugTokens(caption: string, tokens: Token[]) {
