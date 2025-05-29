@@ -108,7 +108,7 @@ DEF PUNCH($att1, $def2, $deg1) {
   $att = $att1 + RANDOM(100)
   $def = $def2 + RANDOM(100)
   if $att > $def return RANDOM(2, $deg1)
-  RETURN 1
+  RETURN 0
 }
 
 DEF ENERGY_BAR($y, $pdv, $max, $nom) {
@@ -127,6 +127,7 @@ DEF ENERGY_BAR($y, $pdv, $max, $nom) {
 }
 
 DEF battle($gladiators, $idx1, $idx2) {
+  $pause = .2
   $cls = "M0,120C0R640,240"
   DRAW($cls)
   $glad1 = $gladiators[$idx1]
@@ -138,29 +139,29 @@ DEF battle($gladiators, $idx1, $idx2) {
   $blows1 = 0
   $blows2 = 0
   DRAW($cls)
-  ENERGY_BAR(80, $pdv1, $maxpdv1, $nom1)
-  ENERGY_BAR(160, $pdv2, $maxpdv2, $nom2)
+  $total = 0
   WHILE ($pdv1>0)AND($pdv2>0) {
+    $pdv1 = MAX(0, $pdv1 - 1)
+    $pdv2 = MAX(0, $pdv2 - 1)
+    $total = $total + 1
+    ENERGY_BAR(80, $pdv1, $maxpdv1, $nom1 + " " + $blows1 + "/" + $total)
+    ENERGY_BAR(160, $pdv2, $maxpdv2, $nom2 + " " + $blows2 + "/" + $total)
     $punch1 = PUNCH($att1, $def2, $deg1)
     if $punch1 > 0 {
       $pdv2 = MAX(0, $pdv2 - $punch1)
       $blows1 = $blows1 + 1
-      DRAW($cls)
-      ENERGY_BAR(80, $pdv1, $maxpdv1, $nom1)
-      ENERGY_BAR(160, $pdv2, $maxpdv2, $nom2)
-      PAUSE(.5)
+      PAUSE($pause)
     }
     $punch2 = PUNCH($att2, $def1, $deg2)
-    if $punch1 > 0 {
+    if $punch2 > 0 {
       $pdv1 = MAX(0, $pdv1 - $punch2)
       $blows2 = $blows2 + 1
-      DRAW($cls)
-      ENERGY_BAR(80, $pdv1, $maxpdv1, $nom1)
-      ENERGY_BAR(160, $pdv2, $maxpdv2, $nom2)
-      PAUSE(.5)
+      PAUSE($pause)
     }
+    PAUSE()
   }
-  DRAW($cls)
+  ENERGY_BAR(80, $pdv1, $maxpdv1, $nom1 + " " + $blows1 + "/" + $total)
+  ENERGY_BAR(160, $pdv2, $maxpdv2, $nom2 + " " + $blows2 + "/" + $total)
   if $pdv1 < $pdv2 {
     $glad1[5] = $glad1[5] - 1
     $glad2[5] = $glad2[5] + 1
