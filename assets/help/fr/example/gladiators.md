@@ -95,7 +95,7 @@ DEF WAIT_USER() {
   MOVE(0,232)
   LABEL("Tape ENTER pour continuer...")
   INK(100, 15, 15, 15)
-  PAUSE(1)
+  PAUSE(.5)
   WHILE NOT(KEY("Enter")) {
     $c = ABS(15 * SIN(TIME()/10))
     INK(100, $c, $c, $c)
@@ -192,7 +192,8 @@ print_gladiators($gladiators)
 WAIT_USER()
 
 FOR $boucle IN RANGE(LEN($gladiators)) {
-  FOR $idx1 IN RANGE(0, LEN($gladiators), 2) {
+  $gladiators = TRI_PAR_BULLES($gladiators, 5)
+  FOR $idx1 IN RANGE(0, LEN($gladiators)-1, 2) {
     $idx2 = $idx1 + 1
     CLS()
     print_gladiators($gladiators)    
@@ -203,15 +204,35 @@ FOR $boucle IN RANGE(LEN($gladiators)) {
     PRINTLN("Prochain combat : ")
     PRINTLN()
     COLOR(24) PRINT($glad1[0])
-    COLOR(26) PRINT(" / ")
-    
+    COLOR(26) PRINT(" / ")    
     COLOR(24) PRINT($glad2[0])
     PRINTLN()
     PRINTLN()
+    PRINT_GLADIATORs([$glad1, $glad2])
+    PRINTLN()
+    $[nom1, att1, def1, deg1, pdv1] = $glad1
+    $[nom2, att2, def2, deg2, pdv2] = $glad2
+    $force1 = CLAMP(100 + ($att1- $def2), 0, 200)
+    $force2 = CLAMP(100 + ($att2- $def1), 0, 200)
+    $coup1 = $deg1 * $force1
+    $coup2 = $deg1 * $force1
+    $chance1 = $pdv1 / $coup2
+    $chance2 = $pdv2 / $coup1
+    COLOR(26) PRINT("Je parie sur ")
+    COLOR(24)
+    IF $force1 > $force2 PRINTLN($nom1)
+    ELSE PRINTLN($nom2)
+    COLOR(26) PRINT("Et toi ?")
     WAIT_USER()
     BATTLE($gladiators, $idx1, $idx2)
     WAIT_USER()
   }
-  $gladiators = TRI_PAR_BULLES($gladiators, 5)
 }
+
+CLS()
+COLOR(8)
+PRINTLN("Les combats sont termines !")
+PRINTLN()
+PRINTLN()
+PRINT_GLADIATORS($gladiators)
 ```
