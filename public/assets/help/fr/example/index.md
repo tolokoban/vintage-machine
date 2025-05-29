@@ -9,5 +9,6 @@
 - [Les couleurs principales](colors)
 - [Toutes les forets du monde](forest)
 - [Mélange les couleurs](color-guess)
+- [Le combat dess gladiateurs](gladiators)
 - [Histoire dont tu es le héro](rpg)
 - [Arkanoïd](arkanoid)
